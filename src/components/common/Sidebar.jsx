@@ -11,7 +11,7 @@ const Sidebar = () => {
     <aside className="w-64 bg-slate-800 text-slate-200 flex flex-col">
       {/* Header */}
       <div className="h-14 flex items-center px-4 border-b border-slate-700">
-        <h1 className="text-lg font-bold tracking-wide">DC Asset Manager</h1>
+        <h1 className="text-lg font-bold tracking-wide">Asset Manager</h1>
       </div>
 
       {/* Menu */}
@@ -68,15 +68,15 @@ const Sidebar = () => {
               `${menuClass} ${isActive ? activeClass : ""}`
             }
           >
-            Firewall
+            CCTV
           </NavLink>
         </div>
       </nav>
 
       {/* Footer */}
-      <div className="p-4 text-xs text-slate-400 border-t border-slate-700">
+      {/* <div className="p-4 text-xs text-slate-400 border-t border-slate-700">
         © 2026 Data Center
-      </div>
+      </div> */}
     </aside>
   );
 };

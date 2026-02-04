@@ -4,3 +4,6 @@
 * {
   font-family: "poppins";
 }
+.input {
+  @apply w-full border px-3 py-2 rounded text-sm font-medium;
+}

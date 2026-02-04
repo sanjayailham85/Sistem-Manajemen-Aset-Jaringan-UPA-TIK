@@ -1,52 +1,120 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import RackCard from "../../../components/server/rack/RackCard";
+import React, { useEffect, useState } from "react";
+import RackGrid from "../../../components/server/rack/RackGrid";
+import RackModal from "../../../components/server/rack/RackModal";
+import {
+  getRacks,
+  createRack,
+  updateRack,
+  deleteRack,
+} from "../../../services/rackService";
+
+import { getPhysical } from "../../../services/physicalService";
 
 const RackList = () => {
-  const navigate = useNavigate();
+  const [racks, setRacks] = useState([]);
+  const [physicalServers, setPhysicalServers] = useState([]);
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedRack, setSelectedRack] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  // dummy data (nanti ganti API)
-  const racks = [
-    {
-      id: 1,
-      name: "Rack A1",
-      location: "Data Center Lt.1",
-      totalServer: 12,
-      status: "active",
-    },
-    {
-      id: 2,
-      name: "Rack A2",
-      location: "Data Center Lt.1",
-      totalServer: 8,
-      status: "maintenance",
-    },
-  ];
+  const fetchRacks = async () => {
+    try {
+      setLoading(true);
+      const res = await getRacks();
+      setRacks(res.data);
+    } catch (err) {
+      console.error("Gagal mengambil data racks", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const handleClick = (rackId) => {
-    navigate(`/racks/${rackId}`);
+  const fetchPhysicalServers = async () => {
+    try {
+      const res = await getPhysical();
+      setPhysicalServers(res.data);
+    } catch (err) {
+      console.error("Gagal mengambil data physical server", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchRacks();
+    fetchPhysicalServers(); // ambil data physical server
+  }, []);
+
+  const handleAddRack = async (data) => {
+    try {
+      await createRack({ ...data });
+      fetchRacks();
+      setOpenModal(false);
+    } catch (err) {
+      console.error("Gagal menambah data racks", err);
+    }
+  };
+  const handleUpdateRack = async (data) => {
+    try {
+      await updateRack(selectedRack.id, data);
+      fetchRacks();
+      setSelectedRack(null);
+      setOpenModal(false);
+    } catch (err) {
+      console.error("Gagal update data rack ", err);
+    }
+  };
+
+  const handleDeleteRack = async (id) => {
+    const confirm = window.confirm("Apakah yakin ingin menghapus rack ini?");
+    if (!confirm) return;
+
+    try {
+      await deleteRack(id);
+      setRacks((prev) => prev.filter((rack) => rack.id !== id));
+    } catch (err) {
+      console.error("Gagal menghapus rack", err);
+    }
   };
 
   return (
-    <div>
-      {/* Header */}
-      <div className="mb-6">
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
         <h1 className="text-xl font-semibold">Rack Server</h1>
-        <p className="text-sm text-gray-500">
-          Daftar rack server di data center
-        </p>
+        <button
+          onClick={() => {
+            setSelectedRack(null);
+            setOpenModal(true);
+          }}
+          className="bg-blue-600 text-white px-4 py-2 rounded"
+        >
+          + Tambah Rack
+        </button>
       </div>
 
-      {/* Grid Rack */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {racks.map((rack) => (
-          <RackCard
-            key={rack.id}
-            rack={rack}
-            onClick={() => handleClick(rack.id)}
-          />
-        ))}
-      </div>
+      <RackGrid
+        racks={racks.map((rack) => {
+          const totalServer = physicalServers.filter(
+            (s) => s.rackId === rack.id
+          ).length;
+          return { ...rack, totalServer };
+        })}
+        onEdit={(rack) => {
+          setSelectedRack(rack);
+          setOpenModal(true);
+        }}
+        onDelete={handleDeleteRack}
+      />
+      {/* Modal */}
+      {openModal && (
+        <RackModal
+          // rackNumber={rackId}
+          initialData={selectedRack}
+          onClose={() => {
+            setOpenModal(false);
+            setSelectedRack(null);
+          }}
+          onSubmit={selectedRack ? handleUpdateRack : handleAddRack}
+        />
+      )}
     </div>
   );
 };

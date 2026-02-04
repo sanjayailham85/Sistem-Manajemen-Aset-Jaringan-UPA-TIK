@@ -50,19 +50,29 @@ const AppRoutes = () => {
       <Route path="/racks/:rackId" element={<RackDetail />} />
 
       {/* Server - Physical */}
-      <Route path="/servers/:physicalId" element={<PhysicalServerList />} />
+      <Route path="/racks/:rackId/physical" element={<PhysicalServerList />} />
       <Route
-        path="/server/physical/:physicalId"
+        path="/racks/:rackId/physical/:physicalId"
         element={<PhysicalServerDetail />}
       />
 
       {/* Server - Host */}
-      <Route path="/server/host/:hostId" element={<HostDetail />} />
+      <Route
+        path="/racks/:rackId/physical/:physicalId/host"
+        element={<HostList />}
+      />
+      <Route
+        path="/racks/:rackId/physical/:physicalId/host/:hostId"
+        element={<HostDetail />}
+      />
 
       {/* Server - Guest */}
-      <Route path="/server/host/:hostId/guest" element={<GuestList />} />
       <Route
-        path="/server/host/:hostId/guest/:guestId"
+        path="/racks/:rackId/physical/:physicalId/host/:hostId/guest"
+        element={<GuestList />}
+      />
+      <Route
+        path="/racks/:rackId/physical/:physicalId/host/:hostId/guest/:guestId"
         element={<GuestDetail />}
       />
 

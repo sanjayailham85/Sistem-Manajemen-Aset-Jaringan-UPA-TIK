@@ -1,59 +1,31 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import GuestTable from "../../../components/tables/GuestTable";
 import Breadcrumb from "../../../components/common/Breadcrumb";
+import { getHostById } from "../../../services/hostService";
 
 const HostDetail = () => {
-  const { rackId } = useParams();
-  const { physicalId } = useParams();
-  const { hostId } = useParams();
-  const navigate = useNavigate();
+  const { rackId, physicalId, hostId } = useParams();
+  const [host, setHost] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  // dummy data host
-  const host = {
-    id: hostId,
-    hostName: "Host-VM-01",
-    ip: "10.10.1.100",
-    auth: "vCenter",
-    version: "ESXi 7.0",
-    device: "VMware ESXi",
-    cpu: "2x Intel Xeon Gold",
-    ram: "256 GB",
-    storage: "10 TB SSD",
-    status: "active",
+  const fetchHostId = async () => {
+    try {
+      setLoading(true);
+      const res = await getHostById(hostId);
+      setHost(res.data);
+    } catch (err) {
+      console.error("Gagal mengambil data host", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // dummy data guest server
-  const guests = [
-    {
-      id: 1,
-      name: "vm-app-01",
-      ip: "10.10.2.10",
-      os: "Ubuntu 20.04",
-      owner: "Tim Aplikasi",
-      status: "running",
-    },
-    {
-      id: 2,
-      name: "vm-db-01",
-      ip: "10.10.2.20",
-      os: "CentOS 7",
-      owner: "Tim Database",
-      status: "running",
-    },
-    {
-      id: 3,
-      name: "vm-test-01",
-      ip: "10.10.2.30",
-      os: "Windows Server 2019",
-      owner: "Tim QA",
-      status: "stopped",
-    },
-  ];
-
-  const handleOpenGuest = (guestId) => {
-    navigate(`/server/host/${guestId}/guest`);
-  };
+  useEffect(() => {
+    if (hostId) {
+      fetchHostId();
+    }
+  }, [hostId]);
 
   return (
     <div className="space-y-6">
@@ -63,7 +35,7 @@ const HostDetail = () => {
           { label: "Physical Server", to: `/racks/${rackId}` },
           {
             label: "Detail Physical Server",
-            to: `/server/physical/${physicalId}`,
+            to: `/racks/${rackId}/physical/${physicalId}`,
           },
           { label: "Host" },
         ]}
@@ -82,39 +54,28 @@ const HostDetail = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
           <div>
             <span className="text-gray-500">Host Name</span>
-            <p className="font-medium">{host.hostName}</p>
+            <p className="font-medium">{host?.name}</p>
           </div>
           <div>
             <span className="text-gray-500">IP Address</span>
-            <p className="font-medium">{host.ip}</p>
+            <p className="font-medium">{host?.ip}</p>
           </div>
           <div>
             <span className="text-gray-500">Host Auth</span>
-            <p className="font-medium">{host.auth}</p>
+            <p className="font-medium">{host?.auth}</p>
           </div>
           <div>
             <span className="text-gray-500">Host Version</span>
-            <p className="font-medium">{host.version}</p>
+            <p className="font-medium">{host?.version}</p>
           </div>
           <div>
             <span className="text-gray-500">Server Device</span>
-            <p className="font-medium">{host.device}</p>
+            <p className="font-medium">{host?.serverDevice}</p>
           </div>
-          <div>
-            <span className="text-gray-500">CPU</span>
-            <p className="font-medium">{host.cpu}</p>
-          </div>
-          <div>
-            <span className="text-gray-500">RAM</span>
-            <p className="font-medium">{host.ram}</p>
-          </div>
-          <div>
-            <span className="text-gray-500">Storage</span>
-            <p className="font-medium">{host.storage}</p>
-          </div>
+
           <div>
             <span className="text-gray-500">Status</span>
-            <p className="font-medium capitalize">{host.status}</p>
+            <p className="font-medium capitalize">{host?.status}</p>
           </div>
         </div>
       </div>
