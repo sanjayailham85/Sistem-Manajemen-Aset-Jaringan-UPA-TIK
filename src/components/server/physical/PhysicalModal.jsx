@@ -14,7 +14,6 @@ const PhysicalModal = ({
     rackId,
     auth: "",
     owner: "",
-    // rackName: rackName || "",
     year: "",
     status: "Active",
     model: "",
@@ -28,7 +27,6 @@ const PhysicalModal = ({
 
   const [form, setForm] = useState(emptyForm);
 
-  // 🔹 Prefill saat EDIT
   useEffect(() => {
     if (initialData) {
       setForm({
@@ -36,7 +34,7 @@ const PhysicalModal = ({
         ...initialData,
         rackName: initialData.rackName || rackName,
         image: null,
-        imagePreview: initialData.imageUrl || null, // dari backend
+        imagePreview: initialData.imageUrl || null,
       });
     }
   }, [initialData, rackName]);
@@ -65,7 +63,6 @@ const PhysicalModal = ({
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 space-y-5">
-        {/* Header */}
         <div>
           <h2 className="text-xl font-semibold">
             {initialData ? "Edit Physical Server" : "Tambah Physical Server"}
@@ -76,7 +73,6 @@ const PhysicalModal = ({
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Informasi Utama */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <input
               name="name"
@@ -110,12 +106,7 @@ const PhysicalModal = ({
               className="input"
               required
             />
-            {/* <input
-              name="rackName"
-              value={`Rack ${form.rackName}`}
-              disabled
-              className="input bg-gray-100 cursor-not-allowed"
-            /> */}
+
             <select
               name="year"
               value={form.year}
@@ -135,7 +126,6 @@ const PhysicalModal = ({
             </select>
           </div>
 
-          {/* Spesifikasi */}
           <div>
             <h3 className="text-sm font-semibold text-gray-600 mb-2">
               Spesifikasi Server
@@ -172,7 +162,6 @@ const PhysicalModal = ({
             </div>
           </div>
 
-          {/* Image Upload */}
           <div>
             <label className="block text-sm font-medium mb-2">
               Gambar Server
@@ -208,7 +197,6 @@ const PhysicalModal = ({
             )}
           </div>
 
-          {/* Status */}
           <select
             name="status"
             value={form.status}
@@ -219,7 +207,6 @@ const PhysicalModal = ({
             <option value="Inactive">Inactive</option>
           </select>
 
-          {/* Detail */}
           <textarea
             name="detail"
             value={form.detail}
@@ -229,7 +216,6 @@ const PhysicalModal = ({
             placeholder="Detail tambahan mengenai server"
           />
 
-          {/* Action */}
           <div className="flex justify-end gap-3 pt-4 border-t">
             <button
               type="button"

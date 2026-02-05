@@ -6,9 +6,10 @@ import {
   createPhysical,
   updatePhysical,
   deletePhysical,
-} from "../../services/physicalService";
+} from "../../../services/physicalService";
+import PhysicalModal from "./PhysicalModal";
 
-const PhysicalServerTable = ({ data, onEdit, onDelete }) => {
+const FilteredPhysicalTable = () => {
   const { rackId, physicalId } = useParams();
   const navigate = useNavigate();
   const [physicals, setPhysical] = useState([]);
@@ -72,6 +73,17 @@ const PhysicalServerTable = ({ data, onEdit, onDelete }) => {
 
   return (
     <div className="bg-white rounded shadow overflow-x-auto">
+      <div className="">
+        <button
+          onClick={() => {
+            setSelectedPhysical(null);
+            setOpenModal(true);
+          }}
+          className="bg-blue-600 text-white px-4 py-2 rounded ml-auto block mb-3"
+        >
+          + Tambah Physical Server
+        </button>
+      </div>
       <table className="w-full text-sm">
         <thead className="bg-gray-100">
           <tr>
@@ -83,7 +95,7 @@ const PhysicalServerTable = ({ data, onEdit, onDelete }) => {
         </thead>
 
         <tbody>
-          {physicals.map((physical) => (
+          {filteredPhysical.map((physical) => (
             <tr
               key={physical.id}
               onClick={() =>
@@ -122,7 +134,7 @@ const PhysicalServerTable = ({ data, onEdit, onDelete }) => {
             </tr>
           ))}
 
-          {physicals.length === 0 && (
+          {filteredPhysical.length === 0 && (
             <tr>
               <td colSpan="4" className="py-4 text-center text-gray-500">
                 Tidak ada physical server
@@ -131,8 +143,19 @@ const PhysicalServerTable = ({ data, onEdit, onDelete }) => {
           )}
         </tbody>
       </table>
+      {openModal && (
+        <PhysicalModal
+          rackId={rackId}
+          initialData={selectedPhysical}
+          onClose={() => {
+            setOpenModal(false);
+            setSelectedPhysical(null);
+          }}
+          onSubmit={selectedPhysical ? handleUpdatePhysical : handleAddPhysical}
+        />
+      )}
     </div>
   );
 };
 
-export default PhysicalServerTable;
+export default FilteredPhysicalTable;

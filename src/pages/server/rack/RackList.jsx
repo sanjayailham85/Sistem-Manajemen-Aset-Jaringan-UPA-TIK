@@ -38,11 +38,6 @@ const RackList = () => {
     }
   };
 
-  useEffect(() => {
-    fetchRacks();
-    fetchPhysicalServers(); // ambil data physical server
-  }, []);
-
   const handleAddRack = async (data) => {
     try {
       await createRack({ ...data });
@@ -75,6 +70,11 @@ const RackList = () => {
     }
   };
 
+  useEffect(() => {
+    fetchRacks();
+    fetchPhysicalServers();
+  }, []);
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -103,16 +103,15 @@ const RackList = () => {
         }}
         onDelete={handleDeleteRack}
       />
-      {/* Modal */}
       {openModal && (
         <RackModal
-          // rackNumber={rackId}
           initialData={selectedRack}
           onClose={() => {
             setOpenModal(false);
             setSelectedRack(null);
           }}
           onSubmit={selectedRack ? handleUpdateRack : handleAddRack}
+          onSuccess={fetchRacks}
         />
       )}
     </div>

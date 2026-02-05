@@ -6,10 +6,8 @@ import Navbar from "./components/common/Navbar";
 const App = () => {
   return (
     <div className="flex h-screen">
-      {/* Sidebar */}
       <Sidebar />
 
-      {/* Main Content */}
       <div className="flex flex-col flex-1">
         <Navbar />
 

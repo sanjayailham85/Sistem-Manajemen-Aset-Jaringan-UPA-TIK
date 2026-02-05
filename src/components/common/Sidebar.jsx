@@ -9,14 +9,12 @@ const Sidebar = () => {
 
   return (
     <aside className="w-64 bg-slate-800 text-slate-200 flex flex-col">
-      {/* Header */}
       <div className="h-14 flex items-center px-4 border-b border-slate-700">
         <h1 className="text-lg font-bold tracking-wide">Asset Manager</h1>
       </div>
 
       {/* Menu */}
-      <nav className="flex-1 px-3 py-4 space-y-6 overflow-y-auto">
-        {/* Dashboard */}
+      <nav className="flex-1 px-3 py-4 space-y-6 overflow-y-auto ">
         <div>
           <NavLink
             to="/"
@@ -28,7 +26,6 @@ const Sidebar = () => {
           </NavLink>
         </div>
 
-        {/* Server Menu */}
         <div>
           <p className="text-xs uppercase text-slate-400 px-3 mb-2">Server</p>
           <NavLink
@@ -37,15 +34,46 @@ const Sidebar = () => {
               `${menuClass} ${isActive ? activeClass : ""}`
             }
           >
-            Rack Server
+            Rack
+          </NavLink>
+          <NavLink
+            to="/physical"
+            className={({ isActive }) =>
+              `${menuClass} ${isActive ? activeClass : ""}`
+            }
+          >
+            Physical
+          </NavLink>
+          <NavLink
+            to="/host"
+            className={({ isActive }) =>
+              `${menuClass} ${isActive ? activeClass : ""}`
+            }
+          >
+            Host
+          </NavLink>
+          <NavLink
+            to="/guest"
+            className={({ isActive }) =>
+              `${menuClass} ${isActive ? activeClass : ""}`
+            }
+          >
+            Guest
           </NavLink>
         </div>
 
-        {/* Digital Menu */}
         <div>
           <p className="text-xs uppercase text-slate-400 px-3 mb-2">
             Digital Device
           </p>
+          <NavLink
+            to="/digital/accessPoint"
+            className={({ isActive }) =>
+              `${menuClass} ${isActive ? activeClass : ""}`
+            }
+          >
+            Access Point
+          </NavLink>
           <NavLink
             to="/digital/switch"
             className={({ isActive }) =>
@@ -63,7 +91,7 @@ const Sidebar = () => {
             Router
           </NavLink>
           <NavLink
-            to="/digital/firewall"
+            to="/digital/cctv"
             className={({ isActive }) =>
               `${menuClass} ${isActive ? activeClass : ""}`
             }
@@ -72,11 +100,6 @@ const Sidebar = () => {
           </NavLink>
         </div>
       </nav>
-
-      {/* Footer */}
-      {/* <div className="p-4 text-xs text-slate-400 border-t border-slate-700">
-        © 2026 Data Center
-      </div> */}
     </aside>
   );
 };

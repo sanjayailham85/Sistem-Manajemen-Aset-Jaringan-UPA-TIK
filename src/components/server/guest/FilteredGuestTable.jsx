@@ -5,8 +5,8 @@ import {
   createGuest,
   updateGuest,
   deleteGuest,
-} from "../../services/guestService";
-import GuestModal from "../server/guest/GuestModal";
+} from "../../../services/guestService";
+import GuestModal from "../guest/GuestModal";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
 
 const GuestTable = () => {
@@ -62,13 +62,24 @@ const GuestTable = () => {
       console.error("Gagal menghapus guest", err);
     }
   };
+  const filteredGuest = guests.filter((guest) => guest.hostId === hostId);
   useEffect(() => {
     fetchGuest();
   }, []);
 
   return (
     <div className="bg-white rounded shadow overflow-x-auto pb-4">
-      <div className=""></div>
+      <div className="">
+        <button
+          onClick={() => {
+            setSelectedGuest(null);
+            setOpenModal(true);
+          }}
+          className="bg-blue-600 text-white px-4 py-2 rounded ml-auto block mb-3"
+        >
+          + Tambah Guest
+        </button>
+      </div>
       <table className="w-full text-sm">
         <thead className="bg-gray-100">
           <tr>
@@ -80,7 +91,7 @@ const GuestTable = () => {
           </tr>
         </thead>
         <tbody>
-          {guests.map((guest) => (
+          {filteredGuest.map((guest) => (
             <tr
               onClick={() =>
                 navigate(
@@ -119,7 +130,7 @@ const GuestTable = () => {
             </tr>
           ))}
 
-          {guests.length === 0 && (
+          {filteredGuest.length === 0 && (
             <tr>
               <td colSpan="5" className="py-4 text-center text-gray-500">
                 Tidak ada guest server

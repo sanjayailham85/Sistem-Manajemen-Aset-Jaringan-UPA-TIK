@@ -1,55 +1,48 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import Breadcrumb from "../../../components/common/Breadcrumb";
 import serverImage from "../../../assets/Untitled.png";
 import { getPhysicalById } from "../../../services/physicalService";
-import HostTable from "../../../components/tables/HostTable";
+import FilteredHostTable from "../../../components/server/host/FilteredHostTable";
 
 const PhysicalServerDetail = () => {
-  const { rackId, physicalId } = useParams();
-  const navigate = useNavigate();
+  const { physicalId } = useParams();
   const [physical, setPhysical] = useState(null);
-  const [loading, setLoading] = useState(false);
-
-  const fetchPhysicalId = async () => {
-    try {
-      setLoading(true);
-      const res = await getPhysicalById(physicalId);
-      setPhysical(res.data);
-    } catch (err) {
-      console.error("Gagal mengambil data physical server", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (physicalId) {
-      fetchPhysicalId();
-    }
+    const fetchPhysical = async () => {
+      try {
+        setLoading(true);
+        const res = await getPhysicalById(physicalId);
+        setPhysical(res.data);
+      } catch (err) {
+        console.error("Gagal mengambil data physical server", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (physicalId) fetchPhysical();
   }, [physicalId]);
 
-  const host = {
-    id: 10,
-    hostName: "Host-VM-01",
-    ip: "10.10.1.100",
-    auth: "vCenter",
-    version: "ESXi 7.0",
-    device: "VMware ESXi",
-    status: "active",
-  };
+  if (loading || !physical) return <p>Loading...</p>;
+
+  const rackId = physical?.rack?.id;
 
   return (
     <div className="space-y-6">
       <Breadcrumb
         items={[
           { label: "Racks", to: "/racks" },
-          { label: "Physical Server", to: `/racks/${rackId}` },
-          { label: "Detail Physical Server" },
+          {
+            label: `Rack ${physical?.rack?.name}` || "Rack",
+            to: rackId ? `/racks/${rackId}` : "#",
+          },
+          { label: `Physical Server ${physical?.name}` || "Physical Server" },
         ]}
       />
 
-      {/* Header */}
       <div>
         <h1 className="text-xl font-semibold">Detail Physical Server</h1>
         <p className="text-sm text-gray-500">
@@ -57,21 +50,18 @@ const PhysicalServerDetail = () => {
         </p>
       </div>
 
-      {/* Server Detail */}
       <div className="bg-white rounded-lg shadow p-5">
         <h2 className="font-semibold mb-4">Informasi Server</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Image */}
           <div className="md:col-span-1">
             <img
-              src={physical?.image}
-              // alt={server.name}
+              src={physical?.image || serverImage}
+              alt={physical?.name}
               className="w-full rounded border"
             />
           </div>
 
-          {/* Info */}
           <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
             <div>
               <span className="text-gray-500">Nama Server</span>
@@ -85,7 +75,6 @@ const PhysicalServerDetail = () => {
               <span className="text-gray-500">Model</span>
               <p className="font-medium">{physical?.model}</p>
             </div>
-
             <div>
               <span className="text-gray-500">Owner</span>
               <p className="font-medium">{physical?.owner}</p>
@@ -119,11 +108,9 @@ const PhysicalServerDetail = () => {
         </div>
       </div>
 
-      {/* Host Server */}
       <div className="bg-white rounded-lg shadow p-5">
         <h2 className="font-semibold mb-4">Host Server</h2>
-
-        <HostTable />
+        <FilteredHostTable physicalId={physical?.id} />
       </div>
     </div>
   );

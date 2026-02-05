@@ -5,8 +5,8 @@ import {
   createHost,
   updateHost,
   deleteHost,
-} from "../../services/hostService";
-import HostModal from "../server/host/HostModal";
+} from "../../../services/hostService";
+import HostModal from "../host/HostModal";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
 
 const HostTable = () => {
@@ -40,7 +40,6 @@ const HostTable = () => {
     }
   };
 
-  // 🔹 UPDATE
   const handleUpdateHost = async (data) => {
     try {
       await updateHost(selectedHost.id, data);
@@ -52,7 +51,6 @@ const HostTable = () => {
     }
   };
 
-  // 🔹 DELETE
   const handleDeleteHost = async (id) => {
     const confirm = window.confirm("Apakah yakin ingin menghapus host ini?");
     if (!confirm) return;
@@ -64,13 +62,24 @@ const HostTable = () => {
       console.error("Gagal menghapus host", err);
     }
   };
+  const filteredHost = hosts.filter((host) => host.physicalId === physicalId);
   useEffect(() => {
     fetchHost();
   }, []);
 
   return (
     <div className="bg-white rounded shadow overflow-x-auto pb-4">
-      <div className=""></div>
+      <div className="">
+        <button
+          onClick={() => {
+            setSelectedHost(null);
+            setOpenModal(true);
+          }}
+          className="bg-blue-600 text-white px-4 py-2 rounded ml-auto block mb-3"
+        >
+          + Tambah Host
+        </button>
+      </div>
       <table className="w-full text-sm">
         <thead className="bg-gray-100">
           <tr>
@@ -82,7 +91,7 @@ const HostTable = () => {
           </tr>
         </thead>
         <tbody>
-          {hosts.map((host) => (
+          {filteredHost.map((host) => (
             <tr
               onClick={() =>
                 navigate(
@@ -121,7 +130,7 @@ const HostTable = () => {
             </tr>
           ))}
 
-          {hosts.length === 0 && (
+          {filteredHost.length === 0 && (
             <tr>
               <td colSpan="5" className="py-4 text-center text-gray-500">
                 Tidak ada host server

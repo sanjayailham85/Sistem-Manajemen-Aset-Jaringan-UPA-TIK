@@ -14,11 +14,10 @@ const RackCard = ({ rack, onEdit, onDelete }) => {
       onClick={handleClick}
       className="relative cursor-pointer hover:bg-gray-50 bg-white rounded-lg shadow hover:shadow-md transition p-5 border"
     >
-      {/* Header Edit/Delete */}
       <div className="absolute top-2 right-2 flex gap-2">
         <button
           onClick={(e) => {
-            e.stopPropagation(); // agar tidak memicu navigate
+            e.stopPropagation();
             onEdit(rack);
           }}
           className="p-1 text-blue-600 hover:bg-blue-100 rounded"
@@ -36,13 +35,10 @@ const RackCard = ({ rack, onEdit, onDelete }) => {
         </button>
       </div>
 
-      {/* Rack Name */}
       <h2 className="text-lg font-semibold mb-1 cursor-pointer">{rack.name}</h2>
 
-      {/* Location */}
       <p className="text-sm text-gray-500 mb-3">{rack.location}</p>
 
-      {/* Info */}
       <div className="flex items-center justify-between">
         <span className="text-sm text-gray-600">
           Total Physical Server:{" "}
