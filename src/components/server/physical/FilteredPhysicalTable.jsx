@@ -10,7 +10,7 @@ import {
 import PhysicalModal from "./PhysicalModal";
 
 const FilteredPhysicalTable = () => {
-  const { rackId, physicalId } = useParams();
+  const { rackId } = useParams();
   const navigate = useNavigate();
   const [physicals, setPhysical] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -21,7 +21,6 @@ const FilteredPhysicalTable = () => {
     try {
       setLoading(true);
       const res = await getPhysical();
-
       setPhysical(res.data);
     } catch (err) {
       console.error("Gagal mengambil data physical", err);
@@ -30,9 +29,21 @@ const FilteredPhysicalTable = () => {
     }
   };
 
+  // ✅ CREATE (FIXED)
   const handleAddPhysical = async (data) => {
     try {
-      await createPhysical({ ...data, physicalId });
+      const formData = new FormData();
+
+      Object.keys(data).forEach((key) => {
+        if (data[key] !== null && data[key] !== undefined) {
+          formData.append(key, data[key]);
+        }
+      });
+
+      // 🔥 PASTIKAN rackId MASUK
+
+      await createPhysical(formData);
+
       fetchPhysical();
       setOpenModal(false);
     } catch (err) {
@@ -40,9 +51,18 @@ const FilteredPhysicalTable = () => {
     }
   };
 
-  const handleUpdatePhysical = async (data) => {
+  // ✅ UPDATE (FIXED)
+  const handleUpdatePhysical = async (form) => {
     try {
-      await updatePhysical(selectedPhysical.id, data);
+      const formData = new FormData();
+
+      Object.keys(form).forEach((key) => {
+        if (key !== "imagePreview" && form[key] !== null) {
+          formData.append(key, form[key]);
+        }
+      });
+
+      await updatePhysical(selectedPhysical.id, formData);
       fetchPhysical();
       setSelectedPhysical(null);
       setOpenModal(false);
@@ -64,16 +84,18 @@ const FilteredPhysicalTable = () => {
       console.error("Gagal menghapus physical", err);
     }
   };
+
   const filteredPhysical = physicals.filter(
     (physical) => physical.rackId === rackId
   );
+
   useEffect(() => {
     fetchPhysical();
   }, []);
 
   return (
     <div className="bg-white rounded shadow overflow-x-auto">
-      <div className="">
+      <div>
         <button
           onClick={() => {
             setSelectedPhysical(null);
@@ -84,6 +106,7 @@ const FilteredPhysicalTable = () => {
           + Tambah Physical Server
         </button>
       </div>
+
       <table className="w-full text-sm">
         <thead className="bg-gray-100">
           <tr>
@@ -117,7 +140,6 @@ const FilteredPhysicalTable = () => {
                       setOpenModal(true);
                     }}
                     className="text-blue-600 hover:text-blue-800"
-                    title="Edit"
                   >
                     <FiEdit size={18} />
                   </button>
@@ -125,7 +147,6 @@ const FilteredPhysicalTable = () => {
                   <button
                     onClick={() => handleDeletePhysical(physical.id)}
                     className="text-red-600 hover:text-red-800"
-                    title="Hapus"
                   >
                     <FiTrash2 size={18} />
                   </button>
@@ -143,6 +164,7 @@ const FilteredPhysicalTable = () => {
           )}
         </tbody>
       </table>
+
       {openModal && (
         <PhysicalModal
           rackId={rackId}

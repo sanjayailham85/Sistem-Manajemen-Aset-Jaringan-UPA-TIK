@@ -12,8 +12,10 @@ const PhysicalModal = ({
     name: "",
     ip: "",
     rackId,
-    auth: "",
+    authUsername: "",
+    authPassword: "",
     owner: "",
+    ownerContact: "",
     year: "",
     status: "Active",
     model: "",
@@ -91,10 +93,18 @@ const PhysicalModal = ({
               required
             />
             <input
-              name="auth"
-              value={form.auth}
+              name="authUsername"
+              value={form.authUsername}
               onChange={handleChange}
-              placeholder="Auth ID Rack"
+              placeholder="Username"
+              className="input"
+              required
+            />
+            <input
+              name="authPassword"
+              value={form.authPassword}
+              onChange={handleChange}
+              placeholder="Password"
               className="input"
               required
             />
@@ -102,7 +112,15 @@ const PhysicalModal = ({
               name="owner"
               value={form.owner}
               onChange={handleChange}
-              placeholder="Owner / Pengelola"
+              placeholder="Owner"
+              className="input"
+              required
+            />
+            <input
+              name="ownerContact"
+              value={form.ownerContact}
+              onChange={handleChange}
+              placeholder="Owner Contact"
               className="input"
               required
             />
@@ -182,6 +200,7 @@ const PhysicalModal = ({
 
             <input
               id="serverImage"
+              name="image"
               type="file"
               accept="image/*"
               onChange={handleImageChange}

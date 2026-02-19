@@ -4,11 +4,13 @@ import Breadcrumb from "../../../components/common/Breadcrumb";
 import serverImage from "../../../assets/Untitled.png";
 import { getPhysicalById } from "../../../services/physicalService";
 import FilteredHostTable from "../../../components/server/host/FilteredHostTable";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 
 const PhysicalServerDetail = () => {
   const { physicalId } = useParams();
   const [physical, setPhysical] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     const fetchPhysical = async () => {
@@ -29,6 +31,32 @@ const PhysicalServerDetail = () => {
   if (loading || !physical) return <p>Loading...</p>;
 
   const rackId = physical?.rack?.id;
+
+  const formattedCreated = physical?.createdAt
+    ? new Date(physical.createdAt).toLocaleString("id-ID", {
+        timeZone: "Asia/Jakarta",
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      })
+    : "-";
+
+  const formattedUpdated = physical?.updatedAt
+    ? new Date(physical.updatedAt).toLocaleString("id-ID", {
+        timeZone: "Asia/Jakarta",
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      })
+    : "-";
+
+  const imageUrl = `http://localhost:5000/uploads/${physical?.image}`;
 
   return (
     <div className="space-y-6">
@@ -56,7 +84,7 @@ const PhysicalServerDetail = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="md:col-span-1">
             <img
-              src={physical?.image || serverImage}
+              src={imageUrl}
               alt={physical?.name}
               className="w-full rounded border"
             />
@@ -72,12 +100,43 @@ const PhysicalServerDetail = () => {
               <p className="font-medium">{physical?.ip}</p>
             </div>
             <div>
+              <span className="text-gray-500">Server Auth (User/Password)</span>
+
+              <div className="relative w-fit">
+                <p className="font-medium pr-8">
+                  {physical?.authUsername}/
+                  {showPassword
+                    ? physical?.authPassword
+                    : "*".repeat(physical?.authPassword?.length || 0)}
+                </p>
+
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                >
+                  {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <span className="text-gray-500">Rack Name</span>
+              <p className="font-medium">{physical?.rack.name}</p>
+            </div>
+            <div>
+              <span className="text-gray-500">U Number</span>
+              <p className="font-medium">5</p>
+            </div>
+            <div>
               <span className="text-gray-500">Model</span>
               <p className="font-medium">{physical?.model}</p>
             </div>
             <div>
-              <span className="text-gray-500">Owner</span>
-              <p className="font-medium">{physical?.owner}</p>
+              <span className="text-gray-500">Owner {"(Kontak)"}</span>
+              <p className="font-medium">
+                {physical?.owner} {`(${physical?.ownerContact})`}{" "}
+              </p>
             </div>
             <div>
               <span className="text-gray-500">Tahun Pengadaan</span>
@@ -105,6 +164,14 @@ const PhysicalServerDetail = () => {
         <div className="mt-4 text-sm">
           <span className="text-gray-500">Detail physical</span>
           <p className="mt-1">{physical?.detail}</p>
+        </div>
+        <div className="mt-4 text-sm">
+          <span className="text-gray-500">Created At</span>
+          <p className="mt-1">{formattedCreated}</p>
+        </div>
+        <div className="mt-4 text-sm">
+          <span className="text-gray-500">Updated At</span>
+          <p className="mt-1">{formattedUpdated}</p>
         </div>
       </div>
 
