@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
+import RelationSelector from "../../common/RelationSelector";
+import { useLocation } from "react-router-dom";
 
 const GuestModal = ({ onClose, onSubmit, hostId, initialData }) => {
   const emptyForm = {
     instanceName: "",
     ip: "",
     hostId,
-    auth: "",
+    authUsername: "",
+    authPassword: "",
     owner: "",
     domainInstance: "",
     ram: "",
@@ -18,6 +21,7 @@ const GuestModal = ({ onClose, onSubmit, hostId, initialData }) => {
   };
 
   const [form, setForm] = useState(emptyForm);
+  const location = useLocation();
 
   useEffect(() => {
     if (initialData) {
@@ -38,6 +42,10 @@ const GuestModal = ({ onClose, onSubmit, hostId, initialData }) => {
     onSubmit(form);
   };
 
+  const isEdit = Boolean(initialData);
+  const isFromDetail = location.pathname.includes("/racks");
+  const showRelationSelector = !isEdit && !isFromDetail;
+
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 space-y-5">
@@ -49,6 +57,10 @@ const GuestModal = ({ onClose, onSubmit, hostId, initialData }) => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {showRelationSelector && (
+            <RelationSelector level="guest" form={form} setForm={setForm} />
+          )}
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <input
               name="instanceName"
@@ -67,10 +79,18 @@ const GuestModal = ({ onClose, onSubmit, hostId, initialData }) => {
               required
             />
             <input
-              name="auth"
-              value={form.auth}
+              name="authUsername"
+              value={form.authUsername}
               onChange={handleChange}
-              placeholder="User Auth"
+              placeholder="Username"
+              className="input"
+              required
+            />
+            <input
+              name="authPassword"
+              value={form.authPassword}
+              onChange={handleChange}
+              placeholder="Password"
               className="input"
               required
             />
@@ -141,9 +161,9 @@ const GuestModal = ({ onClose, onSubmit, hostId, initialData }) => {
             onChange={handleChange}
             className="input font-medium"
           >
-            <option value="aktif">Aktif</option>
-            <option value="tidakAktif">Tidak Aktif</option>
-            <option value="rusak">Rusak</option>
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+            <option value="Damaged">Damaged</option>
           </select>
 
           <textarea

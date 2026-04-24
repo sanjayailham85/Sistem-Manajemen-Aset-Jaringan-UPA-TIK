@@ -1,23 +1,19 @@
 import React, { useEffect, useState } from "react";
 import RelationSelector from "../../common/RelationSelector";
-import { useLocation } from "react-router-dom";
 
-const HostModal = ({ onClose, onSubmit, initialData }) => {
+const AccessPointModal = ({ onClose, onSubmit, initialData }) => {
   const emptyForm = {
     name: "",
     ip: "",
-    rackId: "",
-    physicalId: "",
-    authUsername: "",
-    authPassword: "",
-    version: "",
-    serverDevice: "",
-    status: "Active",
-    detail: "",
+    tahunAnggaran: "",
+    controllerAP: "",
+    type: "",
+    location: "",
+    locationDetail: "",
+    code: "",
   };
 
   const [form, setForm] = useState(emptyForm);
-  const location = useLocation();
 
   useEffect(() => {
     if (initialData) {
@@ -35,39 +31,28 @@ const HostModal = ({ onClose, onSubmit, initialData }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    const payload = { ...form };
-
-    console.log("PAYLOAD:", payload);
-
-    onSubmit(payload);
+    onSubmit(form);
   };
-
-  const isEdit = Boolean(initialData);
-  const isFromDetail = location.pathname.includes("/racks");
-  const showRelationSelector = !isEdit && !isFromDetail;
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 space-y-5">
         <div>
           <h2 className="text-xl font-semibold">
-            {initialData ? "Edit Host" : "Tambah Host"}
+            {initialData ? "Edit Access Point" : "Tambah Access Point"}
           </h2>
-          <p className="text-sm text-gray-500">Lengkapi informasi host</p>
+          <p className="text-sm text-gray-500">
+            Lengkapi informasi Access Point
+          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {showRelationSelector && (
-            <RelationSelector level="host" form={form} setForm={setForm} />
-          )}
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <input
               name="name"
               value={form.name}
               onChange={handleChange}
-              placeholder="Nama Host"
+              placeholder="Name"
               className="input"
               required
             />
@@ -79,59 +64,72 @@ const HostModal = ({ onClose, onSubmit, initialData }) => {
               className="input"
               required
             />
-            <input
-              name="authUsername"
-              value={form.authUsername}
+            <select
+              name="tahunAnggaran"
+              value={form.tahunAnggaran}
               onChange={handleChange}
-              placeholder="Username"
+              className="input"
+              required
+            >
+              <option value="">Tahun Anggaran</option>
+              {Array.from({ length: 10 }).map((_, i) => {
+                const tahunAnggaran = new Date().getFullYear() - i;
+                return (
+                  <option key={tahunAnggaran} value={tahunAnggaran}>
+                    {tahunAnggaran}
+                  </option>
+                );
+              })}
+            </select>
+            <input
+              name="mac"
+              value={form.mac}
+              onChange={handleChange}
+              placeholder="mac"
               className="input"
               required
             />
             <input
-              name="authPassword"
-              value={form.authPassword}
+              name="controllerAP"
+              value={form.controllerAP}
               onChange={handleChange}
-              placeholder="Password"
+              placeholder="Controller AP"
               className="input"
               required
             />
             <input
-              name="version"
-              value={form.version}
+              name="type"
+              value={form.type}
               onChange={handleChange}
-              placeholder="Host Version"
+              placeholder="Type"
               className="input"
               required
             />
             <input
-              name="serverDevice"
-              value={form.serverDevice}
+              name="location"
+              value={form.location}
               onChange={handleChange}
-              placeholder="Server Device"
+              placeholder="Location"
+              className="input"
+              required
+            />
+            <input
+              name="locationDetail"
+              value={form.locationDetail}
+              onChange={handleChange}
+              placeholder="Location Detail"
+              className="input"
+              required
+            />
+            <input
+              name="code"
+              value={form.code}
+              onChange={handleChange}
+              placeholder="Code"
               className="input"
               required
             />
           </div>
-
-          <select
-            name="status"
-            value={form.status}
-            onChange={handleChange}
-            className="input font-medium"
-          >
-            <option value="Active">Active</option>
-            <option value="Inactive">Inactive</option>
-            <option value="Damaged">Damaged</option>
-          </select>
-
-          <textarea
-            name="detail"
-            value={form.detail}
-            onChange={handleChange}
-            rows={4}
-            className="input resize-none"
-            placeholder="Detail tambahan mengenai host"
-          />
 
           <div className="flex justify-end gap-3 pt-4 border-t">
             <button
@@ -154,4 +152,4 @@ const HostModal = ({ onClose, onSubmit, initialData }) => {
   );
 };
 
-export default HostModal;
+export default AccessPointModal;

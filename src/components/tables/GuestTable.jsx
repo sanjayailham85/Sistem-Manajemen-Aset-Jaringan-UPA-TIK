@@ -8,6 +8,7 @@ import {
 } from "../../services/guestService";
 import GuestModal from "../server/guest/GuestModal";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
+import usePermission from "../../utils/usePermission";
 
 const GuestTable = () => {
   const { rackId, physicalId, hostId } = useParams();
@@ -16,6 +17,7 @@ const GuestTable = () => {
   const [loading, setLoading] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [selectedGuest, setSelectedGuest] = useState(null);
+  const { canCreate, canUpdate, canDelete } = usePermission("guest");
 
   const fetchGuest = async () => {
     try {
@@ -32,7 +34,7 @@ const GuestTable = () => {
 
   const handleAddGuest = async (data) => {
     try {
-      await createGuest({ ...data, hostId });
+      await createGuest(data);
       fetchGuest();
       setOpenModal(false);
     } catch (err) {
@@ -68,7 +70,19 @@ const GuestTable = () => {
 
   return (
     <div className="bg-white rounded shadow overflow-x-auto pb-4">
-      <div className=""></div>
+      <div className="m-2">
+        {canCreate && (
+          <button
+            onClick={() => {
+              setSelectedGuest(null);
+              setOpenModal(true);
+            }}
+            className="bg-blue-600 text-white px-4 py-2 rounded ml-auto block mb-3"
+          >
+            + Tambah Guest
+          </button>
+        )}
+      </div>
       <table className="w-full text-sm">
         <thead className="bg-gray-100">
           <tr>
@@ -76,7 +90,9 @@ const GuestTable = () => {
             <th className="px-4 py-2 text-left">IP Address</th>
             <th className="px-4 py-2 text-left">OS Version</th>
             <th className="px-4 py-2 text-left">Status</th>
-            <th className="px-4 py-2 text-center w-28">Aksi</th>
+            {(canUpdate || canDelete) && (
+              <th className="px-4 py-2 text-center w-28">Aksi</th>
+            )}
           </tr>
         </thead>
         <tbody>
@@ -93,29 +109,44 @@ const GuestTable = () => {
               <td className="px-4 py-2">{guest.instanceName}</td>
               <td className="px-4 py-2">{guest.ip}</td>
               <td className="px-4 py-2">{guest.osVersion}</td>
-              <td className="px-4 py-2 capitalize">{guest.status}</td>
-              <td className="px-4 py-2" onClick={(e) => e.stopPropagation()}>
-                <div className="flex justify-center gap-3">
-                  <button
-                    onClick={() => {
-                      setSelectedGuest(guest);
-                      setOpenModal(true);
-                    }}
-                    className="text-blue-600 hover:text-blue-800"
-                    title="Edit"
-                  >
-                    <FiEdit size={18} />
-                  </button>
-
-                  <button
-                    onClick={() => handleDeleteGuest(guest.id)}
-                    className="text-red-600 hover:text-red-800"
-                    title="Hapus"
-                  >
-                    <FiTrash2 size={18} />
-                  </button>
-                </div>
+              <td
+                className={`inline-block mt-1 px-3 py-1 rounded-full text-sm font-medium capitalize ${
+                  guest?.status === "Active"
+                    ? "bg-green-100 text-green-700"
+                    : guest?.status === "Inactive"
+                    ? "bg-red-100 text-red-700"
+                    : guest?.status === "Damaged"
+                    ? "bg-yellow-100 text-yellow-700"
+                    : "bg-gray-100 text-gray-700"
+                }`}
+              >
+                {guest.status}
               </td>
+              {(canUpdate || canDelete) && (
+                <td className="px-4 py-2" onClick={(e) => e.stopPropagation()}>
+                  <div className="flex justify-center gap-3">
+                    <button
+                      onClick={() => {
+                        setSelectedGuest(guest);
+                        setOpenModal(true);
+                      }}
+                      className="text-blue-600 hover:text-blue-800"
+                      title="Edit"
+                    >
+                      <FiEdit size={18} />
+                    </button>
+                    {canDelete && (
+                      <button
+                        onClick={() => handleDeleteGuest(guest.id)}
+                        className="text-red-600 hover:text-red-800"
+                        title="Hapus"
+                      >
+                        <FiTrash2 size={18} />
+                      </button>
+                    )}
+                  </div>
+                </td>
+              )}
             </tr>
           ))}
 

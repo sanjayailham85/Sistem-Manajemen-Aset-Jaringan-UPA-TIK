@@ -7,8 +7,8 @@ import {
   updateRack,
   deleteRack,
 } from "../../../services/rackService";
-
 import { getPhysical } from "../../../services/physicalService";
+import usePermission from "../../../utils/usePermission";
 
 const RackList = () => {
   const [racks, setRacks] = useState([]);
@@ -16,6 +16,7 @@ const RackList = () => {
   const [openModal, setOpenModal] = useState(false);
   const [selectedRack, setSelectedRack] = useState(null);
   const [loading, setLoading] = useState(false);
+  const { canCreate, canUpdate, canDelete } = usePermission("rack");
 
   const fetchRacks = async () => {
     try {
@@ -79,15 +80,17 @@ const RackList = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-xl font-semibold">Rack Server</h1>
-        <button
-          onClick={() => {
-            setSelectedRack(null);
-            setOpenModal(true);
-          }}
-          className="bg-blue-600 text-white px-4 py-2 rounded"
-        >
-          + Tambah Rack
-        </button>
+        {canCreate && (
+          <button
+            onClick={() => {
+              setSelectedRack(null);
+              setOpenModal(true);
+            }}
+            className="bg-blue-600 text-white px-4 py-2 rounded"
+          >
+            + Tambah Rack
+          </button>
+        )}
       </div>
 
       <RackGrid

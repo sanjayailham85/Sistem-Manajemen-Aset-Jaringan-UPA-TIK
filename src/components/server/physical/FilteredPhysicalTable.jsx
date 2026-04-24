@@ -8,6 +8,7 @@ import {
   deletePhysical,
 } from "../../../services/physicalService";
 import PhysicalModal from "./PhysicalModal";
+import usePermission from "../../../utils/usePermission";
 
 const FilteredPhysicalTable = () => {
   const { rackId } = useParams();
@@ -16,6 +17,7 @@ const FilteredPhysicalTable = () => {
   const [loading, setLoading] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [selectedPhysical, setSelectedPhysical] = useState(null);
+  const { canCreate, canUpdate, canDelete } = usePermission("physical");
 
   const fetchPhysical = async () => {
     try {
@@ -96,15 +98,17 @@ const FilteredPhysicalTable = () => {
   return (
     <div className="bg-white rounded shadow overflow-x-auto">
       <div>
-        <button
-          onClick={() => {
-            setSelectedPhysical(null);
-            setOpenModal(true);
-          }}
-          className="bg-blue-600 text-white px-4 py-2 rounded ml-auto block mb-3"
-        >
-          + Tambah Physical Server
-        </button>
+        {canCreate && (
+          <button
+            onClick={() => {
+              setSelectedPhysical(null);
+              setOpenModal(true);
+            }}
+            className="bg-blue-600 text-white px-4 py-2 rounded ml-auto block mb-3"
+          >
+            + Tambah Physical Server
+          </button>
+        )}
       </div>
 
       <table className="w-full text-sm">
@@ -113,7 +117,9 @@ const FilteredPhysicalTable = () => {
             <th className="px-4 py-2 text-left">Nama Server</th>
             <th className="px-4 py-2 text-left">IP Address</th>
             <th className="px-4 py-2 text-left">Status</th>
-            <th className="px-4 py-2 text-center w-28">Aksi</th>
+            {(canUpdate || canDelete) && (
+              <th className="px-4 py-2 text-center w-28">Aksi</th>
+            )}
           </tr>
         </thead>
 
@@ -130,28 +136,42 @@ const FilteredPhysicalTable = () => {
             >
               <td className="px-4 py-2">{physical.name}</td>
               <td className="px-4 py-2">{physical.ip}</td>
-              <td className="px-4 py-2 capitalize">{physical.status}</td>
-
-              <td className="px-4 py-2" onClick={(e) => e.stopPropagation()}>
-                <div className="flex justify-center gap-3">
-                  <button
-                    onClick={() => {
-                      setSelectedPhysical(physical);
-                      setOpenModal(true);
-                    }}
-                    className="text-blue-600 hover:text-blue-800"
-                  >
-                    <FiEdit size={18} />
-                  </button>
-
-                  <button
-                    onClick={() => handleDeletePhysical(physical.id)}
-                    className="text-red-600 hover:text-red-800"
-                  >
-                    <FiTrash2 size={18} />
-                  </button>
-                </div>
+              <td
+                className={`inline-block mt-1 px-3 py-1 rounded-full text-sm font-medium capitalize ${
+                  physical?.status === "Active"
+                    ? "bg-green-100 text-green-700"
+                    : physical?.status === "Inactive"
+                    ? "bg-red-100 text-red-700"
+                    : physical?.status === "Damaged"
+                    ? "bg-yellow-100 text-yellow-700"
+                    : "bg-gray-100 text-gray-700"
+                }`}
+              >
+                {physical.status}
               </td>
+              {(canUpdate || canDelete) && (
+                <td className="px-4 py-2" onClick={(e) => e.stopPropagation()}>
+                  <div className="flex justify-center gap-3">
+                    <button
+                      onClick={() => {
+                        setSelectedPhysical(physical);
+                        setOpenModal(true);
+                      }}
+                      className="text-blue-600 hover:text-blue-800"
+                    >
+                      <FiEdit size={18} />
+                    </button>
+                    {canDelete && (
+                      <button
+                        onClick={() => handleDeletePhysical(physical.id)}
+                        className="text-red-600 hover:text-red-800"
+                      >
+                        <FiTrash2 size={18} />
+                      </button>
+                    )}
+                  </div>
+                </td>
+              )}
             </tr>
           ))}
 

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Breadcrumb from "../../../components/common/Breadcrumb";
-import serverImage from "../../../assets/Untitled.png";
 import { getPhysicalById } from "../../../services/physicalService";
 import FilteredHostTable from "../../../components/server/host/FilteredHostTable";
 import { FiEye, FiEyeOff } from "react-icons/fi";
+import formatDate from "../../../utils/formatDate";
 
 const PhysicalServerDetail = () => {
   const { physicalId } = useParams();
@@ -28,154 +28,166 @@ const PhysicalServerDetail = () => {
     if (physicalId) fetchPhysical();
   }, [physicalId]);
 
-  if (loading || !physical) return <p>Loading...</p>;
-
-  const rackId = physical?.rack?.id;
-
-  const formattedCreated = physical?.createdAt
-    ? new Date(physical.createdAt).toLocaleString("id-ID", {
-        timeZone: "Asia/Jakarta",
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-      })
-    : "-";
-
-  const formattedUpdated = physical?.updatedAt
-    ? new Date(physical.updatedAt).toLocaleString("id-ID", {
-        timeZone: "Asia/Jakarta",
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-      })
-    : "-";
+  if (loading || !physical) {
+    return (
+      <div className="p-6 text-gray-500 animate-pulse">
+        Loading physical server...
+      </div>
+    );
+  }
 
   const imageUrl = `http://localhost:5000/uploads/${physical?.image}`;
 
+  const statusColor =
+    physical?.status === "active"
+      ? "bg-green-100 text-green-700"
+      : "bg-red-100 text-red-700";
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-6">
+      {/* HEADER */}
+      <div>
+        <h1 className="text-2xl font-bold text-gray-800">
+          Detail Physical Server
+        </h1>
+        <p className="text-sm text-gray-500">
+          Informasi lengkap server dan konfigurasi hardware
+        </p>
+      </div>
+
       <Breadcrumb
         items={[
           { label: "Racks", to: "/racks" },
           {
-            label: `Rack ${physical?.rack?.name}` || "Rack",
-            to: rackId ? `/racks/${rackId}` : "#",
+            label: physical?.rack?.name || "Rack",
+            to: `/racks/${physical?.rack?.id}`,
           },
-          { label: `Physical Server ${physical?.name}` || "Physical Server" },
+          { label: physical?.name || "Physical Server" },
         ]}
       />
 
-      <div>
-        <h1 className="text-xl font-semibold">Detail Physical Server</h1>
-        <p className="text-sm text-gray-500">
-          Informasi detail physical server dan host
-        </p>
-      </div>
-
-      <div className="bg-white rounded-lg shadow p-5">
-        <h2 className="font-semibold mb-4">Informasi Server</h2>
-
+      {/* MAIN CARD */}
+      <div className="bg-white rounded-xl shadow p-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="md:col-span-1">
-            <img
-              src={imageUrl}
-              alt={physical?.name}
-              className="w-full rounded border"
-            />
+          {/* IMAGE */}
+          <div>
+            <div className="overflow-hidden rounded-lg border">
+              <img
+                src={imageUrl}
+                alt={physical?.name}
+                className="w-full h-56 object-cover"
+              />
+            </div>
           </div>
 
-          <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-            <div>
-              <span className="text-gray-500">Nama Server</span>
-              <p className="font-medium">{physical?.name}</p>
+          {/* INFO */}
+          <div className="md:col-span-2 space-y-5">
+            <div className="flex justify-between items-start">
+              <div>
+                <h2 className="text-xl font-semibold">{physical?.name}</h2>
+                <p className="text-sm text-gray-500">{physical?.ip}</p>
+              </div>
             </div>
-            <div>
-              <span className="text-gray-500">IP Address</span>
-              <p className="font-medium">{physical?.ip}</p>
-            </div>
-            <div>
-              <span className="text-gray-500">Server Auth (User/Password)</span>
 
-              <div className="relative w-fit">
-                <p className="font-medium pr-8">
+            {/* GRID INFO */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+              <div>
+                <p className="text-gray-500">Rack</p>
+                <p className="font-medium">{physical?.rack?.name}</p>
+              </div>
+
+              <div>
+                <p className="text-gray-500">Model</p>
+                <p className="font-medium">{physical?.model}</p>
+              </div>
+
+              <div>
+                <p className="text-gray-500">Owner</p>
+                <p className="font-medium">
+                  {physical?.owner} ({physical?.ownerContact})
+                </p>
+              </div>
+
+              <div>
+                <p className="text-gray-500">Tahun</p>
+                <p className="font-medium">{physical?.year}</p>
+              </div>
+
+              <div>
+                <p className="text-gray-500">CPU</p>
+                <p className="font-medium">{physical?.cpu}</p>
+              </div>
+
+              <div>
+                <p className="text-gray-500">RAM</p>
+                <p className="font-medium">{physical?.ram}</p>
+              </div>
+
+              <div>
+                <p className="text-gray-500">Storage</p>
+                <p className="font-medium">{physical?.storage}</p>
+              </div>
+
+              <div>
+                <p className="text-gray-500">U Number</p>
+                <p className="font-medium">5</p>
+              </div>
+            </div>
+
+            {/* AUTH */}
+            <div className="pt-4 border-t text-sm">
+              <p className="text-gray-500 mb-1">Server Auth</p>
+
+              <div className="flex items-center gap-2">
+                <span className="font-medium">
                   {physical?.authUsername}/
                   {showPassword
                     ? physical?.authPassword
                     : "*".repeat(physical?.authPassword?.length || 0)}
-                </p>
+                </span>
 
                 <button
-                  type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  className="text-gray-500 hover:text-gray-700"
                 >
-                  {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+                  {showPassword ? <FiEyeOff /> : <FiEye />}
                 </button>
               </div>
             </div>
-
-            <div>
-              <span className="text-gray-500">Rack Name</span>
-              <p className="font-medium">{physical?.rack.name}</p>
-            </div>
-            <div>
-              <span className="text-gray-500">U Number</span>
-              <p className="font-medium">5</p>
-            </div>
-            <div>
-              <span className="text-gray-500">Model</span>
-              <p className="font-medium">{physical?.model}</p>
-            </div>
-            <div>
-              <span className="text-gray-500">Owner {"(Kontak)"}</span>
-              <p className="font-medium">
-                {physical?.owner} {`(${physical?.ownerContact})`}{" "}
-              </p>
-            </div>
-            <div>
-              <span className="text-gray-500">Tahun Pengadaan</span>
-              <p className="font-medium">{physical?.year}</p>
-            </div>
-            <div>
-              <span className="text-gray-500">CPU</span>
-              <p className="font-medium">{physical?.cpu}</p>
-            </div>
-            <div>
-              <span className="text-gray-500">RAM</span>
-              <p className="font-medium">{physical?.ram}</p>
-            </div>
-            <div>
-              <span className="text-gray-500">Storage</span>
-              <p className="font-medium">{physical?.storage}</p>
-            </div>
             <div>
               <span className="text-gray-500">Status</span>
-              <p className="font-medium capitalize">{physical?.status}</p>
+              <p
+                className={`inline-block mt-1 px-3 py-1 rounded-full text-sm font-medium capitalize ${
+                  physical?.status === "Active"
+                    ? "bg-green-100 text-green-700"
+                    : physical?.status === "Inactive"
+                    ? "bg-red-100 text-red-700"
+                    : physical?.status === "Damaged"
+                    ? "bg-yellow-100 text-yellow-700"
+                    : "bg-gray-100 text-gray-700"
+                }`}
+              >
+                {physical?.status}
+              </p>
             </div>
           </div>
         </div>
 
-        <div className="mt-4 text-sm">
-          <span className="text-gray-500">Detail physical</span>
-          <p className="mt-1">{physical?.detail}</p>
+        {/* DETAIL */}
+        <div className="mt-6 pt-4 border-t text-sm">
+          <p className="text-gray-500">Detail</p>
+          <p className="mt-1 text-gray-700">{physical?.detail}</p>
         </div>
-        <div className="mt-4 text-sm">
-          <span className="text-gray-500">Created At</span>
-          <p className="mt-1">{formattedCreated}</p>
-        </div>
-        <div className="mt-4 text-sm">
-          <span className="text-gray-500">Updated At</span>
-          <p className="mt-1">{formattedUpdated}</p>
+
+        {/* FOOTER */}
+        <div className="mt-6 pt-4 border-t flex justify-between text-xs text-gray-400">
+          <span>Created: {formatDate(physical?.createdAt)}</span>
+          <span>Updated: {formatDate(physical?.updatedAt)}</span>
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow p-5">
+      {/* HOST TABLE */}
+      <div className="bg-white rounded-xl shadow p-6">
         <h2 className="font-semibold mb-4">Host Server</h2>
         <FilteredHostTable physicalId={physical?.id} />
       </div>

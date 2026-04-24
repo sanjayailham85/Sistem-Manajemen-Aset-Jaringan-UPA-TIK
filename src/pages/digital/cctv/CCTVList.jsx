@@ -1,13 +1,13 @@
 import React from "react";
-import RouterTable from "../../../components/tables/RouterTable";
+import CCTVTable from "../../../components/tables/CCTVTable";
 
 const RouterList = () => {
   return (
     <div>
       <div className="space-y-4">
-        <h1 className="text-2xl font-bold">Router</h1>
+        <h1 className="text-2xl font-bold">CCTV</h1>
         <div className="bg-white rounded-lg shadow p-5">
-          <RouterTable />
+          <CCTVTable />
         </div>
       </div>
     </div>
