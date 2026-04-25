@@ -9,6 +9,8 @@ import CCTVModal from "../digital/cctv/CCTVModal";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
 import usePermission from "../../utils/usePermission";
 import { useNavigate, useParams } from "react-router-dom";
+import useTableSort from "../../utils/useTableSort";
+import { FiChevronUp, FiChevronDown } from "react-icons/fi";
 
 const CCTVTable = () => {
   const [items, setItems] = useState([]);
@@ -16,6 +18,7 @@ const CCTVTable = () => {
   const [selected, setSelected] = useState(null);
   const navigate = useNavigate();
   const { canCreate, canUpdate, canDelete } = usePermission("cctv");
+  const { sortedData, handleSort, sortConfig } = useTableSort(items);
 
   const fetchData = async () => {
     const res = await getAllCCTV();
@@ -45,6 +48,19 @@ const CCTVTable = () => {
     fetchData();
   };
 
+  const renderSortIcon = (key) => {
+    return (
+      <span className="inline-flex w-4 justify-center">
+        {sortConfig.key === key &&
+          (sortConfig.direction === "asc" ? (
+            <FiChevronUp />
+          ) : (
+            <FiChevronDown />
+          ))}
+      </span>
+    );
+  };
+
   return (
     <div className="bg-white rounded shadow overflow-x-auto pb-4">
       {canCreate && (
@@ -62,10 +78,31 @@ const CCTVTable = () => {
       <table className="w-full text-sm">
         <thead className="bg-gray-100">
           <tr>
-            <th className="px-4 py-2 text-left">Name</th>
-            <th className="px-4 py-2 text-left">IP</th>
-            <th className="px-4 py-2 text-left">Type</th>
-            <th className="px-4 py-2 text-left">Status</th>
+            <th
+              onClick={() => handleSort("name")}
+              className=" px-4 py-2 text-left cursor-pointer select-none"
+            >
+              Name {renderSortIcon("name")}
+            </th>
+            <th
+              onClick={() => handleSort("ip")}
+              className=" px-4 py-2 text-left cursor-pointer select-none"
+            >
+              IP {renderSortIcon("ip")}
+            </th>
+            <th
+              onClick={() => handleSort("type")}
+              className=" px-4 py-2 text-left cursor-pointer select-none"
+            >
+              Type {renderSortIcon("type")}
+            </th>
+            <th
+              onClick={() => handleSort("status")}
+              className=" px-4 py-2 text-left cursor-pointer select-none"
+            >
+              Status {renderSortIcon("status")}
+            </th>
+
             {(canUpdate || canDelete) && (
               <th className="px-4 py-2 text-center">Aksi</th>
             )}
@@ -73,7 +110,7 @@ const CCTVTable = () => {
         </thead>
 
         <tbody>
-          {items.map((item) => (
+          {sortedData.map((item) => (
             <tr
               onClick={() => navigate(`/digital/cctv/${item.id}`)}
               key={item.id}

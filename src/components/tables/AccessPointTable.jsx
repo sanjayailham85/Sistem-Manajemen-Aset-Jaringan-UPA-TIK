@@ -10,6 +10,8 @@ import {
 import AccessPointModal from "../digital/accessPoint/AccessPointModal";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
 import usePermission from "../../utils/usePermission";
+import useTableSort from "../../utils/useTableSort";
+import { FiChevronUp, FiChevronDown } from "react-icons/fi";
 
 const AccessPointTable = () => {
   const [items, setItems] = useState([]);
@@ -17,6 +19,7 @@ const AccessPointTable = () => {
   const [selected, setSelected] = useState(null);
   const navigate = useNavigate();
   const { canCreate, canUpdate, canDelete } = usePermission("accessPoint");
+  const { sortedData, handleSort, sortConfig } = useTableSort(items);
 
   const fetchData = async () => {
     const res = await getAllAccessPoint();
@@ -46,6 +49,19 @@ const AccessPointTable = () => {
     fetchData();
   };
 
+  const renderSortIcon = (key) => {
+    return (
+      <span className="inline-flex w-4 justify-center">
+        {sortConfig.key === key &&
+          (sortConfig.direction === "asc" ? (
+            <FiChevronUp />
+          ) : (
+            <FiChevronDown />
+          ))}
+      </span>
+    );
+  };
+
   return (
     <div className="bg-white rounded shadow overflow-x-auto pb-4">
       {canCreate && (
@@ -63,10 +79,31 @@ const AccessPointTable = () => {
       <table className="w-full text-sm">
         <thead className="bg-gray-100">
           <tr>
-            <th className="px-4 py-2 text-left">Name</th>
-            <th className="px-4 py-2 text-left">IP</th>
-            <th className="px-4 py-2 text-left">type</th>
-            <th className="px-4 py-2 text-left">location</th>
+            <th
+              onClick={() => handleSort("name")}
+              className=" px-4 py-2 text-left cursor-pointer select-none"
+            >
+              Name {renderSortIcon("name")}
+            </th>
+            <th
+              onClick={() => handleSort("ip")}
+              className=" px-4 py-2 text-left cursor-pointer select-none"
+            >
+              IP {renderSortIcon("ip")}
+            </th>
+            <th
+              onClick={() => handleSort("type")}
+              className=" px-4 py-2 text-left cursor-pointer select-none"
+            >
+              Type {renderSortIcon("type")}
+            </th>
+            <th
+              onClick={() => handleSort("location")}
+              className=" px-4 py-2 text-left cursor-pointer select-none"
+            >
+              Location {renderSortIcon("location")}
+            </th>
+
             {(canUpdate || canDelete) && (
               <th className="px-4 py-2 text-center">Aksi</th>
             )}
@@ -74,7 +111,7 @@ const AccessPointTable = () => {
         </thead>
 
         <tbody>
-          {items.map((item) => (
+          {sortedData.map((item) => (
             <tr
               onClick={() => navigate(`/digital/accessPoint/${item.id}`)}
               key={item.id}

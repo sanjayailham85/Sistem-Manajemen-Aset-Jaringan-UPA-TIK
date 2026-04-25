@@ -9,6 +9,8 @@ import {
 } from "../../services/physicalService";
 import PhysicalModal from "../server/physical/PhysicalModal";
 import usePermission from "../../utils/usePermission";
+import useTableSort from "../../utils/useTableSort";
+import { FiChevronUp, FiChevronDown } from "react-icons/fi";
 
 const PhysicalServerTable = ({ data, onEdit, onDelete }) => {
   const { rackId, physicalId } = useParams();
@@ -18,6 +20,7 @@ const PhysicalServerTable = ({ data, onEdit, onDelete }) => {
   const [openModal, setOpenModal] = useState(false);
   const [selectedPhysical, setSelectedPhysical] = useState(null);
   const { canCreate, canUpdate, canDelete } = usePermission("physical");
+  const { sortedData, handleSort, sortConfig } = useTableSort(physicals);
 
   const fetchPhysical = async () => {
     try {
@@ -66,12 +69,23 @@ const PhysicalServerTable = ({ data, onEdit, onDelete }) => {
       console.error("Gagal menghapus physical", err);
     }
   };
-  const filteredPhysical = physicals.filter(
-    (physical) => physical.rackId === rackId
-  );
+
   useEffect(() => {
     fetchPhysical();
   }, []);
+
+  const renderSortIcon = (key) => {
+    return (
+      <span className="inline-flex w-4 justify-center">
+        {sortConfig.key === key &&
+          (sortConfig.direction === "asc" ? (
+            <FiChevronUp />
+          ) : (
+            <FiChevronDown />
+          ))}
+      </span>
+    );
+  };
 
   return (
     <div className="bg-white rounded shadow overflow-x-auto">
@@ -91,9 +105,24 @@ const PhysicalServerTable = ({ data, onEdit, onDelete }) => {
       <table className="w-full text-sm">
         <thead className="bg-gray-100">
           <tr>
-            <th className="px-4 py-2 text-left">Nama Server</th>
-            <th className="px-4 py-2 text-left">IP Address</th>
-            <th className="px-4 py-2 text-left">Status</th>
+            <th
+              onClick={() => handleSort("name")}
+              className=" px-4 py-2 text-left cursor-pointer select-none"
+            >
+              Server Name {renderSortIcon("name")}
+            </th>
+            <th
+              onClick={() => handleSort("ip")}
+              className="px-4 py-2 text-left cursor-pointer select-none"
+            >
+              IP Address {renderSortIcon("ip")}
+            </th>
+            <th
+              onClick={() => handleSort("status")}
+              className="px-4 py-2 text-left cursor-pointer select-none"
+            >
+              Status {renderSortIcon("status")}
+            </th>
             {(canUpdate || canDelete) && (
               <th className="px-4 py-2 text-center w-28">Aksi</th>
             )}
@@ -101,7 +130,7 @@ const PhysicalServerTable = ({ data, onEdit, onDelete }) => {
         </thead>
 
         <tbody>
-          {physicals.map((physical) => (
+          {sortedData.map((physical) => (
             <tr
               key={physical.id}
               onClick={() =>

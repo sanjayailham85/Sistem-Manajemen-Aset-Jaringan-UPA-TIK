@@ -9,6 +9,8 @@ import {
 import GuestModal from "../server/guest/GuestModal";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
 import usePermission from "../../utils/usePermission";
+import useTableSort from "../../utils/useTableSort";
+import { FiChevronUp, FiChevronDown } from "react-icons/fi";
 
 const GuestTable = () => {
   const { rackId, physicalId, hostId } = useParams();
@@ -18,6 +20,7 @@ const GuestTable = () => {
   const [openModal, setOpenModal] = useState(false);
   const [selectedGuest, setSelectedGuest] = useState(null);
   const { canCreate, canUpdate, canDelete } = usePermission("guest");
+  const { sortedData, handleSort, sortConfig } = useTableSort(guests);
 
   const fetchGuest = async () => {
     try {
@@ -68,6 +71,19 @@ const GuestTable = () => {
     fetchGuest();
   }, []);
 
+  const renderSortIcon = (key) => {
+    return (
+      <span className="inline-flex w-4 justify-center">
+        {sortConfig.key === key &&
+          (sortConfig.direction === "asc" ? (
+            <FiChevronUp />
+          ) : (
+            <FiChevronDown />
+          ))}
+      </span>
+    );
+  };
+
   return (
     <div className="bg-white rounded shadow overflow-x-auto pb-4">
       <div className="m-2">
@@ -86,17 +102,38 @@ const GuestTable = () => {
       <table className="w-full text-sm">
         <thead className="bg-gray-100">
           <tr>
-            <th className="px-4 py-2 text-left">Instance Name</th>
-            <th className="px-4 py-2 text-left">IP Address</th>
-            <th className="px-4 py-2 text-left">OS Version</th>
-            <th className="px-4 py-2 text-left">Status</th>
+            <th
+              onClick={() => handleSort("name")}
+              className=" px-4 py-2 text-left cursor-pointer select-none"
+            >
+              Instance Name {renderSortIcon("name")}
+            </th>
+            <th
+              onClick={() => handleSort("ip")}
+              className=" px-4 py-2 text-left cursor-pointer select-none"
+            >
+              IP Address {renderSortIcon("ip")}
+            </th>
+            <th
+              onClick={() => handleSort("osVersion")}
+              className=" px-4 py-2 text-left cursor-pointer select-none"
+            >
+              OS Version {renderSortIcon("osVersion")}
+            </th>
+            <th
+              onClick={() => handleSort("status")}
+              className=" px-4 py-2 text-left cursor-pointer select-none"
+            >
+              Status {renderSortIcon("status")}
+            </th>
+
             {(canUpdate || canDelete) && (
               <th className="px-4 py-2 text-center w-28">Aksi</th>
             )}
           </tr>
         </thead>
         <tbody>
-          {guests.map((guest) => (
+          {sortedData.map((guest) => (
             <tr
               onClick={() =>
                 navigate(
