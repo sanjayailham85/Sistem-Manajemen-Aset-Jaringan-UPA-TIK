@@ -87,6 +87,7 @@ import CCTVList from "../pages/digital/cctv/CCTVList";
 import CCTVDetail from "../pages/digital/cctv/CCTVDetail";
 
 import Users from "../pages/Users";
+import OsVersion from "../pages/option/OsVersion";
 
 const Layout = ({ children }) => (
   <div className="flex h-screen">
@@ -118,14 +119,6 @@ const AppRoutes = () => {
         element={
           <PrivateRoute>
             <Dashboard />
-          </PrivateRoute>
-        }
-      />
-      <Route
-        path="/users"
-        element={
-          <PrivateRoute>
-            <Users />
           </PrivateRoute>
         }
       />
@@ -256,6 +249,22 @@ const AppRoutes = () => {
         element={
           <PrivateRoute>
             <RouterDetail />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/users"
+        element={
+          <PrivateRoute>
+            <Users />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/option/osVersion"
+        element={
+          <PrivateRoute>
+            <OsVersion />
           </PrivateRoute>
         }
       />

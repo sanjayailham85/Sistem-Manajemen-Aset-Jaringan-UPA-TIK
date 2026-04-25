@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
 import usePermission from "../../utils/usePermission";
 import {
@@ -17,6 +17,7 @@ import {
 const Sidebar = () => {
   const { canView } = usePermission("cctv");
   const user = JSON.parse(localStorage.getItem("user"));
+  const [openOption, setOpenOption] = useState(false);
 
   const menuClass =
     "flex items-center gap-2 px-3 py-2 rounded text-sm hover:bg-slate-700 transition";
@@ -138,14 +139,51 @@ const Sidebar = () => {
           )}
 
           {/* OPTION */}
-          <NavLink
-            to="/option"
-            className={({ isActive }) =>
-              `${menuClass} ${isActive ? activeClass : ""}`
-            }
-          >
-            <FiSettings /> Option
-          </NavLink>
+          {/* OPTION */}
+          <div>
+            <button
+              onClick={() => setOpenOption(!openOption)}
+              className={`${menuClass} w-full justify-between`}
+            >
+              <span className="flex items-center gap-2">
+                <FiSettings /> Option
+              </span>
+
+              <span>{openOption ? "▲" : "▼"}</span>
+            </button>
+
+            {/* SUB MENU */}
+            {openOption && (
+              <div className="ml-6 mt-1 space-y-1 border-l border-slate-600 pl-3">
+                <NavLink
+                  to="/option/osVersion"
+                  className={({ isActive }) =>
+                    `${menuClass} ${isActive ? activeClass : ""}`
+                  }
+                >
+                  OS Version
+                </NavLink>
+
+                <NavLink
+                  to="/option/-"
+                  className={({ isActive }) =>
+                    `${menuClass} ${isActive ? activeClass : ""}`
+                  }
+                >
+                  option2
+                </NavLink>
+
+                <NavLink
+                  to="/option/--"
+                  className={({ isActive }) =>
+                    `${menuClass} ${isActive ? activeClass : ""}`
+                  }
+                >
+                  option3
+                </NavLink>
+              </div>
+            )}
+          </div>
         </div>
       </nav>
     </aside>

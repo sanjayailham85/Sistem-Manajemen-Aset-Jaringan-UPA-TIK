@@ -26,6 +26,7 @@ const HostTable = () => {
     try {
       setLoading(true);
       const res = await getHost();
+      console.log(res.data);
 
       setHost(res.data);
     } catch (err) {
@@ -147,7 +148,9 @@ const HostTable = () => {
             >
               <td className="px-4 py-2">{host.name}</td>
               <td className="px-4 py-2">{host.ip}</td>
-              <td className="px-4 py-2">{host.version}</td>
+              <td className="px-4 py-2">
+                {host.osName} {host.osVersion}
+              </td>
               <td
                 className={`inline-block mt-1 px-3 py-1 rounded-full text-sm font-medium capitalize ${
                   host?.status === "Active"

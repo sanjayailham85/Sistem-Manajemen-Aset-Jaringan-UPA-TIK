@@ -216,7 +216,9 @@ const GuestDetail = () => {
 
             <div>
               <span className="text-gray-500">Host Version</span>
-              <p className="font-medium">{guest.host?.version}</p>
+              <p className="font-medium">
+                {guest.host?.osName} {guest.host?.osVersion}
+              </p>
             </div>
 
             <div>

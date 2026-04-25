@@ -43,9 +43,9 @@ const HostDetail = () => {
   const physicalId = physical?.id;
 
   const imageUrl = `http://localhost:5000/uploads/${physical?.image}`;
+  console.log(host);
 
   const format = (date) => (date ? formatDate(date) : "-");
-
   return (
     <div className="space-y-6 p-6">
       {/* HEADER */}
@@ -112,7 +112,9 @@ const HostDetail = () => {
 
             <div>
               <p className="text-gray-500">Version</p>
-              <p className="font-medium">{host.version}</p>
+              <p className="font-medium">
+                {host?.osName} {host?.osVersion}
+              </p>
             </div>
 
             <div>

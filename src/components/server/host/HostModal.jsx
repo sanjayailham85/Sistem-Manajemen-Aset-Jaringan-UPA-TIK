@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import RelationSelector from "../../common/RelationSelector";
 import { useLocation } from "react-router-dom";
+import { getAllOsVersion } from "../../../services/optionService";
 
 const HostModal = ({ onClose, onSubmit, initialData }) => {
   const emptyForm = {
@@ -17,7 +18,12 @@ const HostModal = ({ onClose, onSubmit, initialData }) => {
   };
 
   const [form, setForm] = useState(emptyForm);
+  const [osVersions, setOsVersions] = useState([]);
   const location = useLocation();
+
+  useEffect(() => {
+    fetchOsVersions();
+  }, []);
 
   useEffect(() => {
     if (initialData) {
@@ -28,17 +34,29 @@ const HostModal = ({ onClose, onSubmit, initialData }) => {
     }
   }, [initialData]);
 
+  const fetchOsVersions = async () => {
+    try {
+      const res = await getAllOsVersion();
+      setOsVersions(res.data);
+    } catch (error) {
+      console.error("Failed to fetch OS versions", error);
+    }
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const payload = { ...form };
-
-    console.log("PAYLOAD:", payload);
+    const payload = {
+      ...form,
+    };
 
     onSubmit(payload);
   };
@@ -71,6 +89,7 @@ const HostModal = ({ onClose, onSubmit, initialData }) => {
               className="input"
               required
             />
+
             <input
               name="ip"
               value={form.ip}
@@ -79,6 +98,7 @@ const HostModal = ({ onClose, onSubmit, initialData }) => {
               className="input"
               required
             />
+
             <input
               name="authUsername"
               value={form.authUsername}
@@ -87,6 +107,7 @@ const HostModal = ({ onClose, onSubmit, initialData }) => {
               className="input"
               required
             />
+
             <input
               name="authPassword"
               value={form.authPassword}
@@ -95,14 +116,22 @@ const HostModal = ({ onClose, onSubmit, initialData }) => {
               className="input"
               required
             />
-            <input
+
+            <select
               name="version"
               value={form.version}
               onChange={handleChange}
-              placeholder="Host Version"
               className="input"
               required
-            />
+            >
+              <option value="">Pilih OS Version</option>
+              {osVersions.map((os) => (
+                <option key={os.id} value={os.id}>
+                  {os.name} {os.version}
+                </option>
+              ))}
+            </select>
+
             <input
               name="serverDevice"
               value={form.serverDevice}
@@ -141,6 +170,7 @@ const HostModal = ({ onClose, onSubmit, initialData }) => {
             >
               Batal
             </button>
+
             <button
               type="submit"
               className="px-4 py-2 bg-blue-600 text-white rounded"
