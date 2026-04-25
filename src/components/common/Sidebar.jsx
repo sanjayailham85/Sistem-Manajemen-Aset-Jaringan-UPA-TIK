@@ -1,6 +1,6 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-
+import usePermission from "../../utils/usePermission";
 import {
   FiHome,
   FiDatabase,
@@ -15,6 +15,9 @@ import {
 } from "react-icons/fi";
 
 const Sidebar = () => {
+  const { canView } = usePermission("cctv");
+  const user = JSON.parse(localStorage.getItem("user"));
+
   const menuClass =
     "flex items-center gap-2 px-3 py-2 rounded text-sm hover:bg-slate-700 transition";
 
@@ -123,14 +126,16 @@ const Sidebar = () => {
         </div>
         <div>
           <div className="border-t border-slate-700 my-4"></div>
-          <NavLink
-            to="/users"
-            className={({ isActive }) =>
-              `${menuClass} ${isActive ? activeClass : ""}`
-            }
-          >
-            <FiUsers /> User Management
-          </NavLink>
+          {user.role === "superadmin" && (
+            <NavLink
+              to="/users"
+              className={({ isActive }) =>
+                `${menuClass} ${isActive ? activeClass : ""}`
+              }
+            >
+              <FiUsers /> User Management
+            </NavLink>
+          )}
 
           {/* OPTION */}
           <NavLink

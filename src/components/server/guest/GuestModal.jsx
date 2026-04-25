@@ -4,7 +4,7 @@ import { useLocation } from "react-router-dom";
 
 const GuestModal = ({ onClose, onSubmit, hostId, initialData }) => {
   const emptyForm = {
-    instanceName: "",
+    name: "",
     ip: "",
     hostId,
     authUsername: "",
@@ -63,8 +63,8 @@ const GuestModal = ({ onClose, onSubmit, hostId, initialData }) => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <input
-              name="instanceName"
-              value={form.instanceName}
+              name="name"
+              value={form.name}
               onChange={handleChange}
               placeholder="Instance Name"
               className="input"

@@ -48,10 +48,6 @@ const AccessPointDetail = () => {
             Informasi lengkap perangkat jaringan
           </p>
         </div>
-
-        <span className="px-3 py-1 text-xs rounded-full bg-blue-100 text-blue-700">
-          {accessPoint.code}
-        </span>
       </div>
 
       {/* MAIN CARD */}
@@ -83,12 +79,16 @@ const AccessPointDetail = () => {
               <p className="text-gray-500 text-sm">Controller AP</p>
               <p className="font-medium">{accessPoint.controllerAP}</p>
             </div>
+            <div>
+              <p className="text-gray-500 text-sm">Code</p>
+              <p className="font-medium">{accessPoint.code}</p>
+            </div>
           </div>
 
           {/* KOLOM 2 */}
           <div className="space-y-4">
             <h2 className="font-semibold text-gray-700 border-b pb-2">
-              Network & Lokasi
+              Network & Location
             </h2>
 
             <div>

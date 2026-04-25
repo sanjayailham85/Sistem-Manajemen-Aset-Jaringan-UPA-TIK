@@ -7,7 +7,7 @@ const SwitchModal = ({ onClose, onSubmit, initialData }) => {
     type: "",
     location: "",
     locationDetail: "",
-    status: "",
+    status: "Active",
     code: "",
   };
 
@@ -93,6 +93,14 @@ const SwitchModal = ({ onClose, onSubmit, initialData }) => {
             <option value="Inactive">Inactive</option>
             <option value="Damaged">Damaged</option>
           </select>
+          <input
+            name="detail"
+            value={form.detail}
+            onChange={handleChange}
+            placeholder="Detail Lainnya"
+            className="input"
+            required
+          />
           <input
             name="code"
             value={form.code}

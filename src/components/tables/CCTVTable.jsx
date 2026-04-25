@@ -8,13 +8,14 @@ import {
 import CCTVModal from "../digital/cctv/CCTVModal";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
 import usePermission from "../../utils/usePermission";
+import { useNavigate, useParams } from "react-router-dom";
 
 const CCTVTable = () => {
   const [items, setItems] = useState([]);
   const [openModal, setOpenModal] = useState(false);
   const [selected, setSelected] = useState(null);
-
-  const { canCreate, canUpdate, canDelete } = usePermission("CCTV");
+  const navigate = useNavigate();
+  const { canCreate, canUpdate, canDelete } = usePermission("cctv");
 
   const fetchData = async () => {
     const res = await getAllCCTV();
@@ -73,7 +74,11 @@ const CCTVTable = () => {
 
         <tbody>
           {items.map((item) => (
-            <tr key={item.id} className="border-t hover:bg-gray-50">
+            <tr
+              onClick={() => navigate(`/digital/cctv/${item.id}`)}
+              key={item.id}
+              className="border-t hover:bg-gray-50 cursor-pointer"
+            >
               <td className="px-4 py-2">{item.name}</td>
               <td className="px-4 py-2">{item.ip}</td>
               <td className="px-4 py-2">{item.type}</td>
@@ -92,14 +97,14 @@ const CCTVTable = () => {
               </td>
 
               {(canUpdate || canDelete) && (
-                <td className="px-4 py-2">
+                <td className="px-4 py-2" onClick={(e) => e.stopPropagation()}>
                   <div className="flex justify-center gap-3">
                     <button
                       onClick={() => {
                         setSelected(item);
                         setOpenModal(true);
                       }}
-                      className="text-blue-600"
+                      className="text-blue-600 hover:text-blue-800"
                     >
                       <FiEdit size={18} />
                     </button>
@@ -107,7 +112,7 @@ const CCTVTable = () => {
                     {canDelete && (
                       <button
                         onClick={() => handleDelete(item.id)}
-                        className="text-red-600"
+                        className="text-red-600 hover:text-red-800"
                       >
                         <FiTrash2 size={18} />
                       </button>

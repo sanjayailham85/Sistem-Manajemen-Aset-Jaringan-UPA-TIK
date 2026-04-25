@@ -108,7 +108,7 @@ const GuestTable = () => {
               key={guest.id}
               className="border-t hover:bg-gray-50 cursor-pointer"
             >
-              <td className="px-4 py-2">{guest.instanceName}</td>
+              <td className="px-4 py-2">{guest.name}</td>
               <td className="px-4 py-2">{guest.ip}</td>
               <td className="px-4 py-2">{guest.osVersion}</td>
               <td

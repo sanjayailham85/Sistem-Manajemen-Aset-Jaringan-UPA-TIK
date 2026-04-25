@@ -86,7 +86,7 @@ const AccessPointTable = () => {
               <td className="px-4 py-2">{item.location}</td>
 
               {(canUpdate || canDelete) && (
-                <td className="px-4 py-2">
+                <td className="px-4 py-2" onClick={(e) => e.stopPropagation()}>
                   <div className="flex justify-center gap-3">
                     <button
                       onClick={() => {
