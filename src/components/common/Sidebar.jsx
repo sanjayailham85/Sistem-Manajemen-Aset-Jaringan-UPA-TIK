@@ -12,6 +12,7 @@ import {
   FiGrid,
   FiWifi,
   FiMonitor,
+  FiList,
 } from "react-icons/fi";
 
 const Sidebar = () => {
@@ -156,6 +157,14 @@ const Sidebar = () => {
               <FiUsers /> User Management
             </NavLink>
           )}
+          <NavLink
+            to="/activityLogs"
+            className={({ isActive }) =>
+              `${menuClass} ${isActive ? activeClass : ""}`
+            }
+          >
+            <FiList /> Activity Logs
+          </NavLink>
 
           {/* OPTION */}
           <div>

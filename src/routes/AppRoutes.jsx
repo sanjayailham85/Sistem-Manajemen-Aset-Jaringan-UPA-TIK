@@ -86,6 +86,7 @@ import RouterDetail from "../pages/digital/router/RouterDetail";
 import CCTVList from "../pages/digital/cctv/CCTVList";
 import CCTVDetail from "../pages/digital/cctv/CCTVDetail";
 
+import ActivityLogsList from "../pages/activitylogs/ActivityLogsList";
 import Users from "../pages/Users";
 import OsVersion from "../pages/option/OsVersion";
 import MonitoringPage from "../pages/monitoring/MonitoringPage";
@@ -258,6 +259,14 @@ const AppRoutes = () => {
         element={
           <PrivateRoute>
             <MonitoringPage />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/activityLogs"
+        element={
+          <PrivateRoute>
+            <ActivityLogsList />
           </PrivateRoute>
         }
       />

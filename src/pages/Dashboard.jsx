@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   FiServer,
   FiDatabase,
@@ -20,8 +20,23 @@ import {
   YAxis,
   CartesianGrid,
 } from "recharts";
+import { getRecent } from "../services/activityLogService";
 
 export default function Dashboard() {
+  const [activities, setActivities] = useState([]);
+
+  useEffect(() => {
+    const fetchActivity = async () => {
+      try {
+        const data = await getRecent(5);
+        setActivities(data);
+      } catch (error) {
+        console.error("Failed to load activities:", error);
+      }
+    };
+
+    fetchActivity();
+  }, []);
   // DEVICE STATUS DATA
   const deviceStatusData = [
     { name: "Active", value: 78 },
@@ -140,37 +155,18 @@ export default function Dashboard() {
       </div>
 
       {/* BOTTOM SECTION */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* ACTIVITY LOG */}
-        <div className="lg:col-span-2 bg-white p-4 rounded-xl shadow">
-          <h2 className="font-medium mb-4">Recent Activity</h2>
-          <div className="space-y-3 text-sm">
-            <ActivityItem
-              text="Guest A berhasil ditambahkan di Host C"
-              time="2 min ago"
-            />
-            <ActivityItem text="Host B berhasil diupdate" time="10 min ago" />
-            <ActivityItem
-              text="Switch S1 ditambahkan ke Rack 2"
-              time="1 hour ago"
-            />
-          </div>
-        </div>
 
-        {/* ACTIVITY STATS */}
-        <div className="bg-white p-4 rounded-xl shadow">
-          <h2 className="font-medium mb-4">Activity Stats</h2>
-          <div className="h-72">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={activityData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="activity" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+      {/* ACTIVITY LOG */}
+      <div className="lg:col-span-2 bg-white p-4 rounded-xl shadow">
+        <h2 className="font-medium mb-4">Recent Activity</h2>
+        <div className="space-y-3 text-sm">
+          {activities.map((item) => (
+            <ActivityItem
+              key={item.id}
+              text={`${item.name} ${item.description}`}
+              time={item.created_at}
+            />
+          ))}
         </div>
       </div>
     </div>

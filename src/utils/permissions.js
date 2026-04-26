@@ -12,6 +12,7 @@ const permissions = {
     switch: ["view", "create", "update", "delete"],
     router: ["view", "create", "update", "delete"],
     cctv: ["view", "create", "update", "delete"],
+    activityLogs: ["delete"],
     user: ["view"],
   },
 
