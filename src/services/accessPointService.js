@@ -11,7 +11,14 @@ const getAuthHeader = () => {
   };
 };
 
-export const getAllAccessPoint = () => axios.get(API_URL, getAuthHeader());
+export const getAllAccessPoint = async (page = 1, limit = 10) => {
+  const response = await axios.get(
+    `${API_URL}?page=${page}&limit=${limit}`,
+    getAuthHeader()
+  );
+
+  return response.data;
+};
 export const getAccessPointById = (id) =>
   axios.get(`${API_URL}/${id}`, getAuthHeader());
 export const createAccessPoint = (data) =>

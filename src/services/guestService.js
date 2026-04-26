@@ -10,7 +10,14 @@ const getAuthHeader = () => {
   };
 };
 
-export const getGuest = () => axios.get(API_URL, getAuthHeader());
+export const getGuest = async (page = 1, limit = 10) => {
+  const response = await axios.get(
+    `${API_URL}?page=${page}&limit=${limit}`,
+    getAuthHeader()
+  );
+
+  return response.data;
+};
 export const getGuestById = (id) =>
   axios.get(`${API_URL}/${id}`, getAuthHeader());
 export const createGuest = (data) => axios.post(API_URL, data, getAuthHeader());

@@ -10,35 +10,24 @@ import GuestModal from "../server/guest/GuestModal";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
 import usePermission from "../../utils/usePermission";
 import useTableSort from "../../utils/useTableSort";
+import usePagination from "../../utils/usePagination";
 import { FiChevronUp, FiChevronDown } from "react-icons/fi";
 
 const GuestTable = () => {
   const { rackId, physicalId, hostId } = useParams();
   const navigate = useNavigate();
   const [guests, setGuest] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [selectedGuest, setSelectedGuest] = useState(null);
   const { canCreate, canUpdate, canDelete } = usePermission("guest");
-  const { sortedData, handleSort, sortConfig } = useTableSort(guests);
-
-  const fetchGuest = async () => {
-    try {
-      setLoading(true);
-      const res = await getGuest();
-
-      setGuest(res.data);
-    } catch (err) {
-      console.error("Gagal mengambil data guest", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { data, page, totalPages, nextPage, prevPage, loading, refresh } =
+    usePagination(getGuest, 10);
+  const { sortedData, handleSort, sortConfig } = useTableSort(data);
 
   const handleAddGuest = async (data) => {
     try {
       await createGuest(data);
-      fetchGuest();
+      refresh();
       setOpenModal(false);
     } catch (err) {
       console.error("Gagal menambah guest", err);
@@ -48,7 +37,7 @@ const GuestTable = () => {
   const handleUpdateGuest = async (data) => {
     try {
       await updateGuest(selectedGuest.id, data);
-      fetchGuest();
+      refresh();
       setSelectedGuest(null);
       setOpenModal(false);
     } catch (err) {
@@ -62,14 +51,11 @@ const GuestTable = () => {
 
     try {
       await deleteGuest(id);
-      fetchGuest();
+      refresh();
     } catch (err) {
       console.error("Gagal menghapus guest", err);
     }
   };
-  useEffect(() => {
-    fetchGuest();
-  }, []);
 
   const renderSortIcon = (key) => {
     return (
@@ -187,7 +173,7 @@ const GuestTable = () => {
             </tr>
           ))}
 
-          {guests.length === 0 && (
+          {sortedData.length === 0 && (
             <tr>
               <td colSpan="5" className="py-4 text-center text-gray-500">
                 Tidak ada guest server
@@ -207,6 +193,29 @@ const GuestTable = () => {
           onSubmit={selectedGuest ? handleUpdateGuest : handleAddGuest}
         />
       )}
+      <div className="flex justify-between items-center px-4 py-3 border-t bg-gray-50">
+        <span className="text-sm text-gray-600">
+          Page {page} of {totalPages}
+        </span>
+
+        <div className="flex gap-2">
+          <button
+            onClick={prevPage}
+            disabled={page === 1}
+            className="px-3 py-1 border rounded disabled:opacity-50"
+          >
+            Prev
+          </button>
+
+          <button
+            onClick={nextPage}
+            disabled={page === totalPages}
+            className="px-3 py-1 border rounded disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

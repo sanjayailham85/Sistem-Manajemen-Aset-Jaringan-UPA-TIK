@@ -10,35 +10,24 @@ import {
 import PhysicalModal from "../server/physical/PhysicalModal";
 import usePermission from "../../utils/usePermission";
 import useTableSort from "../../utils/useTableSort";
+import usePagination from "../../utils/usePagination";
 import { FiChevronUp, FiChevronDown } from "react-icons/fi";
 
-const PhysicalServerTable = ({ data, onEdit, onDelete }) => {
+const PhysicalServerTable = ({ onEdit, onDelete }) => {
   const { rackId, physicalId } = useParams();
   const navigate = useNavigate();
   const [physicals, setPhysical] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [selectedPhysical, setSelectedPhysical] = useState(null);
   const { canCreate, canUpdate, canDelete } = usePermission("physical");
-  const { sortedData, handleSort, sortConfig } = useTableSort(physicals);
-
-  const fetchPhysical = async () => {
-    try {
-      setLoading(true);
-      const res = await getPhysical();
-
-      setPhysical(res.data);
-    } catch (err) {
-      console.error("Gagal mengambil data physical", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { data, page, totalPages, nextPage, prevPage, loading, refresh } =
+    usePagination(getPhysical, 10);
+  const { sortedData, handleSort, sortConfig } = useTableSort(data);
 
   const handleAddPhysical = async (data) => {
     try {
       await createPhysical({ ...data, physicalId });
-      fetchPhysical();
+      refresh();
       setOpenModal(false);
     } catch (err) {
       console.error("Gagal menambah physical", err);
@@ -48,7 +37,7 @@ const PhysicalServerTable = ({ data, onEdit, onDelete }) => {
   const handleUpdatePhysical = async (data) => {
     try {
       await updatePhysical(selectedPhysical.id, data);
-      fetchPhysical();
+      refresh();
       setSelectedPhysical(null);
       setOpenModal(false);
     } catch (err) {
@@ -64,15 +53,11 @@ const PhysicalServerTable = ({ data, onEdit, onDelete }) => {
 
     try {
       await deletePhysical(id);
-      fetchPhysical();
+      refresh();
     } catch (err) {
       console.error("Gagal menghapus physical", err);
     }
   };
-
-  useEffect(() => {
-    fetchPhysical();
-  }, []);
 
   const renderSortIcon = (key) => {
     return (
@@ -183,7 +168,7 @@ const PhysicalServerTable = ({ data, onEdit, onDelete }) => {
             </tr>
           ))}
 
-          {physicals.length === 0 && (
+          {sortedData.length === 0 && (
             <tr>
               <td colSpan="4" className="py-4 text-center text-gray-500">
                 Tidak ada physical server
@@ -203,6 +188,29 @@ const PhysicalServerTable = ({ data, onEdit, onDelete }) => {
           onSubmit={selectedPhysical ? handleUpdatePhysical : handleAddPhysical}
         />
       )}
+      <div className="flex justify-between items-center px-4 py-3 border-t bg-gray-50">
+        <span className="text-sm text-gray-600">
+          Page {page} of {totalPages}
+        </span>
+
+        <div className="flex gap-2">
+          <button
+            onClick={prevPage}
+            disabled={page === 1}
+            className="px-3 py-1 border rounded disabled:opacity-50"
+          >
+            Prev
+          </button>
+
+          <button
+            onClick={nextPage}
+            disabled={page === totalPages}
+            className="px-3 py-1 border rounded disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

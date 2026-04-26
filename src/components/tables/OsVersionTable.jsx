@@ -6,35 +6,20 @@ import {
   updateOsVersion,
   deleteOsVersion,
 } from "../../services/osVersionService";
+import usePagination from "../../utils/usePagination";
 import usePermission from "../../utils/usePermission";
 
 const OsVersionTable = () => {
   const [osVersions, setOsVersions] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
+  const { data, page, totalPages, nextPage, prevPage, loading, refresh } =
+    usePagination(getAllOsVersion, 10);
+  const { canCreate, canUpdate, canDelete } = usePermission("osversion");
 
   const [form, setForm] = useState({
     name: "",
     version: "",
   });
-
-  const { canCreate, canUpdate, canDelete } = usePermission("osversion");
-
-  const fetchOsVersion = async () => {
-    try {
-      setLoading(true);
-      const res = await getAllOsVersion();
-      setOsVersions(res.data);
-    } catch (err) {
-      console.error("Failed to fetch OS Version", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchOsVersion();
-  }, []);
 
   const resetForm = () => {
     setForm({
@@ -54,7 +39,7 @@ const OsVersionTable = () => {
         await createOsVersion(form);
       }
 
-      fetchOsVersion();
+      refresh();
       resetForm();
     } catch (err) {
       console.error("Failed to save OS Version", err);
@@ -78,7 +63,7 @@ const OsVersionTable = () => {
 
     try {
       await deleteOsVersion(id);
-      fetchOsVersion();
+      refresh();
     } catch (err) {
       console.error("Failed to delete OS Version", err);
     }
@@ -138,7 +123,7 @@ const OsVersionTable = () => {
         </thead>
 
         <tbody>
-          {osVersions.map((item) => (
+          {data.map((item) => (
             <tr key={item.id} className="border-t hover:bg-gray-50">
               <td className="px-4 py-2">{item.name}</td>
               <td className="px-4 py-2">{item.version}</td>
@@ -171,7 +156,7 @@ const OsVersionTable = () => {
             </tr>
           ))}
 
-          {osVersions.length === 0 && (
+          {data.length === 0 && (
             <tr>
               <td colSpan="3" className="py-4 text-center text-gray-500">
                 Tidak ada data OS Version
@@ -180,6 +165,29 @@ const OsVersionTable = () => {
           )}
         </tbody>
       </table>
+      <div className="flex justify-between items-center px-4 py-3 border-t bg-gray-50">
+        <span className="text-sm text-gray-600">
+          Page {page} of {totalPages}
+        </span>
+
+        <div className="flex gap-2">
+          <button
+            onClick={prevPage}
+            disabled={page === 1}
+            className="px-3 py-1 border rounded disabled:opacity-50"
+          >
+            Prev
+          </button>
+
+          <button
+            onClick={nextPage}
+            disabled={page === totalPages}
+            className="px-3 py-1 border rounded disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

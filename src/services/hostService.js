@@ -10,7 +10,14 @@ const getAuthHeader = () => {
   };
 };
 
-export const getHost = () => axios.get(API_URL, getAuthHeader());
+export const getHost = async (page = 1, limit = 10) => {
+  const response = await axios.get(
+    `${API_URL}?page=${page}&limit=${limit}`,
+    getAuthHeader()
+  );
+
+  return response.data;
+};
 export const getHostById = (id) =>
   axios.get(`${API_URL}/${id}`, getAuthHeader());
 export const createHost = (data) => axios.post(API_URL, data, getAuthHeader());

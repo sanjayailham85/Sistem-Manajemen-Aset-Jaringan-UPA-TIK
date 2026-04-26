@@ -10,7 +10,14 @@ const getAuthHeader = () => {
   };
 };
 
-export const getAllRouter = () => axios.get(API_URL, getAuthHeader());
+export const getAllRouter = async (page = 1, limit = 10) => {
+  const response = await axios.get(
+    `${API_URL}?page=${page}&limit=${limit}`,
+    getAuthHeader()
+  );
+
+  return response.data;
+};
 export const getRouterById = (id) =>
   axios.get(`${API_URL}/${id}`, getAuthHeader());
 export const createRouter = (data) =>

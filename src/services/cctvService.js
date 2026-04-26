@@ -11,7 +11,14 @@ const getAuthHeader = () => {
   };
 };
 
-export const getAllCCTV = () => axios.get(API_URL, getAuthHeader());
+export const getAllCCTV = async (page = 1, limit = 10) => {
+  const response = await axios.get(
+    `${API_URL}?page=${page}&limit=${limit}`,
+    getAuthHeader()
+  );
+
+  return response.data;
+};
 export const getCCTVById = (id) =>
   axios.get(`${API_URL}/${id}`, getAuthHeader());
 export const createCCTV = (data) => axios.post(API_URL, data, getAuthHeader());

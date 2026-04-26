@@ -12,7 +12,6 @@ const MonitoringPage = () => {
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
 
-  // fetch awal
   useEffect(() => {
     const fetchInitial = async () => {
       try {
@@ -29,7 +28,6 @@ const MonitoringPage = () => {
     fetchInitial();
   }, []);
 
-  // realtime websocket
   useEffect(() => {
     socket.on("monitoring:update", (updates) => {
       setDevices((prevDevices) =>
@@ -45,26 +43,20 @@ const MonitoringPage = () => {
     };
   }, []);
 
-  // filter tab
   const filteredDevices = useMemo(() => {
     if (!devices) return [];
-
     if (activeTab === "all") return devices;
-
     return devices.filter((d) => d.category === activeTab);
   }, [devices, activeTab]);
 
-  // total page
   const totalPages = Math.ceil(filteredDevices.length / ITEMS_PER_PAGE);
 
-  // pagination frontend
   const paginatedDevices = useMemo(() => {
     const start = (page - 1) * ITEMS_PER_PAGE;
     const end = start + ITEMS_PER_PAGE;
     return filteredDevices.slice(start, end);
   }, [filteredDevices, page]);
 
-  // summary
   const summary = useMemo(() => {
     return {
       online: devices.filter((d) => d.monitoringStatus === "online").length,
@@ -73,17 +65,15 @@ const MonitoringPage = () => {
     };
   }, [devices]);
 
-  // reset page saat tab berubah
   useEffect(() => {
     setPage(1);
   }, [activeTab]);
 
   return (
     <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Monitoring</h1>
-      </div>
+      <h1 className="text-2xl font-semibold">Monitoring</h1>
 
+      {/* SUMMARY */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <SummaryCard
           label="Online"
@@ -106,27 +96,29 @@ const MonitoringPage = () => {
 
       <DeviceTable filteredDevices={paginatedDevices} loading={loading} />
 
-      {/* pagination */}
-      <div className="flex justify-center gap-2">
-        <button
-          disabled={page === 1}
-          onClick={() => setPage((p) => p - 1)}
-          className="px-3 py-1 rounded bg-white shadow disabled:opacity-50"
-        >
-          Prev
-        </button>
-
-        <span className="px-4 py-1">
-          {page} / {totalPages || 1}
+      {/* 🔥 PAGINATION (SAMA STYLE DENGAN ACTIVITY LOGS) */}
+      <div className="flex justify-between items-center px-4 py-3  bg-white rounded shadow">
+        <span className="text-sm text-gray-600">
+          Page {page} of {totalPages || 1}
         </span>
 
-        <button
-          disabled={page === totalPages || totalPages === 0}
-          onClick={() => setPage((p) => p + 1)}
-          className="px-3 py-1 rounded bg-white shadow disabled:opacity-50"
-        >
-          Next
-        </button>
+        <div className="flex gap-2">
+          <button
+            disabled={page === 1}
+            onClick={() => setPage((p) => p - 1)}
+            className="px-3 py-1 border rounded disabled:opacity-50"
+          >
+            Prev
+          </button>
+
+          <button
+            disabled={page === totalPages || totalPages === 0}
+            onClick={() => setPage((p) => p + 1)}
+            className="px-3 py-1 border rounded disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
       </div>
     </div>
   );

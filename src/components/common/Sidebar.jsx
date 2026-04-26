@@ -13,6 +13,10 @@ import {
   FiWifi,
   FiMonitor,
   FiList,
+  FiRadio,
+  FiShuffle,
+  FiGlobe,
+  FiCamera,
 } from "react-icons/fi";
 
 const Sidebar = () => {
@@ -106,7 +110,7 @@ const Sidebar = () => {
               `${menuClass} ${isActive ? activeClass : ""}`
             }
           >
-            <FiWifi /> Access Point
+            <FiRadio /> Access Point
           </NavLink>
 
           <NavLink
@@ -115,7 +119,7 @@ const Sidebar = () => {
               `${menuClass} ${isActive ? activeClass : ""}`
             }
           >
-            <FiBox /> Switch
+            <FiShuffle /> Switch
           </NavLink>
 
           <NavLink
@@ -124,7 +128,7 @@ const Sidebar = () => {
               `${menuClass} ${isActive ? activeClass : ""}`
             }
           >
-            <FiGrid /> Router
+            <FiGlobe /> Router
           </NavLink>
         </div>
 
@@ -140,7 +144,7 @@ const Sidebar = () => {
               `${menuClass} ${isActive ? activeClass : ""}`
             }
           >
-            <FiMonitor /> CCTV
+            <FiCamera /> CCTV
           </NavLink>
         </div>
 

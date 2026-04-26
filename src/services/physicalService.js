@@ -10,7 +10,14 @@ const getAuthHeader = () => {
   };
 };
 
-export const getPhysical = () => axios.get(API_URL, getAuthHeader());
+export const getPhysical = async (page = 1, limit = 10) => {
+  const response = await axios.get(
+    `${API_URL}?page=${page}&limit=${limit}`,
+    getAuthHeader()
+  );
+
+  return response.data;
+};
 export const getPhysicalById = (id) =>
   axios.get(`${API_URL}/${id}`, getAuthHeader());
 export const createPhysical = (data) =>

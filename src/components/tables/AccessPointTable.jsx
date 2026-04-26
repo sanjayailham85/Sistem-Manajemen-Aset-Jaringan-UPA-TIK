@@ -11,34 +11,36 @@ import AccessPointModal from "../digital/accessPoint/AccessPointModal";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
 import usePermission from "../../utils/usePermission";
 import useTableSort from "../../utils/useTableSort";
+import usePagination from "../../utils/usePagination";
 import { FiChevronUp, FiChevronDown } from "react-icons/fi";
 
 const AccessPointTable = () => {
-  const [items, setItems] = useState([]);
   const [openModal, setOpenModal] = useState(false);
   const [selected, setSelected] = useState(null);
   const navigate = useNavigate();
   const { canCreate, canUpdate, canDelete } = usePermission("accessPoint");
-  const { sortedData, handleSort, sortConfig } = useTableSort(items);
+  const { data, page, totalPages, nextPage, prevPage, loading, refresh } =
+    usePagination(getAllAccessPoint, 10);
+  const { sortedData, handleSort, sortConfig } = useTableSort(data);
 
-  const fetchData = async () => {
-    const res = await getAllAccessPoint();
-    setItems(res.data);
-  };
+  // const fetchData = async () => {
+  //   const res = await getAllAccessPoint();
+  //   setItems(res.data);
+  // };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  // useEffect(() => {
+  //   fetchData();
+  // }, []);
 
   const handleAdd = async (data) => {
     await createAccessPoint(data);
-    fetchData();
+    refresh();
     setOpenModal(false);
   };
 
   const handleUpdate = async (data) => {
     await updateAccessPoint(selected.id, data);
-    fetchData();
+    refresh();
     setSelected(null);
     setOpenModal(false);
   };
@@ -46,7 +48,7 @@ const AccessPointTable = () => {
   const handleDelete = async (id) => {
     if (!confirm("Hapus access point?")) return;
     await deleteAccessPoint(id);
-    fetchData();
+    refresh();
   };
 
   const renderSortIcon = (key) => {
@@ -160,6 +162,29 @@ const AccessPointTable = () => {
           onSubmit={selected ? handleUpdate : handleAdd}
         />
       )}
+      <div className="flex justify-between items-center px-4 py-3 border-t bg-gray-50">
+        <span className="text-sm text-gray-600">
+          Page {page} of {totalPages}
+        </span>
+
+        <div className="flex gap-2">
+          <button
+            onClick={prevPage}
+            disabled={page === 1}
+            className="px-3 py-1 border rounded disabled:opacity-50"
+          >
+            Prev
+          </button>
+
+          <button
+            onClick={nextPage}
+            disabled={page === totalPages}
+            className="px-3 py-1 border rounded disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

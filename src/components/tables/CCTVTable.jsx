@@ -10,6 +10,7 @@ import { FiEdit, FiTrash2 } from "react-icons/fi";
 import usePermission from "../../utils/usePermission";
 import { useNavigate, useParams } from "react-router-dom";
 import useTableSort from "../../utils/useTableSort";
+import usePagination from "../../utils/usePagination";
 import { FiChevronUp, FiChevronDown } from "react-icons/fi";
 
 const CCTVTable = () => {
@@ -18,26 +19,19 @@ const CCTVTable = () => {
   const [selected, setSelected] = useState(null);
   const navigate = useNavigate();
   const { canCreate, canUpdate, canDelete } = usePermission("cctv");
-  const { sortedData, handleSort, sortConfig } = useTableSort(items);
-
-  const fetchData = async () => {
-    const res = await getAllCCTV();
-    setItems(res.data);
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
+  const { data, page, totalPages, nextPage, prevPage, loading, refresh } =
+    usePagination(getAllCCTV, 10);
+  const { sortedData, handleSort, sortConfig } = useTableSort(data);
 
   const handleAdd = async (data) => {
     await createCCTV(data);
-    fetchData();
+    refresh();
     setOpenModal(false);
   };
 
   const handleUpdate = async (data) => {
     await updateCCTV(selected.id, data);
-    fetchData();
+    refresh();
     setSelected(null);
     setOpenModal(false);
   };
@@ -45,7 +39,7 @@ const CCTVTable = () => {
   const handleDelete = async (id) => {
     if (!confirm("Hapus CCTV?")) return;
     await deleteCCTV(id);
-    fetchData();
+    refresh();
   };
 
   const renderSortIcon = (key) => {
@@ -169,6 +163,29 @@ const CCTVTable = () => {
           onSubmit={selected ? handleUpdate : handleAdd}
         />
       )}
+      <div className="flex justify-between items-center px-4 py-3 border-t bg-gray-50">
+        <span className="text-sm text-gray-600">
+          Page {page} of {totalPages}
+        </span>
+
+        <div className="flex gap-2">
+          <button
+            onClick={prevPage}
+            disabled={page === 1}
+            className="px-3 py-1 border rounded disabled:opacity-50"
+          >
+            Prev
+          </button>
+
+          <button
+            onClick={nextPage}
+            disabled={page === totalPages}
+            className="px-3 py-1 border rounded disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

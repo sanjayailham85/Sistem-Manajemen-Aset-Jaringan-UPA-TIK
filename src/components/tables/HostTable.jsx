@@ -10,35 +10,24 @@ import HostModal from "../server/host/HostModal";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
 import usePermission from "../../utils/usePermission";
 import useTableSort from "../../utils/useTableSort";
+import usePagination from "../../utils/usePagination";
 import { FiChevronUp, FiChevronDown } from "react-icons/fi";
 
 const HostTable = () => {
   const { rackId, physicalId } = useParams();
   const navigate = useNavigate();
   const [hosts, setHost] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [selectedHost, setSelectedHost] = useState(null);
   const { canCreate, canUpdate, canDelete } = usePermission("host");
-  const { sortedData, handleSort, sortConfig } = useTableSort(hosts);
-
-  const fetchHost = async () => {
-    try {
-      setLoading(true);
-      const res = await getHost();
-
-      setHost(res.data);
-    } catch (err) {
-      console.error("Gagal mengambil data host", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { data, page, totalPages, nextPage, prevPage, loading, refresh } =
+    usePagination(getHost, 10);
+  const { sortedData, handleSort, sortConfig } = useTableSort(data);
 
   const handleAddHost = async (data) => {
     try {
       await createHost(data);
-      fetchHost();
+      refresh();
       setOpenModal(false);
     } catch (err) {
       console.error("Gagal menambah host", err);
@@ -49,7 +38,7 @@ const HostTable = () => {
   const handleUpdateHost = async (data) => {
     try {
       await updateHost(selectedHost.id, data);
-      fetchHost();
+      refresh();
       setSelectedHost(null);
       setOpenModal(false);
     } catch (err) {
@@ -64,14 +53,11 @@ const HostTable = () => {
 
     try {
       await deleteHost(id);
-      fetchHost();
+      refresh();
     } catch (err) {
       console.error("Gagal menghapus host", err);
     }
   };
-  useEffect(() => {
-    fetchHost();
-  }, []);
 
   const renderSortIcon = (key) => {
     return (
@@ -191,7 +177,7 @@ const HostTable = () => {
             </tr>
           ))}
 
-          {hosts.length === 0 && (
+          {sortedData.length === 0 && (
             <tr>
               <td colSpan="5" className="py-4 text-center text-gray-500">
                 Tidak ada host server
@@ -211,6 +197,29 @@ const HostTable = () => {
           onSubmit={selectedHost ? handleUpdateHost : handleAddHost}
         />
       )}
+      <div className="flex justify-between items-center px-4 py-3 border-t bg-gray-50">
+        <span className="text-sm text-gray-600">
+          Page {page} of {totalPages}
+        </span>
+
+        <div className="flex gap-2">
+          <button
+            onClick={prevPage}
+            disabled={page === 1}
+            className="px-3 py-1 border rounded disabled:opacity-50"
+          >
+            Prev
+          </button>
+
+          <button
+            onClick={nextPage}
+            disabled={page === totalPages}
+            className="px-3 py-1 border rounded disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

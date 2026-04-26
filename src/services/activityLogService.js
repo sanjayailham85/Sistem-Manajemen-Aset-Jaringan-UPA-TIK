@@ -4,6 +4,7 @@ const API_URL = "http://localhost:5000/api/activitylog";
 
 const getAuthHeader = () => {
   const token = localStorage.getItem("token");
+
   return {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -20,8 +21,14 @@ export const getRecent = async (limit = 5) => {
   return response.data;
 };
 
-export const getAll = async () => {
-  const response = await axios.get(API_URL, getAuthHeader());
+export const getAll = async (page = 1, limit = 10) => {
+  const response = await axios.get(
+    `${API_URL}?page=${page}&limit=${limit}`,
+    getAuthHeader()
+  );
 
   return response.data;
 };
+
+export const deleteActivityLogs = (id) =>
+  axios.delete(`${API_URL}/${id}`, getAuthHeader());
