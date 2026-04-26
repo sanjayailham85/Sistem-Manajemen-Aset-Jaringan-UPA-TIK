@@ -119,14 +119,6 @@ const Navbar = () => {
           )}
         </div>
 
-        {/* ===================== NOTIFICATION ===================== */}
-        <button className="relative text-slate-600 hover:text-slate-800 transition">
-          <FiBell size={20} />
-          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
-            2
-          </span>
-        </button>
-
         {/* ===================== USER ===================== */}
         <div className="relative" ref={dropdownRef}>
           <button

@@ -5,7 +5,7 @@ import {
   createOsVersion,
   updateOsVersion,
   deleteOsVersion,
-} from "../../services/optionService";
+} from "../../services/osVersionService";
 import usePermission from "../../utils/usePermission";
 
 const OsVersionTable = () => {

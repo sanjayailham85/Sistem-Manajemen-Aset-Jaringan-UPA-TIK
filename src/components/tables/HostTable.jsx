@@ -26,7 +26,6 @@ const HostTable = () => {
     try {
       setLoading(true);
       const res = await getHost();
-      console.log(res.data);
 
       setHost(res.data);
     } catch (err) {

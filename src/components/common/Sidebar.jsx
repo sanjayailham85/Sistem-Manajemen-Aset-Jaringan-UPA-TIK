@@ -42,6 +42,16 @@ const Sidebar = () => {
           <FiHome /> Dashboard
         </NavLink>
 
+        {/* 🔥 MONITORING (NEW MENU) */}
+        <NavLink
+          to="/monitoring"
+          className={({ isActive }) =>
+            `${menuClass} ${isActive ? activeClass : ""}`
+          }
+        >
+          <FiMonitor /> Monitoring
+        </NavLink>
+
         {/* SERVER */}
         <div>
           <p className="text-xs uppercase text-slate-400 px-3 mb-2">Server</p>
@@ -83,10 +93,10 @@ const Sidebar = () => {
           </NavLink>
         </div>
 
-        {/* DIGITAL DEVICE */}
+        {/* NETWORK DEVICE (REPLACED FROM DIGITAL DEVICE) */}
         <div>
           <p className="text-xs uppercase text-slate-400 px-3 mb-2">
-            Digital Device
+            Network Device
           </p>
 
           <NavLink
@@ -115,6 +125,13 @@ const Sidebar = () => {
           >
             <FiGrid /> Router
           </NavLink>
+        </div>
+
+        {/* SECURITY DEVICE (NEW CATEGORY FOR CCTV) */}
+        <div>
+          <p className="text-xs uppercase text-slate-400 px-3 mb-2">
+            Security Device
+          </p>
 
           <NavLink
             to="/digital/cctv"
@@ -125,8 +142,10 @@ const Sidebar = () => {
             <FiMonitor /> CCTV
           </NavLink>
         </div>
+
         <div>
           <div className="border-t border-slate-700 my-4"></div>
+
           {user.role === "superadmin" && (
             <NavLink
               to="/users"
@@ -138,7 +157,6 @@ const Sidebar = () => {
             </NavLink>
           )}
 
-          {/* OPTION */}
           {/* OPTION */}
           <div>
             <button
@@ -152,7 +170,6 @@ const Sidebar = () => {
               <span>{openOption ? "▲" : "▼"}</span>
             </button>
 
-            {/* SUB MENU */}
             {openOption && (
               <div className="ml-6 mt-1 space-y-1 border-l border-slate-600 pl-3">
                 <NavLink

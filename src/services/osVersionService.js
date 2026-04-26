@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:5000/api/option";
+const API_URL = "http://localhost:5000/api/osVersion";
 
 export const getAllOsVersion = () => axios.get(API_URL);
 export const getOsVersionById = (id) => axios.get(`${API_URL}/${id}`);

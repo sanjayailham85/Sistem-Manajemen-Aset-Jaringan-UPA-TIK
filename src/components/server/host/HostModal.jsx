@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import RelationSelector from "../../common/RelationSelector";
 import { useLocation } from "react-router-dom";
-import { getAllOsVersion } from "../../../services/optionService";
+import { getAllOsVersion } from "../../../services/osVersionService";
 
 const HostModal = ({ onClose, onSubmit, initialData }) => {
   const emptyForm = {
