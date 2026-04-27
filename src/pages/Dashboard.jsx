@@ -29,7 +29,7 @@ export default function Dashboard() {
     const fetchActivity = async () => {
       try {
         const data = await getRecent(5);
-        setActivities(data);
+        setActivities(data.data);
       } catch (error) {
         console.error("Failed to load activities:", error);
       }

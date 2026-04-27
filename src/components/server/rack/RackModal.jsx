@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { createRack, updateRack } from "../../../services/rackService";
 
-const RackModal = ({ onClose, initialData, onSuccess }) => {
+const RackModal = ({ onSubmit, onClose, initialData, onSuccess }) => {
   const emptyForm = { id: "", name: "", location: "" };
   const [form, setForm] = useState(emptyForm);
   const [loading, setLoading] = useState(false);
@@ -22,11 +22,8 @@ const RackModal = ({ onClose, initialData, onSuccess }) => {
     setLoading(true);
 
     try {
-      if (initialData) {
-        await updateRack(initialData.id, form);
-      } else {
-        await createRack(form);
-      }
+      await onSubmit(form); // 🔥 PAKAI PROP DARI PARENT
+
       onSuccess();
       onClose();
     } catch (error) {

@@ -8,6 +8,13 @@ import {
 } from "../../services/userService";
 import UserModal from "../user/userModal";
 import usePermission from "../../utils/usePermission";
+import {
+  notifyCreate,
+  notifyUpdate,
+  notifyDelete,
+  notifyDeleteError,
+  notifyError,
+} from "../../utils/notifyHelper";
 
 const UserTable = () => {
   const [users, setUsers] = useState([]);
@@ -40,8 +47,10 @@ const UserTable = () => {
       await createUser(data);
       fetchUsers();
       setOpenModal(false);
+      notifyCreate("User");
     } catch (err) {
       console.error("Gagal menambah user", err);
+      notify(error);
     }
   };
 
@@ -52,8 +61,10 @@ const UserTable = () => {
       fetchUsers();
       setSelectedUser(null);
       setOpenModal(false);
+      notifyUpdate("User");
     } catch (err) {
       console.error("Gagal update user", err);
+      notify(error);
     }
   };
 
@@ -68,8 +79,10 @@ const UserTable = () => {
     try {
       await deleteUser(id);
       fetchUsers();
+      notifyDelete("User");
     } catch (err) {
       console.error("Gagal menghapus user", err);
+      notify(error);
     }
   };
 

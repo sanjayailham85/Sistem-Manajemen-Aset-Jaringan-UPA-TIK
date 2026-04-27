@@ -11,6 +11,13 @@ import { FiEdit, FiTrash2 } from "react-icons/fi";
 import usePermission from "../../utils/usePermission";
 import useTableSort from "../../utils/useTableSort";
 import usePagination from "../../utils/usePagination";
+import {
+  notifyCreate,
+  notifyUpdate,
+  notifyDelete,
+  notifyDeleteError,
+  notifyError,
+} from "../../utils/notifyHelper";
 import { FiChevronUp, FiChevronDown } from "react-icons/fi";
 
 const GuestTable = () => {
@@ -29,8 +36,10 @@ const GuestTable = () => {
       await createGuest(data);
       refresh();
       setOpenModal(false);
+      notifyCreate("Guest");
     } catch (err) {
       console.error("Gagal menambah guest", err);
+      notifyError();
     }
   };
 
@@ -40,8 +49,10 @@ const GuestTable = () => {
       refresh();
       setSelectedGuest(null);
       setOpenModal(false);
+      notifyUpdate("Guest");
     } catch (err) {
       console.error("Gagal update guest", err);
+      notifyError();
     }
   };
 
@@ -52,8 +63,10 @@ const GuestTable = () => {
     try {
       await deleteGuest(id);
       refresh();
+      notifyDelete("Guest");
     } catch (err) {
       console.error("Gagal menghapus guest", err);
+      notifyError();
     }
   };
 

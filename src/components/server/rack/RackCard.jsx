@@ -44,14 +44,6 @@ const RackCard = ({ rack, onEdit, onDelete }) => {
       <h2 className="text-lg font-semibold mb-1 cursor-pointer">{rack.name}</h2>
 
       <p className="text-sm text-gray-500 mb-3">{rack.location}</p>
-
-      <div className="flex items-center justify-between">
-        <span className="text-sm text-gray-600">
-          Total Physical Server:{" "}
-          <span className="font-medium">{rack.totalServer}</span>
-        </span>
-        <span className={`text-xs px-2 py-1 rounded`}>{rack.status}</span>
-      </div>
     </div>
   );
 };

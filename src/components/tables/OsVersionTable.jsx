@@ -8,6 +8,13 @@ import {
 } from "../../services/osVersionService";
 import usePagination from "../../utils/usePagination";
 import usePermission from "../../utils/usePermission";
+import {
+  notifyCreate,
+  notifyUpdate,
+  notifyDelete,
+  notifyDeleteError,
+  notifyError,
+} from "../../utils/notifyHelper";
 
 const OsVersionTable = () => {
   const [osVersions, setOsVersions] = useState([]);
@@ -35,14 +42,17 @@ const OsVersionTable = () => {
     try {
       if (selectedId) {
         await updateOsVersion(selectedId, form);
+        notifyUpdate("OS");
       } else {
         await createOsVersion(form);
+        notifyCreate("OS");
       }
 
       refresh();
       resetForm();
     } catch (err) {
       console.error("Failed to save OS Version", err);
+      notifyError();
     }
   };
 
@@ -64,8 +74,10 @@ const OsVersionTable = () => {
     try {
       await deleteOsVersion(id);
       refresh();
+      notifyDelete("OS");
     } catch (err) {
       console.error("Failed to delete OS Version", err);
+      notifyError();
     }
   };
 

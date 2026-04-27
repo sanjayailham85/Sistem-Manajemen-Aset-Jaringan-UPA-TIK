@@ -11,6 +11,13 @@ import usePermission from "../../utils/usePermission";
 import { useNavigate, useParams } from "react-router-dom";
 import useTableSort from "../../utils/useTableSort";
 import usePagination from "../../utils/usePagination";
+import {
+  notifyCreate,
+  notifyUpdate,
+  notifyDelete,
+  notifyDeleteError,
+  notifyError,
+} from "../../utils/notifyHelper";
 import { FiChevronUp, FiChevronDown } from "react-icons/fi";
 
 const CCTVTable = () => {
@@ -24,22 +31,40 @@ const CCTVTable = () => {
   const { sortedData, handleSort, sortConfig } = useTableSort(data);
 
   const handleAdd = async (data) => {
-    await createCCTV(data);
-    refresh();
-    setOpenModal(false);
+    try {
+      await createCCTV(data);
+      refresh();
+      setOpenModal(false);
+      notifyCreate("CCTV");
+    } catch (err) {
+      console.error("Gagal menambah cctv", err);
+      notifyError();
+    }
   };
 
   const handleUpdate = async (data) => {
-    await updateCCTV(selected.id, data);
-    refresh();
-    setSelected(null);
-    setOpenModal(false);
+    try {
+      await updateCCTV(selected.id, data);
+      refresh();
+      setSelected(null);
+      setOpenModal(false);
+      notifyUpdate("CCTV");
+    } catch (err) {
+      console.error("Gagal Update cctv", err);
+      notifyError();
+    }
   };
 
   const handleDelete = async (id) => {
-    if (!confirm("Hapus CCTV?")) return;
-    await deleteCCTV(id);
-    refresh();
+    try {
+      if (!confirm("Hapus CCTV?")) return;
+      await deleteCCTV(id);
+      refresh();
+      notifyDelete("CCTV");
+    } catch (err) {
+      console.error("Gagal menambah physical", err);
+      notifyError();
+    }
   };
 
   const renderSortIcon = (key) => {

@@ -12,6 +12,13 @@ import { FiEdit, FiTrash2 } from "react-icons/fi";
 import usePermission from "../../utils/usePermission";
 import useTableSort from "../../utils/useTableSort";
 import usePagination from "../../utils/usePagination";
+import {
+  notifyCreate,
+  notifyUpdate,
+  notifyDelete,
+  notifyDeleteError,
+  notifyError,
+} from "../../utils/notifyHelper";
 import { FiChevronUp, FiChevronDown } from "react-icons/fi";
 
 const AccessPointTable = () => {
@@ -23,32 +30,41 @@ const AccessPointTable = () => {
     usePagination(getAllAccessPoint, 10);
   const { sortedData, handleSort, sortConfig } = useTableSort(data);
 
-  // const fetchData = async () => {
-  //   const res = await getAllAccessPoint();
-  //   setItems(res.data);
-  // };
-
-  // useEffect(() => {
-  //   fetchData();
-  // }, []);
-
   const handleAdd = async (data) => {
-    await createAccessPoint(data);
-    refresh();
-    setOpenModal(false);
+    try {
+      await createAccessPoint(data);
+      refresh();
+      setOpenModal(false);
+      notifyCreate("Access Point");
+    } catch (err) {
+      console.error("Gagal menambah access point", err);
+      notifyError();
+    }
   };
 
   const handleUpdate = async (data) => {
-    await updateAccessPoint(selected.id, data);
-    refresh();
-    setSelected(null);
-    setOpenModal(false);
+    try {
+      await updateAccessPoint(selected.id, data);
+      refresh();
+      setSelected(null);
+      setOpenModal(false);
+      notifyUpdate("Access Point");
+    } catch (err) {
+      console.error("Gagal menambah access point", err);
+      notifyError();
+    }
   };
 
   const handleDelete = async (id) => {
-    if (!confirm("Hapus access point?")) return;
-    await deleteAccessPoint(id);
-    refresh();
+    try {
+      if (!confirm("Hapus access point?")) return;
+      await deleteAccessPoint(id);
+      refresh();
+      notifyDelete("Access Point");
+    } catch (err) {
+      console.error("Gagal menambah access point", err);
+      notifyError();
+    }
   };
 
   const renderSortIcon = (key) => {

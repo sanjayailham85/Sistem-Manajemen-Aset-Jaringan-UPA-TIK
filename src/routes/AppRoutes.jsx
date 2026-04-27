@@ -1,51 +1,3 @@
-// import React from "react";
-// import { Routes, Route } from "react-router-dom";
-// import Dashboard from "../pages/Dashboard";
-
-// // Rack
-// import RackList from "../pages/server/rack/RackList";
-// import RackDetail from "../pages/server/rack/RackDetail";
-
-// import Login from "../pages/Login";
-
-// const AppRoutes = () => {
-//   return (
-//     <Routes>
-//       <Route path="/" element={<Dashboard />} />
-//       <Route path="/auth/login" element={<Login />} />
-
-//       <Route path="/racks" element={<RackList />} />
-//       <Route path="/racks/:rackId" element={<RackDetail />} />
-
-//       <Route path="/physical" element={<PhysicalServerList />} />
-//       <Route
-//         path="/racks/:rackId/physical/:physicalId"
-//         element={<PhysicalServerDetail />}
-//       />
-
-//       <Route path="/host" element={<HostList />} />
-//       <Route
-//         path="/racks/:rackId/physical/:physicalId/host/:hostId"
-//         element={<HostDetail />}
-//       />
-
-//       <Route path="/guest" element={<GuestList />} />
-//       <Route
-//         path="/racks/:rackId/physical/:physicalId/host/:hostId/guest/:guestId"
-//         element={<GuestDetail />}
-//       />
-
-//       <Route path="/digital/switch" element={<SwitchList />} />
-//       <Route path="/digital/switch/:id" element={<SwitchDetail />} />
-
-//       <Route path="/digital/router" element={<RouterList />} />
-//       <Route path="/digital/router/:id" element={<RouterDetail />} />
-//     </Routes>
-//   );
-// };
-
-// export default AppRoutes;
-
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 
@@ -90,15 +42,23 @@ import ActivityLogsList from "../pages/activitylogs/ActivityLogsList";
 import Users from "../pages/Users";
 import OsVersion from "../pages/option/OsVersion";
 import MonitoringPage from "../pages/monitoring/MonitoringPage";
+import { Toaster } from "react-hot-toast";
 
 const Layout = ({ children }) => (
-  <div className="flex h-screen">
-    <Sidebar />
-    <div className="flex flex-col flex-1">
-      <Navbar />
-      <main className="flex-1 overflow-y-auto p-4 bg-gray-100">{children}</main>
+  <>
+    <div className="flex h-screen overflow-hidden">
+      <Sidebar />
+
+      <div className="flex flex-col flex-1 min-h-0">
+        <Navbar />
+
+        <main className="flex-1 min-h-0 overflow-y-auto bg-gray-100 p-4">
+          {children}
+        </main>
+      </div>
     </div>
-  </div>
+    <Toaster position="bottom-right" />;
+  </>
 );
 
 const PrivateRoute = ({ children }) => {

@@ -7,55 +7,46 @@ import {
   updateRack,
   deleteRack,
 } from "../../../services/rackService";
-import { getPhysical } from "../../../services/physicalService";
 import usePermission from "../../../utils/usePermission";
+import usePagination from "../../../utils/usePagination";
+import {
+  notifyCreate,
+  notifyUpdate,
+  notifyDelete,
+  notifyDeleteError,
+  notifyError,
+} from "../../../utils/notifyHelper";
 
 const RackList = () => {
   const [racks, setRacks] = useState([]);
   const [physicalServers, setPhysicalServers] = useState([]);
   const [openModal, setOpenModal] = useState(false);
   const [selectedRack, setSelectedRack] = useState(null);
-  const [loading, setLoading] = useState(false);
   const { canCreate, canUpdate, canDelete } = usePermission("rack");
-
-  const fetchRacks = async () => {
-    try {
-      setLoading(true);
-      const res = await getRacks();
-      setRacks(res.data);
-    } catch (err) {
-      console.error("Gagal mengambil data racks", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchPhysicalServers = async () => {
-    try {
-      const res = await getPhysical();
-      setPhysicalServers(res.data);
-    } catch (err) {
-      console.error("Gagal mengambil data physical server", err);
-    }
-  };
+  const { data, page, totalPages, nextPage, prevPage, loading, refresh } =
+    usePagination(getRacks, 9);
 
   const handleAddRack = async (data) => {
     try {
       await createRack({ ...data });
-      fetchRacks();
+      refresh();
       setOpenModal(false);
+      notifyCreate("Rack");
     } catch (err) {
       console.error("Gagal menambah data racks", err);
+      notifyError();
     }
   };
   const handleUpdateRack = async (data) => {
     try {
       await updateRack(selectedRack.id, data);
-      fetchRacks();
+      refresh();
       setSelectedRack(null);
       setOpenModal(false);
+      notifyUpdadte("Rack");
     } catch (err) {
       console.error("Gagal update data rack ", err);
+      notifyError();
     }
   };
 
@@ -66,15 +57,18 @@ const RackList = () => {
     try {
       await deleteRack(id);
       setRacks((prev) => prev.filter((rack) => rack.id !== id));
+      refresh();
+      notifyDelete("Rack");
     } catch (err) {
-      console.error("Gagal menghapus rack", err);
+      const code = err?.response?.data?.code;
+
+      if (code === "RACK_NOT_EMPTY") {
+        notifyDeleteError("Rack");
+      } else {
+        notifyError();
+      }
     }
   };
-
-  useEffect(() => {
-    fetchRacks();
-    fetchPhysicalServers();
-  }, []);
 
   return (
     <div className="space-y-6">
@@ -94,11 +88,8 @@ const RackList = () => {
       </div>
 
       <RackGrid
-        racks={racks.map((rack) => {
-          const totalServer = physicalServers.filter(
-            (s) => s.rackId === rack.id
-          ).length;
-          return { ...rack, totalServer };
+        data={data.map((rack) => {
+          return { rack };
         })}
         onEdit={(rack) => {
           setSelectedRack(rack);
@@ -114,9 +105,32 @@ const RackList = () => {
             setSelectedRack(null);
           }}
           onSubmit={selectedRack ? handleUpdateRack : handleAddRack}
-          onSuccess={fetchRacks}
+          onSuccess={refresh}
         />
       )}
+      <div className="flex justify-between items-center px-4 py-3 border-t bg-gray-50">
+        <span className="text-sm text-gray-600">
+          Page {page} of {totalPages}
+        </span>
+
+        <div className="flex gap-2">
+          <button
+            onClick={prevPage}
+            disabled={page === 1}
+            className="px-3 py-1 border rounded disabled:opacity-50"
+          >
+            Prev
+          </button>
+
+          <button
+            onClick={nextPage}
+            disabled={page === totalPages}
+            className="px-3 py-1 border rounded disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

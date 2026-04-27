@@ -8,6 +8,7 @@ const SwitchModal = ({ onClose, onSubmit, initialData }) => {
     location: "",
     locationDetail: "",
     status: "Active",
+    detail: "",
     code: "",
   };
 

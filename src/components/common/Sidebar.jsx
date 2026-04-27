@@ -30,7 +30,7 @@ const Sidebar = () => {
   const activeClass = "bg-slate-700 text-white font-semibold";
 
   return (
-    <aside className="w-64 bg-slate-800 text-slate-200 flex flex-col">
+    <aside className="w-64 h-full bg-slate-800 text-slate-200 flex flex-col">
       {/* HEADER */}
       <div className="h-14 flex items-center px-4 border-b border-slate-700">
         <h1 className="text-lg font-bold">Asset Manager</h1>

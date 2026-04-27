@@ -11,6 +11,13 @@ import usePermission from "../../utils/usePermission";
 import { useNavigate, useParams } from "react-router-dom";
 import useTableSort from "../../utils/useTableSort";
 import usePagination from "../../utils/usePagination";
+import {
+  notifyCreate,
+  notifyUpdate,
+  notifyDelete,
+  notifyDeleteError,
+  notifyError,
+} from "../../utils/notifyHelper";
 import { FiChevronUp, FiChevronDown } from "react-icons/fi";
 
 const RouterTable = () => {
@@ -24,22 +31,40 @@ const RouterTable = () => {
   const { sortedData, handleSort, sortConfig } = useTableSort(data);
 
   const handleAdd = async (data) => {
-    await createRouter(data);
-    refresh();
-    setOpenModal(false);
+    try {
+      await createRouter(data);
+      refresh();
+      setOpenModal(false);
+      notifyCreate("Router");
+    } catch (err) {
+      console.error("Gagal menambah router", err);
+      notifyError();
+    }
   };
 
   const handleUpdate = async (data) => {
-    await updateRouter(selected.id, data);
-    refresh();
-    setSelected(null);
-    setOpenModal(false);
+    try {
+      await updateRouter(selected.id, data);
+      refresh();
+      setSelected(null);
+      setOpenModal(false);
+      notifyUpdate("Router");
+    } catch (err) {
+      console.error("Gagal menambah router", err);
+      notifyError();
+    }
   };
 
   const handleDelete = async (id) => {
-    if (!confirm("Hapus router?")) return;
-    await deleteRouter(id);
-    refresh();
+    try {
+      if (!confirm("Hapus router?")) return;
+      await deleteRouter(id);
+      refresh();
+      notifyDelete("Router");
+    } catch (err) {
+      console.error("Gagal menambah router", err);
+      notifyError();
+    }
   };
 
   const renderSortIcon = (key) => {

@@ -11,6 +11,14 @@ import { FiEdit, FiTrash2 } from "react-icons/fi";
 import usePermission from "../../utils/usePermission";
 import useTableSort from "../../utils/useTableSort";
 import usePagination from "../../utils/usePagination";
+import toast from "react-hot-toast";
+import {
+  notifyCreate,
+  notifyUpdate,
+  notifyDelete,
+  notifyDeleteError,
+  notifyError,
+} from "../../utils/notifyHelper";
 import { FiChevronUp, FiChevronDown } from "react-icons/fi";
 
 const HostTable = () => {
@@ -29,8 +37,10 @@ const HostTable = () => {
       await createHost(data);
       refresh();
       setOpenModal(false);
+      notifyCreate("Host");
     } catch (err) {
       console.error("Gagal menambah host", err);
+      notifyError();
     }
   };
 
@@ -41,8 +51,10 @@ const HostTable = () => {
       refresh();
       setSelectedHost(null);
       setOpenModal(false);
+      notifyUpdate("Host");
     } catch (err) {
       console.error("Gagal update host", err);
+      notifyError();
     }
   };
 
@@ -54,8 +66,14 @@ const HostTable = () => {
     try {
       await deleteHost(id);
       refresh();
+      notifyDelete("Host");
     } catch (err) {
-      console.error("Gagal menghapus host", err);
+      const code = err?.response?.data?.code;
+      if (code === "HOST_NOT_EMPTY") {
+        notifyDeleteError("Host");
+      } else {
+        notifyError();
+      }
     }
   };
 

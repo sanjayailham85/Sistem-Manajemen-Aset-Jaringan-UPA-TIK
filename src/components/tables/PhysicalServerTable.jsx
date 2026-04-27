@@ -12,6 +12,13 @@ import usePermission from "../../utils/usePermission";
 import useTableSort from "../../utils/useTableSort";
 import usePagination from "../../utils/usePagination";
 import { FiChevronUp, FiChevronDown } from "react-icons/fi";
+import {
+  notifyCreate,
+  notifyUpdate,
+  notifyDelete,
+  notifyDeleteError,
+  notifyError,
+} from "../../utils/notifyHelper";
 
 const PhysicalServerTable = ({ onEdit, onDelete }) => {
   const { rackId, physicalId } = useParams();
@@ -29,8 +36,10 @@ const PhysicalServerTable = ({ onEdit, onDelete }) => {
       await createPhysical({ ...data, physicalId });
       refresh();
       setOpenModal(false);
+      notifyCreate("Physical");
     } catch (err) {
       console.error("Gagal menambah physical", err);
+      notifyError();
     }
   };
 
@@ -40,8 +49,10 @@ const PhysicalServerTable = ({ onEdit, onDelete }) => {
       refresh();
       setSelectedPhysical(null);
       setOpenModal(false);
+      notifyUpdate("Physical");
     } catch (err) {
       console.error("Gagal update physical", err);
+      notifyError();
     }
   };
 
@@ -54,8 +65,14 @@ const PhysicalServerTable = ({ onEdit, onDelete }) => {
     try {
       await deletePhysical(id);
       refresh();
+      notifyDelete("Physical");
     } catch (err) {
-      console.error("Gagal menghapus physical", err);
+      const code = err?.response?.data?.code;
+      if (code === "PHYSICAL_NOT_EMPTY") {
+        notifyDeleteError("Physical");
+      } else {
+        notifyError();
+      }
     }
   };
 
