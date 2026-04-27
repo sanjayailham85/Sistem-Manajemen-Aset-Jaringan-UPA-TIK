@@ -60,7 +60,6 @@ const RelationSelector = ({ level, form, setForm }) => {
 
   return (
     <div className="space-y-4">
-      {/* RACK */}
       <select
         value={form.rackId || ""}
         onChange={(e) => handleChange("rackId", e.target.value)}
@@ -74,7 +73,6 @@ const RelationSelector = ({ level, form, setForm }) => {
         ))}
       </select>
 
-      {/* PHYSICAL */}
       {(level === "host" || level === "guest") && (
         <select
           value={form.physicalId || ""}
@@ -91,7 +89,6 @@ const RelationSelector = ({ level, form, setForm }) => {
         </select>
       )}
 
-      {/* HOST */}
       {level === "guest" && (
         <select
           value={form.hostId || ""}

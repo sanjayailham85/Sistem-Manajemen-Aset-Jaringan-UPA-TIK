@@ -38,7 +38,6 @@ const CCTVDetail = () => {
 
   return (
     <div className="space-y-6 p-6">
-      {/* HEADER */}
       <div className="flex justify-between items-start">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">Detail CCTV</h1>
@@ -48,11 +47,8 @@ const CCTVDetail = () => {
         </div>
       </div>
 
-      {/* MAIN CARD */}
       <div className="bg-white rounded-xl shadow p-6 space-y-6">
-        {/* GRID INFO */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* KOLOM 1 */}
           <div className="space-y-4">
             <h2 className="font-semibold text-gray-700 border-b pb-2">
               Informasi Utama
@@ -95,7 +91,6 @@ const CCTVDetail = () => {
             </div>
           </div>
 
-          {/* KOLOM 2 */}
           <div className="space-y-4">
             <h2 className="font-semibold text-gray-700 border-b pb-2">
               Network & Location
@@ -120,7 +115,6 @@ const CCTVDetail = () => {
           </div>
         </div>
 
-        {/* FOOTER INFO */}
         <div className="pt-4 border-t text-xs text-gray-400 flex justify-between">
           <span>Created: {formatDate(cctv.createdAt)}</span>
           <span>Updated: {formatDate(cctv.updatedAt)}</span>

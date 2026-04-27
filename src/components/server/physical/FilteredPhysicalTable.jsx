@@ -31,7 +31,6 @@ const FilteredPhysicalTable = () => {
     }
   };
 
-  // ✅ CREATE (FIXED)
   const handleAddPhysical = async (data) => {
     try {
       const formData = new FormData();
@@ -42,8 +41,6 @@ const FilteredPhysicalTable = () => {
         }
       });
 
-      // 🔥 PASTIKAN rackId MASUK
-
       await createPhysical(formData);
 
       fetchPhysical();
@@ -53,7 +50,6 @@ const FilteredPhysicalTable = () => {
     }
   };
 
-  // ✅ UPDATE (FIXED)
   const handleUpdatePhysical = async (form) => {
     try {
       const formData = new FormData();

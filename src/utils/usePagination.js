@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 
 /**
- * Reusable pagination hook
  * @param {Function} fetchFunction - function API (page, limit) => response
  * @param {number} initialLimit
  */
@@ -23,7 +22,6 @@ const usePagination = (fetchFunction, initialLimit = 10) => {
 
       const res = await fetchFunction(currentPage, limit);
 
-      // 🔥 JANGAN kosongkan data lama dulu
       setData(res.data || []);
       setPage(res.page || currentPage);
       setTotalPages(res.totalPages || 1);

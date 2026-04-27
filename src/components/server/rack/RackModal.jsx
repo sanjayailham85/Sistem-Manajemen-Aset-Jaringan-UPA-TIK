@@ -22,7 +22,7 @@ const RackModal = ({ onSubmit, onClose, initialData, onSuccess }) => {
     setLoading(true);
 
     try {
-      await onSubmit(form); // 🔥 PAKAI PROP DARI PARENT
+      await onSubmit(form); 
 
       onSuccess();
       onClose();

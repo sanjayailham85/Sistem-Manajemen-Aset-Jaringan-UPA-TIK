@@ -75,7 +75,6 @@ const GuestDetail = () => {
         </p>
       </div>
 
-      {/* ================= GUEST ================= */}
       <div className="bg-white rounded-xl shadow p-6">
         <h2 className="font-semibold text-lg mb-4 border-b pb-2">
           Informasi Guest
@@ -92,7 +91,6 @@ const GuestDetail = () => {
             <p className="font-medium">{guest.ip}</p>
           </div>
 
-          {/* AUTH GUEST */}
           <div className="flex items-center gap-2">
             <p className="font-medium">
               {guest.authUsername}/
@@ -161,7 +159,6 @@ const GuestDetail = () => {
           <p className="mt-1">{guest.detail}</p>
         </div>
 
-        {/* FOOTER GUEST */}
         <div className="grid grid-cols-2 gap-4 pt-4 border-t text-xs text-gray-400 mt-4">
           <div>
             <p>Created</p>
@@ -174,9 +171,7 @@ const GuestDetail = () => {
         </div>
       </div>
 
-      {/* ================= HOST + PHYSICAL ================= */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-stretch">
-        {/* HOST */}
         <div className="bg-white rounded-xl shadow p-5 flex flex-col">
           <h2 className="font-semibold text-lg mb-4 border-b pb-2">
             Informasi Host
@@ -193,7 +188,6 @@ const GuestDetail = () => {
               <p className="font-medium">{guest.host?.ip}</p>
             </div>
 
-            {/* AUTH HOST */}
             <div className="relative w-fit">
               <p className="font-medium pr-8">
                 {guest.host?.authUsername}/
@@ -244,7 +238,6 @@ const GuestDetail = () => {
             </div>
           </div>
 
-          {/* FOOTER HOST */}
           <div className="grid grid-cols-2 gap-4 pt-4 border-t text-xs text-gray-400 mt-auto">
             <div>
               <p>Created</p>
@@ -257,7 +250,6 @@ const GuestDetail = () => {
           </div>
         </div>
 
-        {/* PHYSICAL */}
         <div className="bg-white rounded-xl shadow p-5 xl:col-span-2">
           <h2 className="font-semibold text-lg mb-4 border-b pb-2">
             Informasi Server
@@ -371,7 +363,6 @@ const GuestDetail = () => {
             <p className="mt-1">{guest.host?.physical?.detail}</p>
           </div>
 
-          {/* FOOTER PHYSICAL */}
           <div className="grid grid-cols-2 gap-4 pt-4 border-t text-xs text-gray-400 mt-4">
             <div>
               <p>Created</p>

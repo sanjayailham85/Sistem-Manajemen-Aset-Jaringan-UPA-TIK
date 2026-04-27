@@ -83,7 +83,6 @@ const OsVersionTable = () => {
 
   return (
     <div className="bg-white rounded shadow overflow-x-auto">
-      {/* FORM */}
       <form onSubmit={handleSubmit} className="p-4 flex flex-wrap gap-3">
         <input
           type="text"
@@ -121,7 +120,6 @@ const OsVersionTable = () => {
         )}
       </form>
 
-      {/* TABLE */}
       <table className="w-full text-sm">
         <thead className="bg-gray-100">
           <tr>

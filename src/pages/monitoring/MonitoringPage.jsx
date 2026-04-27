@@ -73,7 +73,6 @@ const MonitoringPage = () => {
     <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
       <h1 className="text-2xl font-semibold">Monitoring</h1>
 
-      {/* SUMMARY */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <SummaryCard
           label="Online"
@@ -96,7 +95,6 @@ const MonitoringPage = () => {
 
       <DeviceTable filteredDevices={paginatedDevices} loading={loading} />
 
-      {/* 🔥 PAGINATION (SAMA STYLE DENGAN ACTIVITY LOGS) */}
       <div className="flex justify-between items-center px-4 py-3  bg-white rounded shadow">
         <span className="text-sm text-gray-600">
           Page {page} of {totalPages || 1}

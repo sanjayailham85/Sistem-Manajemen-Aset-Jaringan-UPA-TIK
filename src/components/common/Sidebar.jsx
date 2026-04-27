@@ -31,13 +31,11 @@ const Sidebar = () => {
 
   return (
     <aside className="w-64 h-full bg-slate-800 text-slate-200 flex flex-col">
-      {/* HEADER */}
       <div className="h-14 flex items-center px-4 border-b border-slate-700">
         <h1 className="text-lg font-bold">Asset Manager</h1>
       </div>
 
       <nav className="flex-1 px-3 py-4 space-y-6 overflow-y-auto">
-        {/* DASHBOARD */}
         <NavLink
           to="/"
           className={({ isActive }) =>
@@ -47,7 +45,6 @@ const Sidebar = () => {
           <FiHome /> Dashboard
         </NavLink>
 
-        {/* 🔥 MONITORING (NEW MENU) */}
         <NavLink
           to="/monitoring"
           className={({ isActive }) =>
@@ -57,7 +54,6 @@ const Sidebar = () => {
           <FiMonitor /> Monitoring
         </NavLink>
 
-        {/* SERVER */}
         <div>
           <p className="text-xs uppercase text-slate-400 px-3 mb-2">Server</p>
 
@@ -98,7 +94,6 @@ const Sidebar = () => {
           </NavLink>
         </div>
 
-        {/* NETWORK DEVICE (REPLACED FROM DIGITAL DEVICE) */}
         <div>
           <p className="text-xs uppercase text-slate-400 px-3 mb-2">
             Network Device
@@ -132,7 +127,6 @@ const Sidebar = () => {
           </NavLink>
         </div>
 
-        {/* SECURITY DEVICE (NEW CATEGORY FOR CCTV) */}
         <div>
           <p className="text-xs uppercase text-slate-400 px-3 mb-2">
             Security Device
@@ -170,7 +164,6 @@ const Sidebar = () => {
             <FiList /> Activity Logs
           </NavLink>
 
-          {/* OPTION */}
           <div>
             <button
               onClick={() => setOpenOption(!openOption)}

@@ -2,12 +2,10 @@ import React, { useState, useEffect } from "react";
 import StatusBadge from "./StatusBadge";
 import { getAllDevicesMonitoring } from "../../../services/monitoringService";
 
-// DeviceTable Component
 const DeviceTable = ({ filteredDevices }) => {
   return (
     <div className="bg-white rounded-xl shadow overflow-hidden">
       <table className="w-full text-sm">
-        {/* TABLE HEADER */}
         <thead className="bg-gray-100 text-left text-gray-600">
           <tr>
             <th className="p-3">Device</th>
@@ -18,13 +16,11 @@ const DeviceTable = ({ filteredDevices }) => {
           </tr>
         </thead>
 
-        {/* TABLE BODY */}
         <tbody>
           {filteredDevices.length === 0 ? (
             <tr>
               <td colSpan="6" className="p-10 text-center">
                 <div className="flex flex-col items-center justify-center gap-3">
-                  {/* spinner lebih besar */}
                   <div className="w-8 h-8 border-3 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
 
                   <span className="text-sm text-gray-500">
@@ -40,7 +36,6 @@ const DeviceTable = ({ filteredDevices }) => {
                 <td className="p-3 capitalize">{device.category}</td>
                 <td className="p-3 text-gray-600">{device.ip}</td>
 
-                {/* STATUS */}
                 <td className="p-3">
                   <StatusBadge status={device.monitoringStatus} />
                 </td>

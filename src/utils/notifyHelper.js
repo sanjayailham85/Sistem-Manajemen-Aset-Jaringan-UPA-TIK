@@ -11,9 +11,18 @@ export const notifyUpdate = (module) => {
 export const notifyDelete = (module) => {
   toast.success(`Berhasil menghapus ${module}`);
 };
+export const notifyImport = () => {
+  toast.success(`Berhasil import data`);
+};
+export const notifyExport = () => {
+  toast.success(`Berhasil export data`);
+};
 
 export const notifyError = () => {
   toast.error(`Terjadi kesalahan. Silakan coba lagi.`);
+};
+export const notifyImportError = () => {
+  toast.error(`Data tidak valid.`);
 };
 export const notifyDeleteError = (module) => {
   toast.error(

@@ -24,7 +24,6 @@ const UserTable = () => {
 
   const { canCreate, canUpdate, canDelete } = usePermission("user");
 
-  // GET ALL USERS
   const fetchUsers = async () => {
     try {
       setLoading(true);
@@ -41,7 +40,6 @@ const UserTable = () => {
     fetchUsers();
   }, []);
 
-  // CREATE USER
   const handleAddUser = async (data) => {
     try {
       await createUser(data);
@@ -54,7 +52,6 @@ const UserTable = () => {
     }
   };
 
-  // UPDATE USER
   const handleUpdateUser = async (data) => {
     try {
       await updateUser(selectedUser.id, data);
@@ -68,7 +65,6 @@ const UserTable = () => {
     }
   };
 
-  // DELETE USER
   const handleDeleteUser = async (id) => {
     const confirmDelete = window.confirm(
       "Apakah yakin ingin menghapus user ini?"
@@ -88,7 +84,6 @@ const UserTable = () => {
 
   return (
     <div className="bg-white rounded shadow overflow-x-auto">
-      {/* BUTTON ADD */}
       <div className="m-2">
         {canCreate && (
           <button
@@ -103,7 +98,6 @@ const UserTable = () => {
         )}
       </div>
 
-      {/* TABLE */}
       <table className="w-full text-sm">
         <thead className="bg-gray-100">
           <tr>
@@ -130,7 +124,6 @@ const UserTable = () => {
               {(canUpdate || canDelete) && (
                 <td className="px-4 py-2" onClick={(e) => e.stopPropagation()}>
                   <div className="flex justify-center gap-3">
-                    {/* EDIT */}
                     {canUpdate && (
                       <button
                         onClick={() => {
@@ -144,7 +137,6 @@ const UserTable = () => {
                       </button>
                     )}
 
-                    {/* DELETE */}
                     {canDelete && (
                       <button
                         onClick={() => handleDeleteUser(user.id)}
@@ -170,7 +162,6 @@ const UserTable = () => {
         </tbody>
       </table>
 
-      {/* MODAL */}
       {openModal && (
         <UserModal
           initialData={selectedUser}

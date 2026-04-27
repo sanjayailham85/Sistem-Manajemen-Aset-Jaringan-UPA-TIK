@@ -45,7 +45,6 @@ const PhysicalServerDetail = () => {
 
   return (
     <div className="space-y-6 p-6">
-      {/* HEADER */}
       <div>
         <h1 className="text-2xl font-bold text-gray-800">
           Detail Physical Server
@@ -66,10 +65,8 @@ const PhysicalServerDetail = () => {
         ]}
       />
 
-      {/* MAIN CARD */}
       <div className="bg-white rounded-xl shadow p-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* IMAGE */}
           <div>
             <div className="overflow-hidden rounded-lg border">
               <img
@@ -80,7 +77,6 @@ const PhysicalServerDetail = () => {
             </div>
           </div>
 
-          {/* INFO */}
           <div className="md:col-span-2 space-y-5">
             <div className="flex justify-between items-start">
               <div>
@@ -89,7 +85,6 @@ const PhysicalServerDetail = () => {
               </div>
             </div>
 
-            {/* GRID INFO */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
               <div>
                 <p className="text-gray-500">Rack</p>
@@ -134,7 +129,6 @@ const PhysicalServerDetail = () => {
               </div>
             </div>
 
-            {/* AUTH */}
             <div className="pt-4 border-t text-sm">
               <p className="text-gray-500 mb-1">Server Auth</p>
 
@@ -173,20 +167,17 @@ const PhysicalServerDetail = () => {
           </div>
         </div>
 
-        {/* DETAIL */}
         <div className="mt-6 pt-4 border-t text-sm">
           <p className="text-gray-500">Detail</p>
           <p className="mt-1 text-gray-700">{physical?.detail}</p>
         </div>
 
-        {/* FOOTER */}
         <div className="mt-6 pt-4 border-t flex justify-between text-xs text-gray-400">
           <span>Created: {formatDate(physical?.createdAt)}</span>
           <span>Updated: {formatDate(physical?.updatedAt)}</span>
         </div>
       </div>
 
-      {/* HOST TABLE */}
       <div className="bg-white rounded-xl shadow p-6">
         <h2 className="font-semibold mb-4">Host Server</h2>
         <FilteredHostTable physicalId={physical?.id} />

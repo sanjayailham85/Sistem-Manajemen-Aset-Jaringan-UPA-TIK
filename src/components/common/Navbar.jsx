@@ -22,13 +22,11 @@ const Navbar = () => {
   const dropdownRef = useRef(null);
   const searchRef = useRef(null);
 
-  // ===================== LOGOUT =====================
   const handleLogout = () => {
     logoutUser();
     navigate("/login");
   };
 
-  // ===================== CLOSE DROPDOWN OUTSIDE =====================
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -75,7 +73,6 @@ const Navbar = () => {
     }, 300);
   };
 
-  // ===================== UI =====================
   return (
     <div className="h-16 bg-white shadow-sm px-6 flex items-center justify-between">
       {/* TITLE */}
@@ -84,7 +81,6 @@ const Navbar = () => {
       </h1>
 
       <div className="flex items-center gap-6">
-        {/* ===================== SEARCH ===================== */}
         <div
           ref={searchRef}
           className="hidden md:flex items-center bg-slate-100 px-3 py-2 rounded-lg w-72 relative"
@@ -98,7 +94,6 @@ const Navbar = () => {
             className="bg-transparent outline-none w-full text-sm"
           />
 
-          {/* DROPDOWN SEARCH */}
           {results.length > 0 && (
             <div className="absolute top-full left-0 w-full bg-white border mt-1 rounded-lg shadow-lg z-50 max-h-64 overflow-y-auto">
               {results.map((item) => (
@@ -119,7 +114,6 @@ const Navbar = () => {
           )}
         </div>
 
-        {/* ===================== USER ===================== */}
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setShowDropdown(!showDropdown)}

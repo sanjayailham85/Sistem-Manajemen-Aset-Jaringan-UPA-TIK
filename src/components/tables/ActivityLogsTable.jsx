@@ -31,7 +31,6 @@ const ActivityLogsTable = () => {
 
   return (
     <div className="bg-white rounded shadow overflow-hidden">
-      {/* TABLE */}
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="bg-gray-100">
@@ -50,7 +49,6 @@ const ActivityLogsTable = () => {
               <tr>
                 <td colSpan="6" className="p-10 text-center">
                   <div className="flex flex-col items-center justify-center gap-3">
-                    {/* spinner lebih besar */}
                     <div className="w-8 h-8 border-3 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
 
                     <span className="text-sm text-gray-500">
@@ -94,7 +92,6 @@ const ActivityLogsTable = () => {
         </table>
       </div>
 
-      {/* PAGINATION (DI LUAR TABLE) */}
       <div className="flex justify-between items-center px-4 py-3 border-t bg-gray-50">
         <span className="text-sm text-gray-600">
           Page {page} of {totalPages}

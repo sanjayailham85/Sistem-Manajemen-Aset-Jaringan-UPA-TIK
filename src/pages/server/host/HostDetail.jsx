@@ -48,7 +48,6 @@ const HostDetail = () => {
   const format = (date) => (date ? formatDate(date) : "-");
   return (
     <div className="space-y-6 p-6">
-      {/* HEADER */}
       <div>
         <h1 className="text-2xl font-bold text-gray-800">Detail Host Server</h1>
         <p className="text-sm text-gray-500">
@@ -71,9 +70,7 @@ const HostDetail = () => {
         ]}
       />
 
-      {/* MAIN GRID */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        {/* HOST CARD */}
         <div className="bg-white rounded-xl shadow p-5 space-y-4">
           <h2 className="font-semibold text-lg border-b pb-2">
             Host Information
@@ -148,14 +145,12 @@ const HostDetail = () => {
           </div>
         </div>
 
-        {/* PHYSICAL CARD */}
         <div className="bg-white rounded-xl shadow p-5 xl:col-span-2 space-y-5">
           <h2 className="font-semibold text-lg border-b pb-2">
             Physical Server
           </h2>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* IMAGE */}
             <div>
               <img
                 src={imageUrl}
@@ -164,7 +159,6 @@ const HostDetail = () => {
               />
             </div>
 
-            {/* INFO */}
             <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
               <div>
                 <p className="text-gray-500">Name</p>
@@ -224,13 +218,11 @@ const HostDetail = () => {
             </div>
           </div>
 
-          {/* DETAIL */}
           <div className="text-sm pt-4 pb-5 border-t">
             <p className="text-gray-500">Detail</p>
             <p className="mt-1 text-gray-700">{physical?.detail}</p>
           </div>
 
-          {/* FOOTER */}
           <div className="flex justify-between text-xs text-gray-400 border-t pt-2">
             <span>Created: {format(physical?.createdAt)}</span>
             <span>Updated: {format(physical?.updatedAt)}</span>
@@ -238,7 +230,6 @@ const HostDetail = () => {
         </div>
       </div>
 
-      {/* GUEST */}
       <div className="bg-white rounded-xl shadow p-5">
         <h2 className="font-semibold text-lg mb-4">Guest Server</h2>
         <FilteredGuestTable hostId={host.id} />
