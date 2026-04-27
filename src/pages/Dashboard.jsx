@@ -1,96 +1,98 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   FiServer,
   FiDatabase,
-  FiUsers,
-  FiBox,
-  FiWifi,
+  FiUser,
+  FiGrid,
+  FiRadio,
+  FiShuffle,
+  FiGlobe,
   FiCamera,
-  FiGitBranch,
+  FiClock,
 } from "react-icons/fi";
-import {
-  PieChart,
-  Pie,
-  Cell,
-  ResponsiveContainer,
-  Tooltip,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-} from "recharts";
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { getRecent } from "../services/activityLogService";
+import { getDashboardSummary } from "../services/dashboardService";
 
-export default function Dashboard() {
+const Dashboard = () => {
   const [activities, setActivities] = useState([]);
+  const [dashboardData, setDashboardData] = useState({
+    racks: 0,
+    physical: 0,
+    host: 0,
+    guest: 0,
+    networkDevices: [],
+    securityDevices: [],
+    totalDevices: 0,
+    deviceStatus: [],
+  });
 
   useEffect(() => {
-    const fetchActivity = async () => {
+    const fetchDashboard = async () => {
       try {
-        const data = await getRecent(5);
-        setActivities(data.data);
+        const summary = await getDashboardSummary();
+        setDashboardData(summary);
+
+        const activity = await getRecent(5);
+        setActivities(activity.data);
       } catch (error) {
-        console.error("Failed to load activities:", error);
+        console.error("Failed to load dashboard:", error);
       }
     };
 
-    fetchActivity();
+    fetchDashboard();
   }, []);
-  // DEVICE STATUS DATA
-  const deviceStatusData = [
-    { name: "Active", value: 78 },
-    { name: "Inactive", value: 18 },
-    { name: "Damaged", value: 6 },
-  ];
 
-  const deviceData = [
-    { name: "Router", value: 8, icon: <FiWifi className="text-blue-500" /> },
-    {
-      name: "Switch",
-      value: 14,
-      icon: <FiGitBranch className="text-purple-500" />,
-    },
-    {
-      name: "Access Point",
-      value: 6,
-      icon: <FiWifi className="text-green-500" />,
-    },
-    { name: "CCTV", value: 10, icon: <FiCamera className="text-red-500" /> },
-  ];
+  const deviceStatusData = (dashboardData.deviceStatus || []).filter(
+    (item) => item.value > 0
+  );
 
-  const activityData = [
-    { name: "Mon", activity: 5 },
-    { name: "Tue", activity: 8 },
-    { name: "Wed", activity: 3 },
-    { name: "Thu", activity: 10 },
-    { name: "Fri", activity: 6 },
-  ];
+  const statusColors = {
+    Active: "#22c55e",
+    Inactive: "#f59e0b",
+    Damaged: "#ef4444",
+  };
 
-  const COLORS = ["#22c55e", "#f59e0b", "#ef4444"];
+  const addIcons = (devices) =>
+    devices.map((device) => {
+      const iconMap = {
+        Router: <FiGlobe className="text-blue-500" />,
+        Switch: <FiShuffle className="text-purple-500" />,
+        "Access Point": <FiRadio className="text-green-500" />,
+        CCTV: <FiCamera className="text-red-500" />,
+      };
 
-  const totalDevices = deviceData.reduce((acc, d) => acc + d.value, 0);
+      return {
+        ...device,
+        icon: iconMap[device.name] || <FiDatabase />,
+      };
+    });
+
+  const networkDevices = addIcons(dashboardData.networkDevices);
+  const securityDevices = addIcons(dashboardData.securityDevices);
 
   return (
     <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
-      {/* HEADER */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Dashboard Overview</h1>
-      </div>
+      <h1 className="text-2xl font-semibold">Dashboard Overview</h1>
 
-      {/* KPI CARDS */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card title="Total Rack" value="12" icon={<FiServer />} />
-        <Card title="Physical Server" value="34" icon={<FiDatabase />} />
-        <Card title="Host" value="18" icon={<FiBox />} />
-        <Card title="Guest" value="56" icon={<FiUsers />} />
+        <Card
+          title="Total Rack"
+          value={dashboardData.racks}
+          icon={<FiDatabase />}
+        />
+        <Card
+          title="Physical Server"
+          value={dashboardData.physical}
+          icon={<FiServer />}
+        />
+        <Card title="Host" value={dashboardData.host} icon={<FiGrid />} />
+        <Card title="Guest" value={dashboardData.guest} icon={<FiUser />} />
       </div>
 
-      {/* MIDDLE SECTION */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* DEVICE STATUS */}
-        <div className="lg:col-span-1 bg-white p-4 rounded-xl shadow">
-          <h2 className="font-medium mb-4">Device Status Overview</h2>
+        <div className="bg-white p-4 rounded-xl shadow">
+          <h2 className="font-medium mb-4">Status Overview</h2>
 
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
@@ -104,7 +106,10 @@ export default function Dashboard() {
                   label
                 >
                   {deviceStatusData.map((entry, index) => (
-                    <Cell key={index} fill={COLORS[index]} />
+                    <Cell
+                      key={index}
+                      fill={statusColors[entry.name] || "#94a3b8"}
+                    />
                   ))}
                 </Pie>
                 <Tooltip />
@@ -112,7 +117,6 @@ export default function Dashboard() {
             </ResponsiveContainer>
           </div>
 
-          {/* STATUS INDICATORS */}
           <div className="flex justify-around mt-4">
             <StatusDot color="bg-green-500" label="Active" />
             <StatusDot color="bg-yellow-500" label="Inactive" />
@@ -120,45 +124,29 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* NETWORK DEVICES */}
-        <div className="lg:col-span-2 bg-white p-4 rounded-xl shadow flex flex-col">
-          <h2 className="font-medium mb-4">Network Devices</h2>
+        <div className="lg:col-span-2 bg-white p-4 rounded-xl shadow">
+          <h2 className="font-medium mb-4">Device Summary</h2>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {deviceData.map((d, i) => (
-              <div
-                key={i}
-                className="flex items-center justify-between p-3 border rounded-lg hover:shadow-sm"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="text-xl">{d.icon}</div>
-                  <span className="font-medium">{d.name}</span>
-                </div>
-                <span className="text-sm bg-gray-100 px-2 py-1 rounded-full">
-                  {d.value}
-                </span>
-              </div>
-            ))}
+          <div className="grid md:grid-cols-2 gap-6">
+            <DeviceSection title="Network Devices" items={networkDevices} />
+            <DeviceSection title="Security Devices" items={securityDevices} />
           </div>
 
-          {/* TOTAL DEVICE BIG CARD */}
-          <div className="mt-6 flex-1 flex items-center justify-center">
-            <div className="text-center bg-blue-50 w-full py-6 rounded-xl border">
-              <p className="text-sm text-gray-500">Total Devices</p>
-              <p className="text-4xl font-bold text-blue-600">{totalDevices}</p>
-              <p className="text-xs text-gray-400 mt-1">
-                All network equipment combined
-              </p>
-            </div>
+          <div className="mt-6 text-center bg-blue-50 py-5 rounded-xl border">
+            <p className="text-sm text-gray-500">Total Devices</p>
+            <p className="text-4xl font-bold text-blue-600">
+              {dashboardData.totalDevices}
+            </p>
+            <p className="text-xs text-gray-400 mt-1">
+              Combined from all devices
+            </p>
           </div>
         </div>
       </div>
 
-      {/* BOTTOM SECTION */}
-
-      {/* ACTIVITY LOG */}
-      <div className="lg:col-span-2 bg-white p-4 rounded-xl shadow">
+      <div className="bg-white p-4 rounded-xl shadow">
         <h2 className="font-medium mb-4">Recent Activity</h2>
+
         <div className="space-y-3 text-sm">
           {activities.map((item) => (
             <ActivityItem
@@ -171,36 +159,55 @@ export default function Dashboard() {
       </div>
     </div>
   );
-}
+};
 
-function StatusDot({ color, label }) {
-  return (
-    <div className="flex flex-col items-center text-xs text-gray-600">
-      <div className={`w-4 h-4 rounded-full ${color} mb-1`}></div>
-      {label}
+const StatusDot = ({ color, label }) => (
+  <div className="flex flex-col items-center text-xs text-gray-600">
+    <div className={`w-4 h-4 rounded-full ${color} mb-1`} />
+    {label}
+  </div>
+);
+
+const Card = ({ title, value, icon }) => (
+  <div className="bg-white p-4 rounded-xl shadow flex items-center justify-between">
+    <div>
+      <p className="text-sm text-gray-500">{title}</p>
+      <p className="text-xl font-semibold">{value}</p>
     </div>
-  );
-}
+    <div className="text-2xl text-blue-500">{icon}</div>
+  </div>
+);
 
-function Card({ title, value, icon }) {
-  return (
-    <div className="bg-white p-4 rounded-xl shadow flex items-center justify-between">
-      <div>
-        <p className="text-sm text-gray-500">{title}</p>
-        <p className="text-xl font-semibold">{value}</p>
-      </div>
-      <div className="text-2xl text-blue-500">{icon}</div>
+const DeviceSection = ({ title, items }) => (
+  <div>
+    <h3 className="text-sm font-semibold text-gray-500 mb-3">{title}</h3>
+    <div className="space-y-3">
+      {items.map((item, index) => (
+        <div
+          key={index}
+          className="flex items-center justify-between p-3 border rounded-lg"
+        >
+          <div className="flex items-center gap-3">
+            <div className="text-xl">{item.icon}</div>
+            <span className="font-medium">{item.name}</span>
+          </div>
+          <span className="text-sm bg-gray-100 px-2 py-1 rounded-full">
+            {item.value}
+          </span>
+        </div>
+      ))}
     </div>
-  );
-}
+  </div>
+);
 
-function ActivityItem({ text, time }) {
-  return (
-    <div className="flex justify-between items-start border-b pb-2">
+const ActivityItem = ({ text, time }) => (
+  <div className="flex justify-between items-start border-b pb-3">
+    <div className="flex items-start gap-3">
+      <FiClock className="text-blue-500 mt-1" />
       <p>{text}</p>
-      <span className="text-xs text-gray-400 whitespace-nowrap ml-4">
-        {time}
-      </span>
     </div>
-  );
-}
+    <span className="text-xs text-gray-400 whitespace-nowrap ml-4">{time}</span>
+  </div>
+);
+
+export default Dashboard;

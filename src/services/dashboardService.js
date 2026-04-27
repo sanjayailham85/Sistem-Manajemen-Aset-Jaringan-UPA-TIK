@@ -1,6 +1,8 @@
-// services/guestService.js
 import axios from "axios";
 
-const API_URL = "http://localhost:5000/api/dashboard/stats";
+const API_URL = "http://localhost:5000/api/dashboard";
 
-export const getDashboardStat = () => axios.get(API_URL);
+export const getDashboardSummary = async () => {
+  const response = await axios.get(API_URL);
+  return response.data;
+};
