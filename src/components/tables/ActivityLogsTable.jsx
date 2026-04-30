@@ -5,7 +5,7 @@ import usePermission from "../../utils/usePermission";
 import usePagination from "../../utils/usePagination";
 
 const ActivityLogsTable = () => {
-  const { canUpdate, canDelete } = usePermission("activityLogs");
+  const { canUpdate, canDelete } = usePermission("activityLog");
 
   const { data, page, totalPages, nextPage, prevPage, loading, refresh } =
     usePagination(getAll, 10);

@@ -22,7 +22,7 @@ import {
 const CCTVMerkTable = () => {
   const { data, page, totalPages, nextPage, prevPage, loading, refresh } =
     usePagination(getAll, 10);
-  const { canCreate, canUpdate, canDelete } = usePermission("merk");
+  const { canCreate, canUpdate, canDelete } = usePermission("cctvMerk");
   const navigate = useNavigate();
 
   const [openModal, setOpenModal] = useState(false);

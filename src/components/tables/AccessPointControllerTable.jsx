@@ -20,7 +20,9 @@ import {
 
 const ControllerTable = () => {
   const { merkId } = useParams();
-  const { canCreate, canUpdate, canDelete } = usePermission("merk");
+  const { canView, canCreate, canUpdate, canDelete } = usePermission(
+    "accessPointController"
+  );
   const navigate = useNavigate();
   const [openModal, setOpenModal] = useState(false);
   const [selected, setSelected] = useState(null);

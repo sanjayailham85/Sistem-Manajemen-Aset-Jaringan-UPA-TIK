@@ -14,7 +14,7 @@ const RelationSelector = ({ level, form, setForm }) => {
         const [rackRes, physicalRes, hostRes] = await Promise.all([
           getRacks(),
           getPhysical(),
-          getHost(),
+          getAllHost(),
         ]);
 
         setRacks(rackRes.data || []);

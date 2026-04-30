@@ -159,7 +159,7 @@ const Sidebar = () => {
         <div>
           <div className="border-t border-slate-700 my-4"></div>
 
-          {user.role === "superadmin" && (
+          {(user.role === "superadmin" || user.role === "admin") && (
             <NavLink
               to="/users"
               className={({ isActive }) =>

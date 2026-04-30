@@ -21,3 +21,6 @@ export const updateUser = (id, data) =>
 
 export const deleteUser = (id) =>
   axios.delete(`${API_URL}/users/${id}`, getAuthHeader());
+
+export const updatePassword = (data) =>
+  axios.put(`${API_URL}/users/updatePassword`, data, getAuthHeader());

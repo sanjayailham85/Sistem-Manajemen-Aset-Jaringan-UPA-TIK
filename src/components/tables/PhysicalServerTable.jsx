@@ -39,7 +39,7 @@ const PhysicalServerTable = ({ onEdit, onDelete }) => {
 
   const handleAddPhysical = async (data) => {
     try {
-      await createPhysical({ ...data, physicalId });
+      await createPhysical(data);
       refresh();
       setOpenModal(false);
       notifyCreate("Physical");
@@ -129,13 +129,14 @@ const PhysicalServerTable = ({ onEdit, onDelete }) => {
     <div className="bg-white rounded shadow overflow-x-auto">
       <div className="m-2">
         <div className="flex justify-end gap-2 p-2">
-          <button
-            onClick={() => setShowImport(true)}
-            className="bg-green-600 text-white px-4 py-2 rounded cursor-pointer"
-          >
-            Import Data
-          </button>
-
+          {canCreate && (
+            <button
+              onClick={() => setShowImport(true)}
+              className="bg-green-600 text-white px-4 py-2 rounded cursor-pointer"
+            >
+              Import Data
+            </button>
+          )}
           <button
             onClick={() => setShowExport(true)}
             className="bg-blue-600 text-white px-4 py-2 rounded cursor-pointer"

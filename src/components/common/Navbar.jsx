@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import {
   FiSearch,
-  FiBell,
+  FiKey,
   FiUser,
   FiLogOut,
   FiChevronDown,
@@ -10,6 +10,8 @@ import { useNavigate } from "react-router-dom";
 import { logoutUser } from "../../services/authService";
 import { globalSearch } from "../../services/searchService";
 import { buildRoute } from "../../utils/routeHelper";
+import ChangePasswordModal from "../user/ChangePasswordModal";
+import { updatePassword } from "../../services/userService";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -18,7 +20,7 @@ const Navbar = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
-
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
   const dropdownRef = useRef(null);
   const searchRef = useRef(null);
 
@@ -71,6 +73,16 @@ const Navbar = () => {
         setResults([]);
       }
     }, 300);
+  };
+
+  const handleChangePassword = async (data) => {
+    try {
+      await updatePassword(data);
+      alert("Password berhasil diubah");
+      setShowPasswordModal(false);
+    } catch (error) {
+      alert(error.response?.data?.message || "Gagal mengubah password");
+    }
   };
 
   return (
@@ -154,6 +166,13 @@ const Navbar = () => {
               </div>
 
               <button
+                onClick={() => setShowPasswordModal(true)}
+                className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-800 hover:bg-gray-50"
+              >
+                <FiKey />
+                Change Password
+              </button>
+              <button
                 onClick={handleLogout}
                 className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-600 hover:bg-red-50"
               >
@@ -161,6 +180,12 @@ const Navbar = () => {
                 Logout
               </button>
             </div>
+          )}
+          {showPasswordModal && (
+            <ChangePasswordModal
+              onClose={() => setShowPasswordModal(false)}
+              onSubmit={handleChangePassword}
+            />
           )}
         </div>
       </div>

@@ -17,7 +17,7 @@ const IPListTable = () => {
   const [selectedId, setSelectedId] = useState(null);
   const { data, page, totalPages, nextPage, prevPage, loading, refresh } =
     usePagination(getAll, 10);
-  const { canCreate, canUpdate, canDelete } = usePermission("osversion");
+  const { canCreate, canUpdate, canDelete } = usePermission("ipList");
   const [openModal, setOpenModal] = useState(false);
   const [selected, setSelected] = useState(null);
 

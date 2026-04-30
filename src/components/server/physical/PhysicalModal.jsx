@@ -62,17 +62,45 @@ const PhysicalModal = ({
     }));
   };
 
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+
+  //   const payload = {
+  //     ...form,
+  //     ram: `${form.ram} ${form.ramUnit}`,
+  //     storage: `${form.storage} ${form.storageUnit}`,
+  //     cpu: `${form.cpu} ${form.cpuUnit}`,
+  //   };
+
+  //   onSubmit(payload);
+  // };
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const payload = {
-      ...form,
-      ram: `${form.ram} ${form.ramUnit}`,
-      storage: `${form.storage} ${form.storageUnit}`,
-      cpu: `${form.cpu} ${form.cpuUnit}`,
-    };
+    const formData = new FormData();
 
-    onSubmit(payload);
+    formData.append("name", form.name);
+    formData.append("ip", form.ip);
+    formData.append("rackId", form.rackId);
+    formData.append("authUsername", form.authUsername);
+    formData.append("authPassword", form.authPassword);
+    formData.append("owner", form.owner);
+    formData.append("ownerContact", form.ownerContact);
+    formData.append("year", form.year);
+    formData.append("status", form.status);
+    formData.append("model", form.model);
+
+    formData.append("ram", `${form.ram} ${form.ramUnit}`);
+    formData.append("storage", `${form.storage} ${form.storageUnit}`);
+    formData.append("cpu", `${form.cpu} ${form.cpuUnit}`);
+
+    formData.append("detail", form.detail);
+
+    if (form.image) {
+      formData.append("image", form.image);
+    }
+
+    onSubmit(formData);
   };
 
   const isEdit = Boolean(initialData);

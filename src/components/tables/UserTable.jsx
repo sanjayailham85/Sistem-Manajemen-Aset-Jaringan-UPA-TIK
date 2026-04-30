@@ -21,7 +21,7 @@ const UserTable = () => {
   const [loading, setLoading] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
-
+  const currentUser = JSON.parse(localStorage.getItem("user"));
   const { canCreate, canUpdate, canDelete } = usePermission("user");
 
   const fetchUsers = async () => {
@@ -48,7 +48,7 @@ const UserTable = () => {
       notifyCreate("User");
     } catch (err) {
       console.error("Gagal menambah user", err);
-      notify(error);
+      notifyError();
     }
   };
 
@@ -61,7 +61,7 @@ const UserTable = () => {
       notifyUpdate("User");
     } catch (err) {
       console.error("Gagal update user", err);
-      notify(error);
+      notifyError();
     }
   };
 
@@ -78,7 +78,7 @@ const UserTable = () => {
       notifyDelete("User");
     } catch (err) {
       console.error("Gagal menghapus user", err);
-      notify(error);
+      notifyError();
     }
   };
 
@@ -140,7 +140,16 @@ const UserTable = () => {
                     {canDelete && (
                       <button
                         onClick={() => handleDeleteUser(user.id)}
-                        className="text-red-600 hover:text-red-800"
+                        disabled={
+                          JSON.parse(localStorage.getItem("user"))?.id ===
+                          user.id
+                        }
+                        className={`${
+                          JSON.parse(localStorage.getItem("user"))?.id ===
+                          user.id
+                            ? "text-gray-400 cursor-not-allowed"
+                            : "text-red-600 hover:text-red-800"
+                        }`}
                         title="Hapus"
                       >
                         <FiTrash2 size={18} />

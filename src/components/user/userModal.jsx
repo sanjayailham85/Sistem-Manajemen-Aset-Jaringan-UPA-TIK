@@ -5,7 +5,7 @@ const UserModal = ({ onClose, onSubmit, initialData }) => {
     username: "",
     name: "",
     password: "",
-    role: "guest",
+    role: "networking",
   };
 
   const [form, setForm] = useState(emptyForm);
@@ -16,7 +16,7 @@ const UserModal = ({ onClose, onSubmit, initialData }) => {
         username: initialData.username || "",
         name: initialData.name || "",
         password: "", // jangan isi password lama
-        role: initialData.role || "guest",
+        role: initialData.role || "networking",
       });
     } else {
       setForm(emptyForm);
@@ -97,10 +97,11 @@ const UserModal = ({ onClose, onSubmit, initialData }) => {
               onChange={handleChange}
               className="input font-medium"
             >
-              <option value="guest">Guest</option>
-              <option value="operator">Operator</option>
-              <option value="admin">Admin</option>
               <option value="superadmin">Superadmin</option>
+              <option value="admin">Admin</option>
+              <option value="networking">Networking</option>
+              <option value="sysadmin">SysAdmin</option>
+              <option value="operator">Operator</option>
             </select>
           </div>
 

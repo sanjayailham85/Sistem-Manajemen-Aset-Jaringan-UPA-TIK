@@ -36,13 +36,6 @@ const PhysicalServerDetail = () => {
     );
   }
 
-  const imageUrl = `http://localhost:5000/uploads/${physical?.image}`;
-
-  const statusColor =
-    physical?.status === "active"
-      ? "bg-green-100 text-green-700"
-      : "bg-red-100 text-red-700";
-
   return (
     <div className="space-y-6 p-6">
       <div>
@@ -70,7 +63,11 @@ const PhysicalServerDetail = () => {
           <div>
             <div className="overflow-hidden rounded-lg border">
               <img
-                src={physical?.imageUrl}
+                src={
+                  physical?.image
+                    ? `http://localhost:5000/uploads/${physical.image}`
+                    : "/no-image.png"
+                }
                 alt={physical?.name}
                 className="w-full h-56 object-cover"
               />
