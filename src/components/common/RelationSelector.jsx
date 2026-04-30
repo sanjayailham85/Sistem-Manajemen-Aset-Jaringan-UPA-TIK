@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getRacks } from "../../services/rackService";
 import { getPhysical } from "../../services/physicalService";
-import { getHost } from "../../services/hostService";
+import { getAllHost } from "../../services/hostService";
 
 const RelationSelector = ({ level, form, setForm }) => {
   const [racks, setRacks] = useState([]);

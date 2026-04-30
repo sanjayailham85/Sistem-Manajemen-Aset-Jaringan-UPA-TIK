@@ -35,6 +35,7 @@ const PhysicalServerTable = ({ onEdit, onDelete }) => {
   const { sortedData, handleSort, sortConfig } = useTableSort(data);
   const [showExport, setShowExport] = useState(false);
   const [showImport, setShowImport] = useState(false);
+  const [selected, setSelected] = useState([]);
 
   const handleAddPhysical = async (data) => {
     try {

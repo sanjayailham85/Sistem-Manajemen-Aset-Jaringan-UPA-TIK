@@ -8,6 +8,7 @@ import {
 } from "../../services/osVersionService";
 import usePagination from "../../utils/usePagination";
 import usePermission from "../../utils/usePermission";
+import OsVersionModal from "../../components/option/OsVersionModal";
 import {
   notifyCreate,
   notifyUpdate,
@@ -22,104 +23,67 @@ const OsVersionTable = () => {
   const { data, page, totalPages, nextPage, prevPage, loading, refresh } =
     usePagination(getAllOsVersion, 10);
   const { canCreate, canUpdate, canDelete } = usePermission("osversion");
+  const [openModal, setOpenModal] = useState(false);
+  const [selected, setSelected] = useState(null);
 
   const [form, setForm] = useState({
     name: "",
     version: "",
   });
 
-  const resetForm = () => {
-    setForm({
-      name: "",
-      version: "",
-    });
-    setSelectedId(null);
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
+  const handleAdd = async (data) => {
     try {
-      if (selectedId) {
-        await updateOsVersion(selectedId, form);
-        notifyUpdate("OS");
-      } else {
-        await createOsVersion(form);
-        notifyCreate("OS");
-      }
-
-      refresh();
-      resetForm();
+      await createOsVersion(data);
+      await refresh();
+      setOpenModal(false);
+      notifyCreate("OS Version");
     } catch (err) {
-      console.error("Failed to save OS Version", err);
-      notifyError();
+      console.error(err);
+      notifyError("Gagal menambah OS Version");
     }
   };
 
-  const handleEdit = (item) => {
-    setSelectedId(item.id);
-    setForm({
-      name: item.name,
-      version: item.version,
-    });
+  const handleUpdate = async (data) => {
+    try {
+      await updateOsVersion(selected.id, data);
+      await refresh();
+      setSelected(null);
+      setOpenModal(false);
+      notifyUpdate("OS Version");
+    } catch (err) {
+      console.error(err);
+      notifyError("Gagal update OS Version");
+    }
   };
 
   const handleDelete = async (id) => {
-    const confirmDelete = window.confirm(
-      "Apakah yakin ingin menghapus OS Version ini?"
-    );
-
-    if (!confirmDelete) return;
-
     try {
+      if (!confirm("Hapus OS Version ini?")) return;
+
       await deleteOsVersion(id);
-      refresh();
-      notifyDelete("OS");
+      await refresh();
+      notifyDelete("OS Version");
     } catch (err) {
-      console.error("Failed to delete OS Version", err);
-      notifyError();
+      console.error(err);
+      notifyError("Gagal menghapus OS Version");
     }
   };
 
   return (
     <div className="bg-white rounded shadow overflow-x-auto">
-      <form onSubmit={handleSubmit} className="p-4 flex flex-wrap gap-3">
-        <input
-          type="text"
-          placeholder="OS Name"
-          value={form.name}
-          onChange={(e) => setForm({ ...form, name: e.target.value })}
-          className="border px-3 py-2 rounded w-56"
-        />
-
-        <input
-          type="text"
-          placeholder="Version"
-          value={form.version}
-          onChange={(e) => setForm({ ...form, version: e.target.value })}
-          className="border px-3 py-2 rounded w-40"
-        />
-
+      <div className="flex justify-end gap-2 p-2">
         {canCreate && (
           <button
-            type="submit"
-            className="bg-blue-600 text-white px-4 py-2 rounded"
+            onClick={() => {
+              setSelected(null);
+              setOpenModal(true);
+            }}
+            className="bg-blue-600 text-white px-4 py-2 rounded cursor-pointer"
           >
-            {selectedId ? "Update" : "+ Tambah"}
+            + Tambah Access Point
           </button>
         )}
-
-        {selectedId && (
-          <button
-            type="button"
-            onClick={resetForm}
-            className="bg-gray-400 text-white px-4 py-2 rounded"
-          >
-            Cancel
-          </button>
-        )}
-      </form>
-
+      </div>
       <table className="w-full text-sm">
         <thead className="bg-gray-100">
           <tr>
@@ -143,7 +107,10 @@ const OsVersionTable = () => {
                   <div className="flex justify-center gap-3">
                     {canUpdate && (
                       <button
-                        onClick={() => handleEdit(item)}
+                        onClick={() => {
+                          setSelected(item);
+                          setOpenModal(true);
+                        }}
                         className="text-blue-600 hover:text-blue-800"
                         title="Edit"
                       >
@@ -175,6 +142,13 @@ const OsVersionTable = () => {
           )}
         </tbody>
       </table>
+      {openModal && (
+        <OsVersionModal
+          initialData={selected}
+          onClose={() => setOpenModal(false)}
+          onSubmit={selected ? handleUpdate : handleAdd}
+        />
+      )}
       <div className="flex justify-between items-center px-4 py-3 border-t bg-gray-50">
         <span className="text-sm text-gray-600">
           Page {page} of {totalPages}

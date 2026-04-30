@@ -70,7 +70,7 @@ const PhysicalServerDetail = () => {
           <div>
             <div className="overflow-hidden rounded-lg border">
               <img
-                src={imageUrl}
+                src={physical?.imageUrl}
                 alt={physical?.name}
                 className="w-full h-56 object-cover"
               />

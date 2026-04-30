@@ -65,6 +65,11 @@ const SwitchDetail = () => {
             </div>
 
             <div>
+              <p className="text-gray-500 text-sm">Merk</p>
+              <p className="font-medium">{switchState.merk}</p>
+            </div>
+
+            <div>
               <p className="text-gray-500 text-sm">Status</p>
               <p
                 className={`inline-block mt-1 px-3 py-1 rounded-full text-sm font-medium capitalize ${

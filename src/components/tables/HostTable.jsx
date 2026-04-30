@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
-  getHost,
+  getAllHost,
   createHost,
   updateHost,
   deleteHost,
@@ -27,12 +27,12 @@ import { FiChevronUp, FiChevronDown } from "react-icons/fi";
 const HostTable = () => {
   const { rackId, physicalId } = useParams();
   const navigate = useNavigate();
-  const [hosts, setHost] = useState([]);
+  const [selected, setSelected] = useState([]);
   const [openModal, setOpenModal] = useState(false);
   const [selectedHost, setSelectedHost] = useState(null);
   const { canCreate, canUpdate, canDelete } = usePermission("host");
   const { data, page, totalPages, nextPage, prevPage, loading, refresh } =
-    usePagination(getHost, 10);
+    usePagination(getAllHost, 10);
   const { sortedData, handleSort, sortConfig } = useTableSort(data);
   const [showExport, setShowExport] = useState(false);
   const [showImport, setShowImport] = useState(false);

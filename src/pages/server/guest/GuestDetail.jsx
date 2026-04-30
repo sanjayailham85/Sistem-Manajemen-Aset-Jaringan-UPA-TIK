@@ -47,6 +47,12 @@ const GuestDetail = () => {
 
   return (
     <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold">Guest Server Detail</h1>
+        <p className="text-sm text-gray-500">
+          Informasi guest, host, dan physical server
+        </p>
+      </div>
       <Breadcrumb
         items={[
           { label: "Racks", to: "/racks" },
@@ -63,17 +69,10 @@ const GuestDetail = () => {
             to: `/racks/${rackId}/physical/${physicalId}/host/${hostId}`,
           },
           {
-            label: `Guest ${guest.instanceName}`,
+            label: `Guest ${guest.name}`,
           },
         ]}
       />
-
-      <div>
-        <h1 className="text-2xl font-bold">Guest Server Detail</h1>
-        <p className="text-sm text-gray-500">
-          Informasi guest, host, dan physical server
-        </p>
-      </div>
 
       <div className="bg-white rounded-xl shadow p-6">
         <h2 className="font-semibold text-lg mb-4 border-b pb-2">
@@ -83,7 +82,7 @@ const GuestDetail = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 text-sm">
           <div>
             <span className="text-gray-500">Instance Name</span>
-            <p className="font-medium">{guest.instanceName}</p>
+            <p className="font-medium">{guest.name}</p>
           </div>
 
           <div>

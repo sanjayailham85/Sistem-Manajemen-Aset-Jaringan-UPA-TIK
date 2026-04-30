@@ -11,9 +11,13 @@ const getAuthHeader = () => {
   };
 };
 
-export const getAllAccessPoint = async (page = 1, limit = 10) => {
+export const getAllAccessPoint = async (
+  page = 1,
+  limit = 10,
+  controllerId = ""
+) => {
   const response = await axios.get(
-    `${API_URL}?page=${page}&limit=${limit}`,
+    `${API_URL}?page=${page}&limit=${limit}&controllerId=${controllerId}`,
     getAuthHeader()
   );
 

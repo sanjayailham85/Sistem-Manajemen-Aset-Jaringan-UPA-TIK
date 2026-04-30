@@ -21,9 +21,11 @@ const PhysicalModal = ({
     year: "",
     status: "Active",
     model: "",
-    cpu: "",
-    ram: "",
+    ramUnit: "GB",
     storage: "",
+    storageUnit: "GB",
+    cpu: "",
+    cpuUnit: "GHz",
     detail: "",
     image: null,
     imagePreview: null,
@@ -62,7 +64,15 @@ const PhysicalModal = ({
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(form);
+
+    const payload = {
+      ...form,
+      ram: `${form.ram} ${form.ramUnit}`,
+      storage: `${form.storage} ${form.storageUnit}`,
+      cpu: `${form.cpu} ${form.cpuUnit}`,
+    };
+
+    onSubmit(payload);
   };
 
   const isEdit = Boolean(initialData);
@@ -166,27 +176,63 @@ const PhysicalModal = ({
                 placeholder="Model Server"
                 className="input"
               />
-              <input
-                name="cpu"
-                value={form.cpu}
-                onChange={handleChange}
-                placeholder="CPU"
-                className="input"
-              />
-              <input
-                name="ram"
-                value={form.ram}
-                onChange={handleChange}
-                placeholder="RAM"
-                className="input"
-              />
-              <input
-                name="storage"
-                value={form.storage}
-                onChange={handleChange}
-                placeholder="Storage"
-                className="input"
-              />
+
+              <div className="flex gap-2">
+                <input
+                  name="ram"
+                  value={form.ram}
+                  onChange={handleChange}
+                  placeholder="RAM"
+                  className="input flex-1"
+                />
+
+                <select
+                  name="ramUnit"
+                  value={form.ramUnit}
+                  onChange={handleChange}
+                  className="input !w-16 flex-none"
+                >
+                  <option value="GB">GB</option>
+                  <option value="TB">TB</option>
+                </select>
+              </div>
+              <div className="flex gap-2">
+                <input
+                  name="cpu"
+                  value={form.cpu}
+                  onChange={handleChange}
+                  placeholder="CPU"
+                  className="input flex-1"
+                />
+
+                <select
+                  name="cpuUnit"
+                  value={form.cpuUnit}
+                  onChange={handleChange}
+                  className="input !w-16 flex-none"
+                >
+                  <option value="GHz">GHz</option>
+                </select>
+              </div>
+              <div className="flex gap-2">
+                <input
+                  name="storage"
+                  value={form.storage}
+                  onChange={handleChange}
+                  placeholder="STORAGE"
+                  className="input flex-1"
+                />
+
+                <select
+                  name="storageUnit"
+                  value={form.storageUnit}
+                  onChange={handleChange}
+                  className="input !w-16 flex-none"
+                >
+                  <option value="GB">GB</option>
+                  <option value="TB">TB</option>
+                </select>
+              </div>
             </div>
           </div>
 

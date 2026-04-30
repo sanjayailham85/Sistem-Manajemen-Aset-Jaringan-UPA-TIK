@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { getAllLocation } from "../../../services/locationService";
 
 const SwitchModal = ({ onClose, onSubmit, initialData }) => {
   const emptyForm = {
     name: "",
     ip: "",
-    type: "",
+    type: "Manage",
     location: "",
     locationDetail: "",
     status: "Active",
@@ -13,12 +14,24 @@ const SwitchModal = ({ onClose, onSubmit, initialData }) => {
   };
 
   const [form, setForm] = useState(emptyForm);
+  const [location, setLocation] = useState([]);
 
   useEffect(() => {
     if (initialData) {
       setForm({ ...emptyForm, ...initialData });
     }
   }, [initialData]);
+  useEffect(() => {
+    fetchItems();
+  }, []);
+  const fetchItems = async () => {
+    try {
+      const resLocation = await getAllLocation();
+      setLocation(resLocation.data);
+    } catch (error) {
+      console.error("Failed to fetch item", error);
+    }
+  };
 
   const handleChange = (e) => {
     setForm((prev) => ({
@@ -60,22 +73,29 @@ const SwitchModal = ({ onClose, onSubmit, initialData }) => {
             required
           />
 
-          <input
+          <select
             name="type"
             value={form.type}
             onChange={handleChange}
-            placeholder="Type"
-            className="input"
-            required
-          />
-          <input
+            className="input font-medium"
+          >
+            <option value="Manage">Manage</option>
+            <option value="Unmanaged">Unmanaged</option>
+          </select>
+          <select
             name="location"
             value={form.location}
             onChange={handleChange}
-            placeholder="Location"
             className="input"
             required
-          />
+          >
+            <option value="">Pilih Lokasi</option>
+            {location.map((item) => (
+              <option key={item.id} value={item.name}>
+                {item.name}
+              </option>
+            ))}
+          </select>
           <input
             name="locationDetail"
             value={form.locationDetail}

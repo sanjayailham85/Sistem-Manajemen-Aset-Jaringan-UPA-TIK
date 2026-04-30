@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 import {
   getAllAccessPoint,
@@ -14,6 +14,7 @@ import { FiEdit, FiTrash2, FiChevronUp, FiChevronDown } from "react-icons/fi";
 import usePermission from "../../utils/usePermission";
 import useTableSort from "../../utils/useTableSort";
 import usePagination from "../../utils/usePagination";
+import { getById } from "../../services/accessPointControllerService";
 
 import {
   notifyCreate,
@@ -27,13 +28,34 @@ import { exportData } from "../../services/exportService";
 const AccessPointTable = () => {
   const navigate = useNavigate();
   const { canCreate, canUpdate, canDelete } = usePermission("accessPoint");
+  const { controllerId } = useParams();
+  const [controllerMerk, setControllerMerk] = useState("");
+  const fetchAccessPointByController = React.useCallback(
+    (page, limit) => getAllAccessPoint(page, limit, controllerId),
+    [controllerId]
+  );
   const { data, page, totalPages, nextPage, prevPage, refresh, loading } =
-    usePagination(getAllAccessPoint, 10);
+    usePagination(fetchAccessPointByController, 10);
   const { sortedData, handleSort, sortConfig } = useTableSort(data);
   const [openModal, setOpenModal] = useState(false);
   const [selected, setSelected] = useState(null);
   const [showExport, setShowExport] = useState(false);
   const [showImport, setShowImport] = useState(false);
+
+  useEffect(() => {
+    const fetchController = async () => {
+      try {
+        const res = await getById(controllerId);
+        setControllerMerk(res.data?.merk || "");
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    if (controllerId) {
+      fetchController();
+    }
+  }, [controllerId]);
 
   const handleAdd = async (data) => {
     try {
@@ -163,6 +185,12 @@ const AccessPointTable = () => {
             >
               Type {renderSortIcon("type")}
             </th>
+            <th
+              onClick={() => handleSort("merk")}
+              className="px-4 py-2 text-left cursor-pointer"
+            >
+              Merk {renderSortIcon("merk")}
+            </th>
 
             <th
               onClick={() => handleSort("location")}
@@ -199,6 +227,7 @@ const AccessPointTable = () => {
                 <td className="px-4 py-2">{item.name}</td>
                 <td className="px-4 py-2">{item.ip}</td>
                 <td className="px-4 py-2">{item.type}</td>
+                <td className="px-4 py-2">{item.merk}</td>
                 <td className="px-4 py-2">{item.location}</td>
 
                 {(canUpdate || canDelete) && (
@@ -242,9 +271,11 @@ const AccessPointTable = () => {
 
       {openModal && (
         <AccessPointModal
+          controllerId={controllerId}
           initialData={selected}
           onClose={() => setOpenModal(false)}
           onSubmit={selected ? handleUpdate : handleAdd}
+          selectedMerk={selected?.merk || controllerMerk?.name || ""}
         />
       )}
 

@@ -1,28 +1,65 @@
 import React, { useEffect, useState } from "react";
 import RelationSelector from "../../common/RelationSelector";
+import { getAllMerk } from "../../../services/merkService";
+import { getAllLocation } from "../../../services/locationService";
 
-const AccessPointModal = ({ onClose, onSubmit, initialData }) => {
+const AccessPointModal = ({
+  onClose,
+  onSubmit,
+  initialData,
+  controllerId,
+  selectedMerk,
+}) => {
   const emptyForm = {
     name: "",
     ip: "",
     tahunAnggaran: "",
     controllerAP: "",
+    controllerId: controllerId,
     type: "",
     location: "",
     locationDetail: "",
     code: "",
+    merk: "",
   };
 
   const [form, setForm] = useState(emptyForm);
+  const [merk, setMerk] = useState([]);
+  const [location, setLocation] = useState([]);
 
   useEffect(() => {
     if (initialData) {
       setForm({
-        ...emptyForm,
         ...initialData,
+        controllerId,
+        merk: initialData.merk || selectedMerk || "",
       });
+    } else {
+      setForm((prev) => ({
+        ...prev,
+        controllerId,
+        merk: selectedMerk || "",
+      }));
     }
-  }, [initialData]);
+  }, [initialData, selectedMerk, controllerId]);
+
+  useEffect(() => {
+    fetchItems();
+  }, []);
+
+  const fetchItems = async () => {
+    try {
+      const resMerk = await getAllMerk();
+      const resLocation = await getAllLocation();
+      const filteredMerk = resMerk.data.filter(
+        (item) => item.category === "Access Point"
+      );
+      setMerk(filteredMerk);
+      setLocation(resLocation.data);
+    } catch (error) {
+      console.error("Failed to fetch item", error);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -31,7 +68,12 @@ const AccessPointModal = ({ onClose, onSubmit, initialData }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(form);
+
+    onSubmit({
+      ...form,
+      controllerId,
+      merk: form.merk,
+    });
   };
 
   return (
@@ -105,14 +147,21 @@ const AccessPointModal = ({ onClose, onSubmit, initialData }) => {
               className="input"
               required
             />
-            <input
+
+            <select
               name="location"
               value={form.location}
               onChange={handleChange}
-              placeholder="Location"
               className="input"
               required
-            />
+            >
+              <option value="">Pilih Lokasi</option>
+              {location.map((item) => (
+                <option key={item.id} value={item.name}>
+                  {item.name}
+                </option>
+              ))}
+            </select>
             <input
               name="locationDetail"
               value={form.locationDetail}

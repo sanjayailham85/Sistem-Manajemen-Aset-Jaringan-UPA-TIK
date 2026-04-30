@@ -63,6 +63,10 @@ const CCTVDetail = () => {
               <p className="text-gray-500 text-sm">Type</p>
               <p className="font-medium">{cctv.type}</p>
             </div>
+            <div>
+              <p className="text-gray-500 text-sm">Merk</p>
+              <p className="font-medium">{cctv.merk}</p>
+            </div>
 
             <div>
               <p className="text-gray-500 text-sm">Status</p>

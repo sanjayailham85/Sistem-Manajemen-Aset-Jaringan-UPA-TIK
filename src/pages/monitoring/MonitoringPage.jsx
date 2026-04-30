@@ -11,13 +11,26 @@ const MonitoringPage = () => {
   const [devices, setDevices] = useState([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
+  const subCategoryOrder = [
+    "physical",
+    "host",
+    "router",
+    "switch",
+    "accessPoint",
+    "cctv",
+  ];
+
+  const [subIndex, setSubIndex] = useState(0);
+  const handleSubCategoryClick = () => {
+    setSubIndex((prev) => (prev + 1) % subCategoryOrder.length);
+  };
 
   useEffect(() => {
     const fetchInitial = async () => {
       try {
         setLoading(true);
         const res = await getAllDevicesMonitoring();
-        setDevices(res.data || []);
+        setDevices(res.data || res || []);
       } catch (err) {
         console.error(err);
       } finally {
@@ -29,32 +42,55 @@ const MonitoringPage = () => {
   }, []);
 
   useEffect(() => {
-    socket.on("monitoring:update", (updates) => {
-      setDevices((prevDevices) =>
-        prevDevices.map((device) => {
+    const handleUpdate = (updates) => {
+      setDevices((prev) =>
+        prev.map((device) => {
           const updated = updates.find((u) => u.id === device.id);
           return updated ? { ...device, ...updated } : device;
         })
       );
-    });
+    };
+
+    const handleInit = (data) => {
+      setDevices(data || []);
+    };
+
+    socket.on("monitoring:update", handleUpdate);
+    socket.on("monitoring:init", handleInit);
 
     return () => {
-      socket.off("monitoring:update");
+      socket.off("monitoring:update", handleUpdate);
+      socket.off("monitoring:init", handleInit);
     };
   }, []);
 
   const filteredDevices = useMemo(() => {
     if (!devices) return [];
-    if (activeTab === "all") return devices;
-    return devices.filter((d) => d.category === activeTab);
-  }, [devices, activeTab]);
+
+    let data =
+      activeTab === "all"
+        ? devices
+        : devices.filter((d) => (d.category || "").toLowerCase() === activeTab);
+
+    const currentSub = subCategoryOrder[subIndex];
+
+    return [...data].sort((a, b) => {
+      const aIndex = subCategoryOrder.indexOf(a.subcategory);
+      const bIndex = subCategoryOrder.indexOf(b.subcategory);
+
+      // kalau sama atau tidak ada, tetap
+      if (a.subcategory === currentSub) return -1;
+      if (b.subcategory === currentSub) return 1;
+
+      return aIndex - bIndex;
+    });
+  }, [devices, activeTab, subIndex]);
 
   const totalPages = Math.ceil(filteredDevices.length / ITEMS_PER_PAGE);
 
   const paginatedDevices = useMemo(() => {
     const start = (page - 1) * ITEMS_PER_PAGE;
-    const end = start + ITEMS_PER_PAGE;
-    return filteredDevices.slice(start, end);
+    return filteredDevices.slice(start, start + ITEMS_PER_PAGE);
   }, [filteredDevices, page]);
 
   const summary = useMemo(() => {
@@ -93,9 +129,13 @@ const MonitoringPage = () => {
 
       <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
 
-      <DeviceTable filteredDevices={paginatedDevices} loading={loading} />
+      <DeviceTable
+        filteredDevices={paginatedDevices}
+        loading={loading}
+        onSubCategoryClick={handleSubCategoryClick}
+      />
 
-      <div className="flex justify-between items-center px-4 py-3  bg-white rounded shadow">
+      <div className="flex justify-between items-center px-4 py-3 bg-white rounded shadow">
         <span className="text-sm text-gray-600">
           Page {page} of {totalPages || 1}
         </span>

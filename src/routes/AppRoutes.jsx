@@ -11,37 +11,38 @@ import Register from "../pages/Register";
 import RackList from "../pages/server/rack/RackList";
 import RackDetail from "../pages/server/rack/RackDetail";
 
-// Physical Server
 import PhysicalServerList from "../pages/server/physical/PhysicalServerList";
 import PhysicalServerDetail from "../pages/server/physical/PhysicalServerDetail";
 
-// Host
 import HostList from "../pages/server/host/HostList";
 import HostDetail from "../pages/server/host/HostDetail";
 
-// Guest
 import GuestList from "../pages/server/guest/GuestList";
 import GuestDetail from "../pages/server/guest/GuestDetail";
 
 import AccessPointList from "../pages/digital/accessPoint/AccessPointList";
 import AccessPointDetail from "../pages/digital/accessPoint/AccessPointDetail";
 
-// Switch
 import SwitchList from "../pages/digital/switch/SwitchList";
 import SwitchDetail from "../pages/digital/switch/SwitchDetail";
 
-// Router
 import RouterList from "../pages/digital/router/RouterList";
 import RouterDetail from "../pages/digital/router/RouterDetail";
 
-//cctv
 import CCTVList from "../pages/digital/cctv/CCTVList";
 import CCTVDetail from "../pages/digital/cctv/CCTVDetail";
 
 import ActivityLogsList from "../pages/activitylogs/ActivityLogsList";
 import Users from "../pages/Users";
 import OsVersion from "../pages/option/OsVersion";
+import AccessPointMerk from "../pages/digital/accessPoint/AccessPointMerk";
+import AccessPointController from "../pages/digital/accessPoint/AccessPointController";
+import CCTVMerk from "../pages/digital/cctv/CCTVMerk";
+import CCTVController from "../pages/digital/cctv/CCTVController";
+import Merk from "../pages/option/Merk";
+import Location from "../pages/option/Location";
 import MonitoringPage from "../pages/monitoring/MonitoringPage";
+import IPList from "../pages/IPList";
 import { Toaster } from "react-hot-toast";
 
 const Layout = ({ children }) => (
@@ -215,6 +216,14 @@ const AppRoutes = () => {
         }
       />
       <Route
+        path="/digitalAsset/ipList"
+        element={
+          <PrivateRoute>
+            <IPList />
+          </PrivateRoute>
+        }
+      />
+      <Route
         path="/monitoring"
         element={
           <PrivateRoute>
@@ -243,6 +252,71 @@ const AppRoutes = () => {
         element={
           <PrivateRoute>
             <OsVersion />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/option/merk"
+        element={
+          <PrivateRoute>
+            <Merk />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/accessPointMerk"
+        element={
+          <PrivateRoute>
+            <AccessPointMerk />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/accessPointMerk/:merkId"
+        element={
+          <PrivateRoute>
+            <AccessPointController />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/accessPointMerk/:merkId/controller/:controllerId"
+        element={
+          <PrivateRoute>
+            <AccessPointList />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/cctvMerk"
+        element={
+          <PrivateRoute>
+            <CCTVMerk />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/cctvMerk/:merkId"
+        element={
+          <PrivateRoute>
+            <CCTVController />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/cctvMerk/:merkId/controller/:controllerId"
+        element={
+          <PrivateRoute>
+            <CCTVList />
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/option/location"
+        element={
+          <PrivateRoute>
+            <Location />
           </PrivateRoute>
         }
       />

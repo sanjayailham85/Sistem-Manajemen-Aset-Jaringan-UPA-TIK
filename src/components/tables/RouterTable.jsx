@@ -23,7 +23,6 @@ import { exportData } from "../../services/exportService";
 import ExportModal from "../../components/ExportModal";
 import ImportModal from "../../components/ImportModal";
 
-
 const RouterTable = () => {
   const [items, setItems] = useState([]);
   const [openModal, setOpenModal] = useState(false);
@@ -168,6 +167,12 @@ const RouterTable = () => {
               Type {renderSortIcon("type")}
             </th>
             <th
+              onClick={() => handleSort("merk")}
+              className=" px-4 py-2 text-left cursor-pointer select-none"
+            >
+              Merk {renderSortIcon("merk")}
+            </th>
+            <th
               onClick={() => handleSort("status")}
               className=" px-4 py-2 text-left cursor-pointer select-none"
             >
@@ -201,6 +206,7 @@ const RouterTable = () => {
                 <td className="px-4 py-2">{item.name}</td>
                 <td className="px-4 py-2">{item.ip}</td>
                 <td className="px-4 py-2">{item.type}</td>
+                <td className="px-4 py-2">{item.merk}</td>
                 <td
                   className={`inline-block mt-1 px-3 py-1 rounded-full text-sm font-medium capitalize ${
                     item?.status === "Active"

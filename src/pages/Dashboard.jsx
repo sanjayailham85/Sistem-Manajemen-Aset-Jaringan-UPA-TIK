@@ -21,10 +21,12 @@ const Dashboard = () => {
     physical: 0,
     host: 0,
     guest: 0,
-    networkDevices: [],
-    securityDevices: [],
+    devices: [],
     totalDevices: 0,
     deviceStatus: [],
+    deviceStatusPerDevice: {},
+    cctvByMerk: [],
+    accessPointByMerk: [],
   });
 
   useEffect(() => {
@@ -49,11 +51,11 @@ const Dashboard = () => {
 
   const statusColors = {
     Active: "#22c55e",
-    Inactive: "#f59e0b",
-    Damaged: "#ef4444",
+    Inactive: "#ef4444",
+    Damaged: "#f59e0b",
   };
 
-  const addIcons = (devices) =>
+  const addIcons = (devices = []) =>
     devices.map((device) => {
       const iconMap = {
         Router: <FiGlobe className="text-blue-500" />,
@@ -68,8 +70,7 @@ const Dashboard = () => {
       };
     });
 
-  const networkDevices = addIcons(dashboardData.networkDevices);
-  const securityDevices = addIcons(dashboardData.securityDevices);
+  const devices = addIcons(dashboardData.devices);
 
   return (
     <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
@@ -78,16 +79,45 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card
           title="Total Rack"
-          value={dashboardData.racks}
+          total={dashboardData.racks}
           icon={<FiDatabase />}
         />
         <Card
           title="Physical Server"
-          value={dashboardData.physical}
+          total={dashboardData.physical}
+          status={
+            dashboardData.deviceStatusPerDevice?.physicalServer || {
+              Active: 0,
+              Inactive: 0,
+              Damaged: 0,
+            }
+          }
           icon={<FiServer />}
         />
-        <Card title="Host" value={dashboardData.host} icon={<FiGrid />} />
-        <Card title="Guest" value={dashboardData.guest} icon={<FiUser />} />
+        <Card
+          title="Host"
+          icon={<FiGrid />}
+          total={dashboardData.host}
+          status={
+            dashboardData.deviceStatusPerDevice?.host || {
+              Active: 0,
+              Inactive: 0,
+              Damaged: 0,
+            }
+          }
+        />
+        <Card
+          title="Guest"
+          total={dashboardData.guest}
+          status={
+            dashboardData.deviceStatusPerDevice?.guest || {
+              Active: 0,
+              Inactive: 0,
+              Damaged: 0,
+            }
+          }
+          icon={<FiUser />}
+        />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -119,26 +149,89 @@ const Dashboard = () => {
 
           <div className="flex justify-around mt-4">
             <StatusDot color="bg-green-500" label="Active" />
-            <StatusDot color="bg-yellow-500" label="Inactive" />
-            <StatusDot color="bg-red-500" label="Damaged" />
+            <StatusDot color="bg-red-500" label="Inactive" />
+            <StatusDot color="bg-yellow-500" label="Damaged" />
           </div>
         </div>
-
-        <div className="lg:col-span-2 bg-white p-4 rounded-xl shadow">
+        <div className="lg:col-span-2 bg-white p-4 rounded-xl shadow w-full">
           <h2 className="font-medium mb-4">Device Summary</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+            {devices.map((device, index) => {
+              const status = dashboardData.deviceStatusPerDevice?.[
+                device.name.toLowerCase().replace(" ", "")
+              ] || {
+                Active: 0,
+                Inactive: 0,
+                Damaged: 0,
+              };
 
-          <div className="grid md:grid-cols-2 gap-6">
-            <DeviceSection title="Network Devices" items={networkDevices} />
-            <DeviceSection title="Security Devices" items={securityDevices} />
+              return (
+                <div key={index} className="p-4 border rounded-lg space-y-3">
+                  {/* HEADER */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="text-xl">{device.icon}</div>
+                      <span className="font-medium">{device.name}</span>
+                    </div>
+
+                    <span className="text-sm bg-gray-100 px-2 py-1 rounded-full">
+                      {device.value}
+                    </span>
+                  </div>
+
+                  {/* STATUS COMPACT */}
+                  <div className="grid grid-cols-3 gap-2 text-xs">
+                    <div className="text-center bg-green-50 rounded py-1">
+                      <div className="font-semibold text-green-600">
+                        {showValue(status.Active)}
+                      </div>
+                      <div className="text-green-600">Active</div>
+                    </div>
+
+                    <div className="text-center bg-yellow-50 rounded py-1">
+                      <div className="font-semibold text-red-600">
+                        {showValue(status.Inactive)}
+                      </div>
+                      <div className="text-red-600">Inactive</div>
+                    </div>
+
+                    <div className="text-center bg-red-50 rounded py-1">
+                      <div className="font-semibold text-yellow-600">
+                        {showValue(status.Damaged)}
+                      </div>
+                      <div className="text-yellow-600">Damaged</div>
+                    </div>
+                  </div>
+                  {/* BY MERK (KHUSUS CCTV & ACCESS POINT) */}
+                  {(device.name === "CCTV" ||
+                    device.name === "Access Point") && (
+                    <div className="mt-3 border-t pt-2 text-[11px]">
+                      <p className="text-gray-800 mb-1 ">By Merk</p>
+
+                      <div className="space-y-1">
+                        {(device.name === "CCTV"
+                          ? dashboardData.cctvByMerk
+                          : dashboardData.accessPointByMerk
+                        )?.map((item, i) => (
+                          <div key={i} className="flex justify-between">
+                            <span className="text-gray-600">{item.merk}</span>
+                            <span className="font-medium">
+                              {showValue(item.total)}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
-
+          {/* TOTAL */}
           <div className="mt-6 text-center bg-blue-50 py-5 rounded-xl border">
             <p className="text-sm text-gray-500">Total Devices</p>
             <p className="text-4xl font-bold text-blue-600">
               {dashboardData.totalDevices}
-            </p>
-            <p className="text-xs text-gray-400 mt-1">
-              Combined from all devices
             </p>
           </div>
         </div>
@@ -168,35 +261,40 @@ const StatusDot = ({ color, label }) => (
   </div>
 );
 
-const Card = ({ title, value, icon }) => (
-  <div className="bg-white p-4 rounded-xl shadow flex items-center justify-between">
-    <div>
-      <p className="text-sm text-gray-500">{title}</p>
-      <p className="text-xl font-semibold">{value}</p>
-    </div>
-    <div className="text-2xl text-blue-500">{icon}</div>
-  </div>
-);
+const formatNumber = (num) => {
+  if (num >= 1000) return (num / 1000).toFixed(1) + "K";
+  // if (num >= 1000000) return (num / 1000000).toFixed(1) + "M";
+  return num;
+};
+const showValue = (val) => (val === 0 ? "-" : formatNumber(val));
 
-const DeviceSection = ({ title, items }) => (
-  <div>
-    <h3 className="text-sm font-semibold text-gray-500 mb-3">{title}</h3>
-    <div className="space-y-3">
-      {items.map((item, index) => (
-        <div
-          key={index}
-          className="flex items-center justify-between p-3 border rounded-lg"
-        >
-          <div className="flex items-center gap-3">
-            <div className="text-xl">{item.icon}</div>
-            <span className="font-medium">{item.name}</span>
-          </div>
-          <span className="text-sm bg-gray-100 px-2 py-1 rounded-full">
-            {item.value}
-          </span>
-        </div>
-      ))}
+const Card = ({ title, total, icon, status }) => (
+  <div className="bg-white p-4 rounded-xl shadow">
+    {/* HEADER */}
+    <div className="flex items-center gap-3">
+      <div className="flex-1">
+        <p className="text-sm text-gray-500">{title}</p>
+        <p className="text-2xl font-semibold">{total}</p>
+      </div>
+      <div className="text-2xl text-blue-500">{icon}</div>
     </div>
+
+    {/* STATUS MINI (COMPACT BAR) */}
+    {status && (
+      <div className="mt-4 flex gap-2 text-[11px]">
+        <span className="flex items-center gap-1 text-green-600">
+          ● Active {showValue(status.Active)}
+        </span>
+
+        <span className="flex items-center gap-1 text-red-600">
+          ● Inactive {showValue(status.Inactive)}
+        </span>
+
+        <span className="flex items-center gap-1 text-yellow-600">
+          ● Damaged {showValue(status.Damaged)}
+        </span>
+      </div>
+    )}
   </div>
 );
 

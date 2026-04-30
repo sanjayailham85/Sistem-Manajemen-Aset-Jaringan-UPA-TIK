@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
+import { getAllMerk } from "../../../services/merkService";
+import { getAllLocation } from "../../../services/locationService";
 
 const RouterModal = ({ onClose, onSubmit, initialData }) => {
   const emptyForm = {
     name: "",
     ip: "",
     type: "",
+    merk: "Mikrotik",
     location: "",
     locationDetail: "",
     status: "Active",
@@ -13,6 +16,8 @@ const RouterModal = ({ onClose, onSubmit, initialData }) => {
   };
 
   const [form, setForm] = useState(emptyForm);
+  const [merk, setMerk] = useState([]);
+  const [location, setLocation] = useState([]);
 
   useEffect(() => {
     if (initialData) {
@@ -22,6 +27,24 @@ const RouterModal = ({ onClose, onSubmit, initialData }) => {
       });
     }
   }, [initialData]);
+
+  useEffect(() => {
+    fetchItems();
+  }, []);
+
+  const fetchItems = async () => {
+    try {
+      const resMerk = await getAllMerk();
+      const resLocation = await getAllLocation();
+      const filteredMerk = resMerk.data.filter(
+        (item) => item.category === "Router"
+      );
+      setMerk(filteredMerk);
+      setLocation(resLocation.data);
+    } catch (error) {
+      console.error("Failed to fetch item", error);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -75,14 +98,34 @@ const RouterModal = ({ onClose, onSubmit, initialData }) => {
             className="input"
             required
           />
-          <input
+          <select
+            name="merk"
+            value={form.merk}
+            onChange={handleChange}
+            className="input"
+            required
+          >
+            <option value="">Pilih Merk</option>
+            {merk.map((item) => (
+              <option key={item.id} value={item.name}>
+                {item.name}
+              </option>
+            ))}
+          </select>
+          <select
             name="location"
             value={form.location}
             onChange={handleChange}
-            placeholder="Location"
             className="input"
             required
-          />
+          >
+            <option value="">Pilih Lokasi</option>
+            {location.map((item) => (
+              <option key={item.id} value={item.name}>
+                {item.name}
+              </option>
+            ))}
+          </select>
           <input
             name="locationDetail"
             value={form.locationDetail}

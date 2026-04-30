@@ -76,6 +76,10 @@ const AccessPointDetail = () => {
               <p className="font-medium">{accessPoint.controllerAP}</p>
             </div>
             <div>
+              <p className="text-gray-500 text-sm">Merk</p>
+              <p className="font-medium">{accessPoint.merk}</p>
+            </div>
+            <div>
               <p className="text-gray-500 text-sm">Code</p>
               <p className="font-medium">{accessPoint.code}</p>
             </div>

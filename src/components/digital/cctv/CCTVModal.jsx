@@ -1,29 +1,80 @@
 import React, { useEffect, useState } from "react";
+import { getAllMerk } from "../../../services/merkService";
+import { getAllLocation } from "../../../services/locationService";
 
-const CCTVModal = ({ onClose, onSubmit, initialData }) => {
-  const emptyForm = {
+const CCTVModal = ({
+  onClose,
+  onSubmit,
+  initialData,
+  controllerId,
+  selectedMerk,
+}) => {
+  const [form, setForm] = useState({
     name: "",
     ip: "",
-    type: "",
+    type: "Indoor",
     location: "",
     locationDetail: "",
+    controllerId,
     status: "Active",
     detail: "",
     code: "",
-  };
-
-  const [form, setForm] = useState(emptyForm);
+    merk: "",
+  });
+  const [merkList, setMerkList] = useState([]);
+  const [location, setLocation] = useState([]);
 
   useEffect(() => {
-    if (initialData) setForm({ ...emptyForm, ...initialData });
-  }, [initialData]);
+    if (initialData) {
+      setForm({
+        ...initialData,
+        controllerId,
+        merk: initialData.merk || selectedMerk || "",
+      });
+    } else {
+      setForm((prev) => ({
+        ...prev,
+        controllerId,
+        merk: selectedMerk || "",
+      }));
+    }
+  }, [initialData, selectedMerk, controllerId]);
 
-  const handleChange = (e) =>
-    setForm((p) => ({ ...p, [e.target.name]: e.target.value }));
+  useEffect(() => {
+    fetchItems();
+  }, []);
+
+  const fetchItems = async () => {
+    try {
+      const resMerk = await getAllMerk();
+      const resLocation = await getAllLocation();
+
+      const filteredMerk = resMerk.data.filter(
+        (item) => item.category === "CCTV"
+      );
+
+      setMerkList(filteredMerk);
+      setLocation(resLocation.data);
+    } catch (error) {
+      console.error("Failed to fetch item", error);
+    }
+  };
+
+  const handleChange = (e) => {
+    setForm((p) => ({
+      ...p,
+      [e.target.name]: e.target.value,
+    }));
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(form);
+
+    onSubmit({
+      ...form,
+      controllerId,
+      merk: form.merk,
+    });
   };
 
   return (
@@ -54,22 +105,31 @@ const CCTVModal = ({ onClose, onSubmit, initialData }) => {
             required
           />
 
-          <input
+          <select
             name="type"
             value={form.type}
             onChange={handleChange}
-            placeholder="Type"
             className="input"
-            required
-          />
-          <input
+          >
+            <option value="Indoor">Indoor</option>
+            <option value="Outdoor">Outdoor</option>
+          </select>
+
+          <select
             name="location"
             value={form.location}
             onChange={handleChange}
-            placeholder="Location"
             className="input"
             required
-          />
+          >
+            <option value="">Pilih Lokasi</option>
+            {location.map((item) => (
+              <option key={item.id} value={item.name}>
+                {item.name}
+              </option>
+            ))}
+          </select>
+
           <input
             name="locationDetail"
             value={form.locationDetail}
@@ -78,16 +138,18 @@ const CCTVModal = ({ onClose, onSubmit, initialData }) => {
             className="input"
             required
           />
+
           <select
             name="status"
             value={form.status}
             onChange={handleChange}
-            className="input font-medium"
+            className="input"
           >
             <option value="Active">Active</option>
             <option value="Inactive">Inactive</option>
             <option value="Damaged">Damaged</option>
           </select>
+
           <input
             name="detail"
             value={form.detail}

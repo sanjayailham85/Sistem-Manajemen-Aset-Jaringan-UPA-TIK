@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import RelationSelector from "../../common/RelationSelector";
 import { useLocation } from "react-router-dom";
+import { getAllOsVersion } from "../../../services/osVersionService";
 
 const GuestModal = ({ onClose, onSubmit, hostId, initialData }) => {
   const emptyForm = {
@@ -11,9 +12,11 @@ const GuestModal = ({ onClose, onSubmit, hostId, initialData }) => {
     authPassword: "",
     owner: "",
     domainInstance: "",
-    ram: "",
+    ramUnit: "GB",
     storage: "",
+    storageUnit: "GB",
     cpu: "",
+    cpuUnit: "GHz",
     model: "",
     osVersion: "",
     status: "Active",
@@ -22,6 +25,11 @@ const GuestModal = ({ onClose, onSubmit, hostId, initialData }) => {
 
   const [form, setForm] = useState(emptyForm);
   const location = useLocation();
+  const [osVersions, setOsVersions] = useState([]);
+
+  useEffect(() => {
+    fetchOsVersions();
+  }, []);
 
   useEffect(() => {
     if (initialData) {
@@ -32,14 +40,34 @@ const GuestModal = ({ onClose, onSubmit, hostId, initialData }) => {
     }
   }, [initialData]);
 
+  const fetchOsVersions = async () => {
+    try {
+      const res = await getAllOsVersion();
+      setOsVersions(res.data);
+    } catch (error) {
+      console.error("Failed to fetch OS versions", error);
+    }
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(form);
+
+    const payload = {
+      ...form,
+      ram: `${form.ram} ${form.ramUnit}`,
+      storage: `${form.storage} ${form.storageUnit}`,
+      cpu: `${form.cpu} ${form.cpuUnit}`,
+    };
+
+    onSubmit(payload);
   };
 
   const isEdit = Boolean(initialData);
@@ -114,7 +142,7 @@ const GuestModal = ({ onClose, onSubmit, hostId, initialData }) => {
 
           <div>
             <h3 className="text-sm font-semibold text-gray-600 mb-2">
-              Spesifikasi Server
+              Spesifikasi Guest
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <input
@@ -124,34 +152,77 @@ const GuestModal = ({ onClose, onSubmit, hostId, initialData }) => {
                 placeholder="Model Server"
                 className="input"
               />
-              <input
-                name="cpu"
-                value={form.cpu}
-                onChange={handleChange}
-                placeholder="CPU"
-                className="input"
-              />
-              <input
-                name="ram"
-                value={form.ram}
-                onChange={handleChange}
-                placeholder="RAM"
-                className="input"
-              />
-              <input
-                name="storage"
-                value={form.storage}
-                onChange={handleChange}
-                placeholder="Storage"
-                className="input"
-              />
-              <input
+
+              <div className="flex gap-2">
+                <input
+                  name="ram"
+                  value={form.ram}
+                  onChange={handleChange}
+                  placeholder="RAM"
+                  className="input flex-1"
+                />
+
+                <select
+                  name="ramUnit"
+                  value={form.ramUnit}
+                  onChange={handleChange}
+                  className="input !w-16 flex-none"
+                >
+                  <option value="GB">GB</option>
+                  <option value="TB">TB</option>
+                </select>
+              </div>
+              <div className="flex gap-2">
+                <input
+                  name="cpu"
+                  value={form.cpu}
+                  onChange={handleChange}
+                  placeholder="CPU"
+                  className="input flex-1"
+                />
+
+                <select
+                  name="cpuUnit"
+                  value={form.cpuUnit}
+                  onChange={handleChange}
+                  className="input !w-16 flex-none"
+                >
+                  <option value="GHz">GHz</option>
+                </select>
+              </div>
+              <div className="flex gap-2">
+                <input
+                  name="storage"
+                  value={form.storage}
+                  onChange={handleChange}
+                  placeholder="STORAGE"
+                  className="input flex-1"
+                />
+
+                <select
+                  name="storageUnit"
+                  value={form.storageUnit}
+                  onChange={handleChange}
+                  className="input !w-16 flex-none"
+                >
+                  <option value="GB">GB</option>
+                  <option value="TB">TB</option>
+                </select>
+              </div>
+              <select
                 name="osVersion"
                 value={form.osVersion}
                 onChange={handleChange}
-                placeholder="OS Version"
                 className="input"
-              />
+                required
+              >
+                <option value="">Pilih OS Version</option>
+                {osVersions.map((os) => (
+                  <option key={os.id} value={os.id}>
+                    {os.name} {os.version}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 

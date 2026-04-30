@@ -26,6 +26,6 @@ export const notifyImportError = () => {
 };
 export const notifyDeleteError = (module) => {
   toast.error(
-    `${module} tidak bisa dihapus karena masih ada perangkat yang terdaftar`
+    `${module} Tidak bisa dihapus karena masih ada perangkat yang terdaftar`
   );
 };

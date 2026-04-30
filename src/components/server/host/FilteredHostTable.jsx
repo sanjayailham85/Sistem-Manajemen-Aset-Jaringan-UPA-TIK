@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
-  getHost,
+  getAllHost,
   createHost,
   updateHost,
   deleteHost,
@@ -22,7 +22,7 @@ const HostTable = () => {
   const fetchHost = async () => {
     try {
       setLoading(true);
-      const res = await getHost();
+      const res = await getAllHost();
 
       setHost(res.data);
     } catch (err) {

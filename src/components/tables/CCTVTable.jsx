@@ -5,6 +5,7 @@ import {
   updateCCTV,
   deleteCCTV,
 } from "../../services/cctvService";
+import { getById } from "../../services/cctvControllerService";
 import CCTVModal from "../digital/cctv/CCTVModal";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
 import usePermission from "../../utils/usePermission";
@@ -29,11 +30,33 @@ const CCTVTable = () => {
   const [selected, setSelected] = useState(null);
   const navigate = useNavigate();
   const { canCreate, canUpdate, canDelete } = usePermission("cctv");
-  const { data, page, totalPages, nextPage, prevPage, loading, refresh } =
-    usePagination(getAllCCTV, 10);
+  const { controllerId } = useParams();
+  const [controllerMerk, setControllerMerk] = useState("");
+  const fetchCCTVByController = React.useCallback(
+    (page, limit) => getAllCCTV(page, limit, controllerId),
+    [controllerId]
+  );
+
+  const { data, page, totalPages, nextPage, prevPage, refresh, loading } =
+    usePagination(fetchCCTVByController, 10);
   const { sortedData, handleSort, sortConfig } = useTableSort(data);
   const [showExport, setShowExport] = useState(false);
   const [showImport, setShowImport] = useState(false);
+
+  useEffect(() => {
+    const fetchController = async () => {
+      try {
+        const res = await getById(controllerId);
+        setControllerMerk(res.data?.merk || "");
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    if (controllerId) {
+      fetchController();
+    }
+  }, [controllerId]);
 
   const handleAdd = async (data) => {
     try {
@@ -114,7 +137,6 @@ const CCTVTable = () => {
       </span>
     );
   };
-
   return (
     <div className="bg-white rounded shadow overflow-x-auto pb-4">
       <div className="flex justify-end gap-2 p-2">
@@ -167,6 +189,12 @@ const CCTVTable = () => {
               Type {renderSortIcon("type")}
             </th>
             <th
+              onClick={() => handleSort("merk")}
+              className=" px-4 py-2 text-left cursor-pointer select-none"
+            >
+              Merk {renderSortIcon("merk")}
+            </th>
+            <th
               onClick={() => handleSort("status")}
               className=" px-4 py-2 text-left cursor-pointer select-none"
             >
@@ -201,6 +229,7 @@ const CCTVTable = () => {
                 <td className="px-4 py-2">{item.name}</td>
                 <td className="px-4 py-2">{item.ip}</td>
                 <td className="px-4 py-2">{item.type}</td>
+                <td className="px-4 py-2">{item.merk}</td>
                 <td
                   className={`inline-block mt-1 px-3 py-1 rounded-full text-sm font-medium capitalize ${
                     item?.status === "Active"
@@ -256,9 +285,11 @@ const CCTVTable = () => {
 
       {openModal && (
         <CCTVModal
+          controllerId={controllerId}
           initialData={selected}
           onClose={() => setOpenModal(false)}
           onSubmit={selected ? handleUpdate : handleAdd}
+          selectedMerk={selected?.merk || controllerMerk?.name || ""}
         />
       )}
       <ExportModal

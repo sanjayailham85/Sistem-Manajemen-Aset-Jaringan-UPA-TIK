@@ -35,6 +35,7 @@ const GuestTable = () => {
   const { sortedData, handleSort, sortConfig } = useTableSort(data);
   const [showExport, setShowExport] = useState(false);
   const [showImport, setShowImport] = useState(false);
+  const [selected, setSelected] = useState([]);
 
   const handleAddGuest = async (data) => {
     try {
@@ -205,7 +206,9 @@ const GuestTable = () => {
               >
                 <td className="px-4 py-2">{guest.name}</td>
                 <td className="px-4 py-2">{guest.ip}</td>
-                <td className="px-4 py-2">{guest.osVersion}</td>
+                <td className="px-4 py-2">
+                  {guest.osName} {guest.osVersion}
+                </td>{" "}
                 <td
                   className={`inline-block mt-1 px-3 py-1 rounded-full text-sm font-medium capitalize ${
                     guest?.status === "Active"

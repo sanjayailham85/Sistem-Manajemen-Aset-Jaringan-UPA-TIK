@@ -5,12 +5,11 @@ import {
   FiHome,
   FiDatabase,
   FiServer,
-  FiBox,
+  FiLink,
   FiUsers,
   FiUser,
   FiSettings,
   FiGrid,
-  FiWifi,
   FiMonitor,
   FiList,
   FiRadio,
@@ -100,7 +99,7 @@ const Sidebar = () => {
           </p>
 
           <NavLink
-            to="/digital/accessPoint"
+            to="/accessPointMerk"
             className={({ isActive }) =>
               `${menuClass} ${isActive ? activeClass : ""}`
             }
@@ -133,12 +132,27 @@ const Sidebar = () => {
           </p>
 
           <NavLink
-            to="/digital/cctv"
+            to="/cctvMerk"
             className={({ isActive }) =>
               `${menuClass} ${isActive ? activeClass : ""}`
             }
           >
             <FiCamera /> CCTV
+          </NavLink>
+        </div>
+
+        <div>
+          <p className="text-xs uppercase text-slate-400 px-3 mb-2">
+            Digital Asset
+          </p>
+
+          <NavLink
+            to="/digitalAsset/ipList"
+            className={({ isActive }) =>
+              `${menuClass} ${isActive ? activeClass : ""}`
+            }
+          >
+            <FiLink /> IP List
           </NavLink>
         </div>
 
@@ -188,21 +202,21 @@ const Sidebar = () => {
                 </NavLink>
 
                 <NavLink
-                  to="/option/-"
+                  to="/option/merk"
                   className={({ isActive }) =>
                     `${menuClass} ${isActive ? activeClass : ""}`
                   }
                 >
-                  option2
+                  Merk
                 </NavLink>
 
                 <NavLink
-                  to="/option/--"
+                  to="/option/location"
                   className={({ isActive }) =>
                     `${menuClass} ${isActive ? activeClass : ""}`
                   }
                 >
-                  option3
+                  Location
                 </NavLink>
               </div>
             )}
