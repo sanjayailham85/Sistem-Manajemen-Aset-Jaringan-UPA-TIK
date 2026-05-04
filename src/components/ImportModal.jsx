@@ -22,19 +22,16 @@ const ImportModal = ({ isOpen, onClose, module, onImport }) => {
       const response = await importData(formData);
       const res = response.data;
 
-      // ❌ gagal total
       if (!res.success && (!res.inserted || res.inserted === 0)) {
         notifyError();
         return;
       }
 
-      // ⚠️ sukses sebagian
       if (!res.success && res.inserted > 0) {
-        notifyImport(); // bisa kamu ganti notif khusus kalau mau
+        notifyImport();
         console.warn("Beberapa data gagal diimport:", res.errors);
       }
 
-      // ✅ sukses penuh
       if (res.success) {
         notifyImport();
       }

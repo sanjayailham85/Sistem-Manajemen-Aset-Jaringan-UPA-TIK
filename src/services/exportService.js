@@ -1,13 +1,8 @@
 import axios from "axios";
+import API_BASE_URL from "../config/api";
 
-const API_URL = "http://localhost:5000/api/export";
-const getAuthHeader = () => {
-  return {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  };
-};
+const API_URL = `${API_BASE_URL}/export`;
+
 const token = localStorage.getItem("token");
 
 export const exportData = (payload) =>

@@ -1,4 +1,6 @@
 import axios from "axios";
+import API_BASE_URL from "../config/api";
+
 const getAuthHeader = () => {
   const token = localStorage.getItem("token");
   return {
@@ -8,8 +10,5 @@ const getAuthHeader = () => {
   };
 };
 export const globalSearch = (query) => {
-  return axios.get(
-    `http://localhost:5000/api/search?q=${query}`,
-    getAuthHeader()
-  );
+  return axios.get(`${API_BASE_URL}/search?q=${query}`, getAuthHeader());
 };
