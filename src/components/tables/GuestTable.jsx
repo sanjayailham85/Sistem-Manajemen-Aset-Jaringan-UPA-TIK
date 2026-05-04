@@ -210,7 +210,7 @@ const GuestTable = () => {
                 <td className="px-4 py-2">{guest.ip}</td>
                 <td className="px-4 py-2">
                   {guest.osName} {guest.osVersion}
-                </td>{" "}
+                </td>
                 <td
                   className={`inline-block mt-1 px-3 py-1 rounded-full text-sm font-medium capitalize ${
                     guest?.status === "Active"

@@ -20,19 +20,28 @@ const ImportModal = ({ isOpen, onClose, module, onImport }) => {
       formData.append("module", module);
 
       const response = await importData(formData);
+      const res = response.data;
 
-      if (!response.data.success) {
+      // ❌ gagal total
+      if (!res.success && (!res.inserted || res.inserted === 0)) {
         notifyError();
-
         return;
       }
 
-      await onImport?.();
+      // ⚠️ sukses sebagian
+      if (!res.success && res.inserted > 0) {
+        notifyImport(); // bisa kamu ganti notif khusus kalau mau
+        console.warn("Beberapa data gagal diimport:", res.errors);
+      }
 
+      // ✅ sukses penuh
+      if (res.success) {
+        notifyImport();
+      }
+
+      await onImport?.();
       setFile(null);
       onClose();
-
-      notifyImport();
     } catch (error) {
       console.error("Import gagal:", error);
       notifyError();

@@ -9,5 +9,4 @@ const getAuthHeader = () => {
     },
   };
 };
-export const importData = (formData) =>
-  axios.post(API_URL, formData, getAuthHeader());
+export const importData = (formData) => axios.post(API_URL, formData);

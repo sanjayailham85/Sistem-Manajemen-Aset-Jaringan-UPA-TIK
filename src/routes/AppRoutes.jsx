@@ -1,5 +1,5 @@
-import React from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 
 import Sidebar from "../components/common/Sidebar";
 import Navbar from "../components/common/Navbar";
@@ -63,12 +63,31 @@ const Layout = ({ children }) => (
 );
 
 const PrivateRoute = ({ children }) => {
-  const token = localStorage.getItem("token");
-  return token ? (
-    <Layout>{children}</Layout>
-  ) : (
-    <Navigate to="/auth/login" replace />
-  );
+  const location = useLocation();
+  const [token, setToken] = useState(localStorage.getItem("token"));
+
+  useEffect(() => {
+    const checkToken = () => {
+      const currentToken = localStorage.getItem("token");
+      setToken(currentToken);
+    };
+
+    window.addEventListener("storage", checkToken);
+
+    // fallback: cek berkala
+    const interval = setInterval(checkToken, 3000);
+
+    return () => {
+      window.removeEventListener("storage", checkToken);
+      clearInterval(interval);
+    };
+  }, []);
+
+  if (!token) {
+    return <Navigate to="/auth/login" state={{ from: location }} replace />;
+  }
+
+  return <Layout>{children}</Layout>;
 };
 
 const AppRoutes = () => {
