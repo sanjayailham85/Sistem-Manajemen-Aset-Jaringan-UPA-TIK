@@ -5,6 +5,7 @@ import Breadcrumb from "../../../components/common/Breadcrumb";
 import { getHostById } from "../../../services/hostService";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import formatDate from "../../../utils/formatDate";
+import { IMAGE_BASE_URL } from "../../../config/api";
 
 const HostDetail = () => {
   const { hostId } = useParams();
@@ -41,9 +42,6 @@ const HostDetail = () => {
 
   const rackId = physical?.rack?.id;
   const physicalId = physical?.id;
-
-  const imageUrl = `http://localhost:5000/uploads/${physical?.image}`;
-  console.log(host);
 
   const format = (date) => (date ? formatDate(date) : "-");
   return (
@@ -153,7 +151,11 @@ const HostDetail = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div>
               <img
-                src={imageUrl}
+                src={
+                  physical?.image
+                    ? `${IMAGE_BASE_URL}/${physical.image}`
+                    : "/no-image.png"
+                }
                 alt={physical?.name}
                 className="w-full h-48 object-cover rounded-lg border"
               />

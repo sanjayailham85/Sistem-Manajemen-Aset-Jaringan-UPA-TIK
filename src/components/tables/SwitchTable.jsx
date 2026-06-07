@@ -5,6 +5,7 @@ import {
   updateSwitch,
   deleteSwitch,
 } from "../../services/switchService";
+import { getById } from "../../services/switchControllerService";
 import SwitchModal from "../digital/switch/SwitchModal";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
 import usePermission from "../../utils/usePermission";
@@ -18,22 +19,43 @@ import {
   notifyDeleteError,
   notifyError,
 } from "../../utils/notifyHelper";
-import { FiChevronUp, FiChevronDown } from "react-icons/fi";
 import { exportData } from "../../services/exportService";
+import { FiChevronUp, FiChevronDown } from "react-icons/fi";
 import ExportModal from "../../components/ExportModal";
 import ImportModal from "../../components/ImportModal";
 
 const SwitchTable = () => {
-  const [items, setItems] = useState([]);
   const [openModal, setOpenModal] = useState(false);
   const [selected, setSelected] = useState(null);
   const navigate = useNavigate();
   const { canCreate, canUpdate, canDelete } = usePermission("switch");
-  const { data, page, totalPages, nextPage, prevPage, loading, refresh } =
-    usePagination(getAllSwitch, 10);
+  const { controllerId } = useParams();
+  const [controllerMerk, setControllerMerk] = useState("");
+  const fetchSwitchByController = React.useCallback(
+    (page, limit) => getAllSwitch(page, limit, controllerId),
+    [controllerId]
+  );
+
+  const { data, page, totalPages, nextPage, prevPage, refresh, loading } =
+    usePagination(fetchSwitchByController, 10);
   const { sortedData, handleSort, sortConfig } = useTableSort(data);
   const [showExport, setShowExport] = useState(false);
   const [showImport, setShowImport] = useState(false);
+
+  useEffect(() => {
+    const fetchController = async () => {
+      try {
+        const res = await getById(controllerId);
+        setControllerMerk(res.data?.merk || "");
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    if (controllerId) {
+      fetchController();
+    }
+  }, [controllerId]);
 
   const handleAdd = async (data) => {
     try {
@@ -55,19 +77,19 @@ const SwitchTable = () => {
       setOpenModal(false);
       notifyUpdate("Switch");
     } catch (err) {
-      console.error("Gagal menambah switch", err);
+      console.error("Gagal Update switch", err);
       notifyError();
     }
   };
 
   const handleDelete = async (id) => {
     try {
-      if (!confirm("Hapus switch?")) return;
+      if (!confirm("Hapus Switch?")) return;
       await deleteSwitch(id);
       refresh();
       notifyDelete("Switch");
     } catch (err) {
-      console.error("Gagal menambah switch", err);
+      console.error("Gagal menambah physical", err);
       notifyError();
     }
   };
@@ -98,7 +120,7 @@ const SwitchTable = () => {
       setShowExport(false);
     } catch (error) {
       console.error("Export gagal:", error);
-      notifyError("Gagal export Switch");
+      notifyError("Gagal export switch");
     }
   };
 
@@ -118,14 +140,14 @@ const SwitchTable = () => {
   return (
     <div className="bg-white rounded shadow overflow-x-auto pb-4">
       <div className="flex justify-end gap-2 p-2">
-        {canCreate && (
+        {/* {canCreate && (
           <button
             onClick={() => setShowImport(true)}
             className="bg-green-600 text-white px-4 py-2 rounded cursor-pointer"
           >
             Import Data
           </button>
-        )}
+        )} */}
 
         <button
           onClick={() => setShowExport(true)}
@@ -142,7 +164,7 @@ const SwitchTable = () => {
             }}
             className="bg-blue-600 text-white px-4 py-2 rounded cursor-pointer"
           >
-            + Tambah Swtich
+            + Tambah Switch
           </button>
         )}
       </div>
@@ -169,11 +191,18 @@ const SwitchTable = () => {
               Type {renderSortIcon("type")}
             </th>
             <th
+              onClick={() => handleSort("merk")}
+              className=" px-4 py-2 text-left cursor-pointer select-none"
+            >
+              Merk {renderSortIcon("merk")}
+            </th>
+            <th
               onClick={() => handleSort("status")}
               className=" px-4 py-2 text-left cursor-pointer select-none"
             >
               Status {renderSortIcon("status")}
             </th>
+
             {(canUpdate || canDelete) && (
               <th className="px-4 py-2 text-center">Aksi</th>
             )}
@@ -195,13 +224,14 @@ const SwitchTable = () => {
           ) : sortedData.length > 0 ? (
             sortedData.map((item) => (
               <tr
+                onClick={() => navigate(`/digital/switch/${item.id}`)}
                 key={item.id}
                 className="border-t hover:bg-gray-50 cursor-pointer"
-                onClick={() => navigate(`/digital/switch/${item.id}`)}
               >
                 <td className="px-4 py-2">{item.name}</td>
                 <td className="px-4 py-2">{item.ip}</td>
                 <td className="px-4 py-2">{item.type}</td>
+                <td className="px-4 py-2">{item.merk}</td>
                 <td
                   className={`inline-block mt-1 px-3 py-1 rounded-full text-sm font-medium capitalize ${
                     item?.status === "Active"
@@ -227,7 +257,7 @@ const SwitchTable = () => {
                           setSelected(item);
                           setOpenModal(true);
                         }}
-                        className="text-blue-600"
+                        className="text-blue-600 hover:text-blue-800"
                       >
                         <FiEdit size={18} />
                       </button>
@@ -235,7 +265,7 @@ const SwitchTable = () => {
                       {canDelete && (
                         <button
                           onClick={() => handleDelete(item.id)}
-                          className="text-red-600"
+                          className="text-red-600 hover:text-red-800"
                         >
                           <FiTrash2 size={18} />
                         </button>
@@ -257,9 +287,11 @@ const SwitchTable = () => {
 
       {openModal && (
         <SwitchModal
+          controllerId={controllerId}
           initialData={selected}
           onClose={() => setOpenModal(false)}
           onSubmit={selected ? handleUpdate : handleAdd}
+          selectedMerk={selected?.merk || controllerMerk?.name || ""}
         />
       )}
       <ExportModal
@@ -268,7 +300,6 @@ const SwitchTable = () => {
         onExport={handleExport}
         title="Export Switch"
       />
-
       <ImportModal
         isOpen={showImport}
         onClose={() => setShowImport(false)}

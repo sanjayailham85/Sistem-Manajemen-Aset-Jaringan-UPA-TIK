@@ -62,18 +62,6 @@ const PhysicalModal = ({
     }));
   };
 
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-
-  //   const payload = {
-  //     ...form,
-  //     ram: `${form.ram} ${form.ramUnit}`,
-  //     storage: `${form.storage} ${form.storageUnit}`,
-  //     cpu: `${form.cpu} ${form.cpuUnit}`,
-  //   };
-
-  //   onSubmit(payload);
-  // };
   const handleSubmit = (e) => {
     e.preventDefault();
 

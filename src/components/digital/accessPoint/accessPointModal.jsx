@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import RelationSelector from "../../common/RelationSelector";
 import { getAllMerk } from "../../../services/merkService";
 import { getAllLocation } from "../../../services/locationService";
+import { FiUploadCloud } from "react-icons/fi";
 
 const AccessPointModal = ({
   onClose,
@@ -17,10 +18,13 @@ const AccessPointModal = ({
     controllerAP: "",
     controllerId: controllerId,
     type: "",
+    mac: "",
     location: "",
     locationDetail: "",
     code: "",
     merk: "",
+    image: null,
+    imagePreview: null,
   };
 
   const [form, setForm] = useState(emptyForm);
@@ -33,6 +37,8 @@ const AccessPointModal = ({
         ...initialData,
         controllerId,
         merk: initialData.merk || selectedMerk || "",
+        image: null,
+        imagePreview: initialData.imageUrl || null,
       });
     } else {
       setForm((prev) => ({
@@ -66,14 +72,41 @@ const AccessPointModal = ({
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setForm((prev) => ({
+      ...prev,
+      image: file,
+      imagePreview: URL.createObjectURL(file),
+    }));
+  };
+
+  
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    onSubmit({
-      ...form,
-      controllerId,
-      merk: form.merk,
-    });
+    const formData = new FormData();
+
+    formData.append("name", form.name);
+    formData.append("ip", form.ip);
+    formData.append("tahunAnggaran", form.tahunAnggaran);
+    formData.append("controllerAP", form.controllerAP);
+    formData.append("controllerId", controllerId);
+    formData.append("type", form.type);
+    formData.append("location", form.location);
+    formData.append("locationDetail", form.locationDetail);
+    formData.append("mac", form.mac);
+    formData.append("code", form.code);
+    formData.append("merk", form.merk);
+
+    if (form.image) {
+      formData.append("image", form.image);
+    }
+
+    onSubmit(formData);
   };
 
   return (
@@ -170,6 +203,7 @@ const AccessPointModal = ({
               className="input"
               required
             />
+
             <input
               name="code"
               value={form.code}
@@ -178,6 +212,41 @@ const AccessPointModal = ({
               className="input"
               required
             />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-2">
+              Gambar Access Point
+            </label>
+
+            <label
+              htmlFor="accessPointImage"
+              className="flex flex-col items-center justify-center
+              border-2 border-dashed rounded-lg p-6 cursor-pointer
+              text-gray-500 hover:border-blue-500 hover:text-blue-600 transition"
+            >
+              <FiUploadCloud size={24} />
+              <span className="mt-2 text-sm font-medium">
+                Klik untuk upload gambar Access Point
+              </span>
+              <span className="text-xs text-gray-400">PNG, JPG, JPEG</span>
+            </label>
+
+            <input
+              id="accessPointImage"
+              name="image"
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="hidden"
+            />
+
+            {form.imagePreview && (
+              <img
+                src={form.imagePreview}
+                alt="Preview"
+                className="mt-4 h-40 object-contain rounded border"
+              />
+            )}
           </div>
 
           <div className="flex justify-end gap-3 pt-4 border-t">

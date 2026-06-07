@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getAccessPointById } from "../../../services/accessPointService";
 import formatDate from "../../../utils/formatDate";
+import { IMAGE_BASE_URL } from "../../../config/api";
 
 const AccessPointDetail = () => {
   const { id } = useParams();
@@ -24,99 +25,94 @@ const AccessPointDetail = () => {
     if (id) fetchAccessPoint();
   }, [id]);
 
-  if (loading) {
+  if (loading || !accessPoint) {
     return (
       <div className="p-6 text-gray-500 animate-pulse">
-        Loading detail access point...
+        Loading access point...
       </div>
     );
   }
 
-  if (!accessPoint) {
-    return <div className="p-6 text-red-500">Data tidak ditemukan</div>;
-  }
-
   return (
     <div className="space-y-6 p-6">
-      <div className="flex justify-between items-start">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-800">
-            Detail Access Point
-          </h1>
-          <p className="text-sm text-gray-500">
-            Informasi lengkap perangkat jaringan
-          </p>
-        </div>
+      <div>
+        <h1 className="text-2xl font-bold text-gray-800">
+          Detail Access Point
+        </h1>
+        <p className="text-sm text-gray-500">
+          Informasi lengkap perangkat jaringan
+        </p>
       </div>
 
-      <div className="bg-white rounded-xl shadow p-6 space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-4">
-            <h2 className="font-semibold text-gray-700 border-b pb-2">
-              Informasi Utama
-            </h2>
-
-            <div>
-              <p className="text-gray-500 text-sm">Nama Server</p>
-              <p className="font-medium">{accessPoint.name}</p>
-            </div>
-
-            <div>
-              <p className="text-gray-500 text-sm">Type</p>
-              <p className="font-medium">{accessPoint.type}</p>
-            </div>
-
-            <div>
-              <p className="text-gray-500 text-sm">Tahun Anggaran</p>
-              <p className="font-medium">{accessPoint.tahunAnggaran}</p>
-            </div>
-
-            <div>
-              <p className="text-gray-500 text-sm">Controller AP</p>
-              <p className="font-medium">{accessPoint.controllerAP}</p>
-            </div>
-            <div>
-              <p className="text-gray-500 text-sm">Merk</p>
-              <p className="font-medium">{accessPoint.merk}</p>
-            </div>
-            <div>
-              <p className="text-gray-500 text-sm">Code</p>
-              <p className="font-medium">{accessPoint.code}</p>
+      <div className="bg-white rounded-xl shadow p-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div>
+            <div className="overflow-hidden rounded-lg border">
+              <img
+                src={
+                  accessPoint?.image
+                    ? `http://localhost:5000/uploads/${accessPoint.image}`
+                    : "/no-image.png"
+                }
+                alt={accessPoint?.name}
+                className="w-full h-56 object-cover"
+              />
             </div>
           </div>
 
-          <div className="space-y-4">
-            <h2 className="font-semibold text-gray-700 border-b pb-2">
-              Network & Location
-            </h2>
-
+          <div className="md:col-span-2 space-y-5">
             <div>
-              <p className="text-gray-500 text-sm">IP Address</p>
-              <span className="inline-block px-2 py-1 bg-gray-100 rounded text-sm font-mono">
-                {accessPoint.ip}
-              </span>
+              <h2 className="text-xl font-semibold">{accessPoint?.name}</h2>
+              <p className="text-sm text-gray-500">{accessPoint?.ip}</p>
             </div>
 
-            <div>
-              <p className="text-gray-500 text-sm">MAC Address</p>
-              <p className="font-mono">{accessPoint.mac}</p>
-            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+              <div>
+                <p className="text-gray-500">Type</p>
+                <p className="font-medium">{accessPoint?.type}</p>
+              </div>
 
-            <div>
-              <p className="text-gray-500 text-sm">Location</p>
-              <p className="font-medium">{accessPoint.location}</p>
-            </div>
+              <div>
+                <p className="text-gray-500">Tahun Anggaran</p>
+                <p className="font-medium">{accessPoint?.tahunAnggaran}</p>
+              </div>
 
-            <div>
-              <p className="text-gray-500 text-sm">Detail Lokasi</p>
-              <p className="font-medium">{accessPoint.locationDetail}</p>
+              <div>
+                <p className="text-gray-500">Controller AP</p>
+                <p className="font-medium">{accessPoint?.controllerAP}</p>
+              </div>
+
+              <div>
+                <p className="text-gray-500">Merk</p>
+                <p className="font-medium">{accessPoint?.merk}</p>
+              </div>
+
+              <div>
+                <p className="text-gray-500">Code</p>
+                <p className="font-medium">{accessPoint?.code}</p>
+              </div>
+
+              <div>
+                <p className="text-gray-500">Location</p>
+                <p className="font-medium">{accessPoint?.location}</p>
+              </div>
+
+              <div>
+                <p className="text-gray-500">Detail Lokasi</p>
+                <p className="font-medium">{accessPoint?.locationDetail}</p>
+              </div>
+
+              <div>
+                <p className="text-gray-500">MAC Address</p>
+                <p className="font-medium">{accessPoint?.mac}</p>
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="pt-4 border-t text-xs text-gray-400 flex justify-between">
-          <span>Created: {formatDate(accessPoint.createdAt)}</span>
-          <span>Updated: {formatDate(accessPoint.updatedAt)}</span>
+        <div className="mt-6 pt-4 border-t flex justify-between text-xs text-gray-400">
+          <span>Created: {formatDate(accessPoint?.createdAt)}</span>
+          <span>Updated: {formatDate(accessPoint?.updatedAt)}</span>
         </div>
       </div>
     </div>

@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import {
   FiServer,
   FiDatabase,
@@ -15,7 +17,9 @@ import { getRecent } from "../services/activityLogService";
 import { getDashboardSummary } from "../services/dashboardService";
 
 const Dashboard = () => {
-  const [activities, setActivities] = useState([]);
+  const [openMerk, setOpenMerk] = useState(null);
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
   const [dashboardData, setDashboardData] = useState({
     racks: 0,
     physical: 0,
@@ -27,11 +31,15 @@ const Dashboard = () => {
     deviceStatusPerDevice: {},
     cctvByMerk: [],
     accessPointByMerk: [],
+    switchByMerk: [],
   });
+  const [activities, setActivities] = useState([]);
 
   useEffect(() => {
     const fetchDashboard = async () => {
       try {
+        setLoading(true);
+
         const summary = await getDashboardSummary();
         setDashboardData(summary);
 
@@ -39,12 +47,13 @@ const Dashboard = () => {
         setActivities(activity.data);
       } catch (error) {
         console.error("Failed to load dashboard:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchDashboard();
   }, []);
-
   const deviceStatusData = (dashboardData.deviceStatus || []).filter(
     (item) => item.value > 0
   );
@@ -71,18 +80,93 @@ const Dashboard = () => {
     });
 
   const devices = addIcons(dashboardData.devices);
+  const deviceRoutes = {
+    Router: "/digital/router",
+    "Access Point": "/accessPointMerk",
+    Switch: "/switchMerk",
+    CCTV: "/cctvMerk",
+  };
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="flex flex-col items-center justify-center gap-3">
+          <div className="w-10 h-10 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
+          <span className="text-sm text-gray-500">Loading dashboard...</span>
+        </div>
+      </div>
+    );
+  }
 
+  const devicePieData = [
+    { name: "Physical Server", value: dashboardData.physical },
+    { name: "Host", value: dashboardData.host },
+    { name: "Guest", value: dashboardData.guest },
+    {
+      name: "CCTV",
+      value: dashboardData.devices.find((d) => d.name === "CCTV")?.value || 0,
+    },
+    {
+      name: "Router",
+      value: dashboardData.devices.find((d) => d.name === "Router")?.value || 0,
+    },
+    {
+      name: "Switch",
+      value: dashboardData.devices.find((d) => d.name === "Switch")?.value || 0,
+    },
+    {
+      name: "Access Point",
+      value:
+        dashboardData.devices.find((d) => d.name === "Access Point")?.value ||
+        0,
+    },
+  ].filter((item) => item.value > 0);
+  const deviceColors = {
+    "Physical Server": "#3b82f6", // blue
+    Host: "#22c55e", // green
+    Guest: "#a855f7", // purple
+    CCTV: "#ef4444", // red
+    Router: "#06b6d4", // cyan
+    Switch: "#f97316", // orange
+    "Access Point": "#84cc16", // lime
+  };
+  const deviceDotColors = [
+    { label: "Physical Server", color: "bg-blue-500" },
+    { label: "Host", color: "bg-green-500" },
+    { label: "Guest", color: "bg-purple-500" },
+    { label: "CCTV", color: "bg-red-500" },
+    { label: "Router", color: "bg-cyan-500" },
+    { label: "Switch", color: "bg-orange-500" },
+    { label: "Access Point", color: "bg-lime-500" },
+  ];
+  const globalStatus = dashboardData.deviceStatusPerDevice || {};
+
+  const totalActive = Object.values(globalStatus).reduce(
+    (acc, device) => acc + (device.Active || 0),
+    0
+  );
+
+  const totalInactive = Object.values(globalStatus).reduce(
+    (acc, device) => acc + (device.Inactive || 0),
+    0
+  );
+
+  const totalDamaged = Object.values(globalStatus).reduce(
+    (acc, device) => acc + (device.Damaged || 0),
+    0
+  );
   return (
     <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
       <h1 className="text-2xl font-semibold">Dashboard Overview</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card
+          onClick={() => navigate("/racks")}
           title="Total Rack"
           total={dashboardData.racks}
           icon={<FiDatabase />}
         />
         <Card
+          onClick={() => navigate("/physical")}
           title="Physical Server"
           total={dashboardData.physical}
           status={
@@ -95,6 +179,7 @@ const Dashboard = () => {
           icon={<FiServer />}
         />
         <Card
+          onClick={() => navigate("/host")}
           title="Host"
           icon={<FiGrid />}
           total={dashboardData.host}
@@ -107,6 +192,7 @@ const Dashboard = () => {
           }
         />
         <Card
+          onClick={() => navigate("/guest")}
           title="Guest"
           total={dashboardData.guest}
           status={
@@ -128,17 +214,17 @@ const Dashboard = () => {
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
-                  data={deviceStatusData}
+                  data={devicePieData}
                   dataKey="value"
                   nameKey="name"
                   innerRadius={50}
                   outerRadius={80}
                   label
                 >
-                  {deviceStatusData.map((entry, index) => (
+                  {devicePieData.map((entry, index) => (
                     <Cell
                       key={index}
-                      fill={statusColors[entry.name] || "#94a3b8"}
+                      fill={deviceColors[entry.name] || "#94a3b8"}
                     />
                   ))}
                 </Pie>
@@ -147,10 +233,12 @@ const Dashboard = () => {
             </ResponsiveContainer>
           </div>
 
-          <div className="flex justify-around mt-4">
-            <StatusDot color="bg-green-500" label="Active" />
-            <StatusDot color="bg-red-500" label="Inactive" />
-            <StatusDot color="bg-yellow-500" label="Damaged" />
+          <div className="mt-4 columns-2 gap-4">
+            {deviceDotColors.map((item, index) => (
+              <div key={index} className="mb-2 break-inside-avoid">
+                <StatusDot color={item.color} label={item.label} />
+              </div>
+            ))}
           </div>
         </div>
         <div className="lg:col-span-2 bg-white p-4 rounded-xl shadow w-full">
@@ -166,7 +254,11 @@ const Dashboard = () => {
               };
 
               return (
-                <div key={index} className="p-4 border rounded-lg space-y-3">
+                <div
+                  onClick={() => navigate(deviceRoutes[device.name])}
+                  key={index}
+                  className="p-4 border rounded-lg space-y-3 cursor-pointer"
+                >
                   {/* HEADER */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -175,7 +267,7 @@ const Dashboard = () => {
                     </div>
 
                     <span className="text-sm bg-gray-100 px-2 py-1 rounded-full">
-                      {device.value}
+                      Total: {device.value}
                     </span>
                   </div>
 
@@ -202,16 +294,19 @@ const Dashboard = () => {
                       <div className="text-yellow-600">Damaged</div>
                     </div>
                   </div>
-                  {/* BY MERK (KHUSUS CCTV & ACCESS POINT) */}
+
                   {(device.name === "CCTV" ||
-                    device.name === "Access Point") && (
+                    device.name === "Access Point" ||
+                    device.name === "Switch") && (
                     <div className="mt-3 border-t pt-2 text-[11px]">
                       <p className="text-gray-800 mb-1 ">By Merk</p>
 
                       <div className="space-y-1">
                         {(device.name === "CCTV"
                           ? dashboardData.cctvByMerk
-                          : dashboardData.accessPointByMerk
+                          : device.name === "Access Point"
+                          ? dashboardData.accessPointByMerk
+                          : dashboardData.switchByMerk
                         )?.map((item, i) => (
                           <div key={i} className="flex justify-between">
                             <span className="text-gray-600">{item.merk}</span>
@@ -227,12 +322,37 @@ const Dashboard = () => {
               );
             })}
           </div>
-          {/* TOTAL */}
-          <div className="mt-6 text-center bg-blue-50 py-5 rounded-xl border">
-            <p className="text-sm text-gray-500">Total Devices</p>
-            <p className="text-4xl font-bold text-blue-600">
-              {dashboardData.totalDevices}
+          <div className="bg-white rounded-xl shadow p-6 mt-3">
+            <p className="text-sm text-gray-500 mb-4 text-center">
+              Total Status Devices
             </p>
+
+            <div className="flex justify-evenly items-center">
+              <div className="text-center">
+                <p className="text-green-600 text-2xl font-bold">
+                  {totalActive}
+                </p>
+                <p className="text-xs text-gray-500">Active</p>
+              </div>
+
+              <div className="w-px h-10 bg-gray-200" />
+
+              <div className="text-center">
+                <p className="text-red-600 text-2xl font-bold">
+                  {totalInactive}
+                </p>
+                <p className="text-xs text-gray-500">Inactive</p>
+              </div>
+
+              <div className="w-px h-10 bg-gray-200" />
+
+              <div className="text-center">
+                <p className="text-yellow-600 text-2xl font-bold">
+                  {totalDamaged}
+                </p>
+                <p className="text-xs text-gray-500">Damaged</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -268,8 +388,11 @@ const formatNumber = (num) => {
 };
 const showValue = (val) => (val === 0 ? "-" : formatNumber(val));
 
-const Card = ({ title, total, icon, status }) => (
-  <div className="bg-white p-4 rounded-xl shadow">
+const Card = ({ title, total, icon, status, onClick }) => (
+  <div
+    onClick={onClick}
+    className="bg-white p-4 rounded-xl shadow cursor-pointer"
+  >
     {/* HEADER */}
     <div className="flex items-center gap-3">
       <div className="flex-1">

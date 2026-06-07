@@ -49,8 +49,8 @@ const ExportModal = ({ isOpen, onClose, onExport, title = "Export Data" }) => {
               disabled={loading}
             >
               <option value="excel">Excel (.xlsx)</option>
-              {/* <option value="csv">CSV (.csv)</option>
-              <option value="pdf">PDF (.pdf)</option> */}
+              {/* <option value="csv">CSV (.csv)</option> */}
+              <option value="pdf">PDF (.pdf)</option>
             </select>
           </div>
 

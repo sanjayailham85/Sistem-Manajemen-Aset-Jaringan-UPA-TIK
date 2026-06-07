@@ -37,12 +37,17 @@ import Users from "../pages/Users";
 import OsVersion from "../pages/option/OsVersion";
 import AccessPointMerk from "../pages/digital/accessPoint/AccessPointMerk";
 import AccessPointController from "../pages/digital/accessPoint/AccessPointController";
+import SwitchMerk from "../pages/digital/switch/SwitchMerk";
+import SwitchController from "../pages/digital/switch/SwitchController";
 import CCTVMerk from "../pages/digital/cctv/CCTVMerk";
 import CCTVController from "../pages/digital/cctv/CCTVController";
 import Merk from "../pages/option/Merk";
 import Location from "../pages/option/Location";
+import SubDomain from "../pages/option/SubDomain";
 import MonitoringPage from "../pages/monitoring/MonitoringPage";
-import IPList from "../pages/IPList";
+import IPList from "../pages/digitalAsset/IPList";
+import Domain from "../pages/digitalAsset/Domain";
+import Lisensi from "../pages/digitalAsset/Lisensi";
 import { Toaster } from "react-hot-toast";
 
 const Layout = ({ children }) => (
@@ -243,6 +248,22 @@ const AppRoutes = () => {
         }
       />
       <Route
+        path="/digitalAsset/domain"
+        element={
+          <PrivateRoute>
+            <Domain />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/digitalAsset/lisensi"
+        element={
+          <PrivateRoute>
+            <Lisensi />
+          </PrivateRoute>
+        }
+      />
+      <Route
         path="/monitoring"
         element={
           <PrivateRoute>
@@ -266,22 +287,7 @@ const AppRoutes = () => {
           </PrivateRoute>
         }
       />
-      <Route
-        path="/option/osVersion"
-        element={
-          <PrivateRoute>
-            <OsVersion />
-          </PrivateRoute>
-        }
-      />
-      <Route
-        path="/option/merk"
-        element={
-          <PrivateRoute>
-            <Merk />
-          </PrivateRoute>
-        }
-      />
+
       <Route
         path="/accessPointMerk"
         element={
@@ -303,6 +309,30 @@ const AppRoutes = () => {
         element={
           <PrivateRoute>
             <AccessPointList />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/switchMerk"
+        element={
+          <PrivateRoute>
+            <SwitchMerk />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/switchMerk/:merkId"
+        element={
+          <PrivateRoute>
+            <SwitchController />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/switchMerk/:merkId/controller/:controllerId"
+        element={
+          <PrivateRoute>
+            <SwitchList />
           </PrivateRoute>
         }
       />
@@ -331,6 +361,30 @@ const AppRoutes = () => {
         }
       />
 
+      <Route
+        path="/option/osVersion"
+        element={
+          <PrivateRoute>
+            <OsVersion />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/option/merk"
+        element={
+          <PrivateRoute>
+            <Merk />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/option/subDomain"
+        element={
+          <PrivateRoute>
+            <SubDomain />
+          </PrivateRoute>
+        }
+      />
       <Route
         path="/option/location"
         element={

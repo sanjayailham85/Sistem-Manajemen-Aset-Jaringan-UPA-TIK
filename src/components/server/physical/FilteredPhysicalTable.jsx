@@ -9,63 +9,48 @@ import {
 } from "../../../services/physicalService";
 import PhysicalModal from "./PhysicalModal";
 import usePermission from "../../../utils/usePermission";
-
+import useTableSort from "../../../utils/useTableSort";
+import usePagination from "../../../utils/usePagination.js";
+import {
+  notifyCreate,
+  notifyUpdate,
+  notifyDelete,
+  notifyDeleteError,
+  notifyError,
+} from "../../../utils/notifyHelper";
 const FilteredPhysicalTable = () => {
   const { rackId } = useParams();
   const navigate = useNavigate();
   const [physicals, setPhysical] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [selectedPhysical, setSelectedPhysical] = useState(null);
   const { canCreate, canUpdate, canDelete } = usePermission("physical");
-
-  const fetchPhysical = async () => {
-    try {
-      setLoading(true);
-      const res = await getPhysical();
-      setPhysical(res.data);
-    } catch (err) {
-      console.error("Gagal mengambil data physical", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { data, page, totalPages, nextPage, prevPage, loading, refresh } =
+    usePagination(getPhysical, 10);
+  const { sortedData, handleSort, sortConfig } = useTableSort(data);
 
   const handleAddPhysical = async (data) => {
     try {
-      const formData = new FormData();
-
-      Object.keys(data).forEach((key) => {
-        if (data[key] !== null && data[key] !== undefined) {
-          formData.append(key, data[key]);
-        }
-      });
-
-      await createPhysical(formData);
-
-      fetchPhysical();
+      await createPhysical(data);
+      refresh();
       setOpenModal(false);
+      notifyCreate("Physical");
     } catch (err) {
       console.error("Gagal menambah physical", err);
+      notifyError();
     }
   };
 
-  const handleUpdatePhysical = async (form) => {
+  const handleUpdatePhysical = async (data) => {
     try {
-      const formData = new FormData();
-
-      Object.keys(form).forEach((key) => {
-        if (key !== "imagePreview" && form[key] !== null) {
-          formData.append(key, form[key]);
-        }
-      });
-
-      await updatePhysical(selectedPhysical.id, formData);
-      fetchPhysical();
+      await updatePhysical(selectedPhysical.id, data);
+      refresh();
       setSelectedPhysical(null);
       setOpenModal(false);
+      notifyUpdate("Physical");
     } catch (err) {
       console.error("Gagal update physical", err);
+      notifyError();
     }
   };
 
@@ -77,19 +62,21 @@ const FilteredPhysicalTable = () => {
 
     try {
       await deletePhysical(id);
-      fetchPhysical();
+      refresh();
+      notifyDelete("Physical");
     } catch (err) {
-      console.error("Gagal menghapus physical", err);
+      const code = err?.response?.data?.code;
+      if (code === "PHYSICAL_NOT_EMPTY") {
+        notifyDeleteError("Physical");
+      } else {
+        notifyError();
+      }
     }
   };
 
-  const filteredPhysical = physicals.filter(
+  const filteredPhysical = sortedData.filter(
     (physical) => physical.rackId === rackId
   );
-
-  useEffect(() => {
-    fetchPhysical();
-  }, []);
 
   return (
     <div className="bg-white rounded shadow overflow-x-auto">
@@ -110,7 +97,7 @@ const FilteredPhysicalTable = () => {
       <table className="w-full text-sm">
         <thead className="bg-gray-100">
           <tr>
-            <th className="px-4 py-2 text-left">Nama Server</th>
+            <th className="px-4 py-2 text-left">Physical Server Name</th>
             <th className="px-4 py-2 text-left">IP Address</th>
             <th className="px-4 py-2 text-left">Status</th>
             {(canUpdate || canDelete) && (
@@ -192,6 +179,29 @@ const FilteredPhysicalTable = () => {
           onSubmit={selectedPhysical ? handleUpdatePhysical : handleAddPhysical}
         />
       )}
+      <div className="flex justify-between items-center px-4 py-3 border-t bg-gray-50">
+        <span className="text-sm text-gray-600">
+          Page {page} of {totalPages}
+        </span>
+
+        <div className="flex gap-2">
+          <button
+            onClick={prevPage}
+            disabled={page === 1}
+            className="px-3 py-1 border rounded disabled:opacity-50"
+          >
+            Prev
+          </button>
+
+          <button
+            onClick={nextPage}
+            disabled={page === totalPages}
+            className="px-3 py-1 border rounded disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

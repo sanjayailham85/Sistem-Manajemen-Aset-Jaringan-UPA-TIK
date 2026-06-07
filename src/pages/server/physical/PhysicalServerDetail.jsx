@@ -5,6 +5,7 @@ import { getPhysicalById } from "../../../services/physicalService";
 import FilteredHostTable from "../../../components/server/host/FilteredHostTable";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import formatDate from "../../../utils/formatDate";
+import { IMAGE_BASE_URL } from "../../../config/api";
 
 const PhysicalServerDetail = () => {
   const { physicalId } = useParams();
@@ -65,7 +66,7 @@ const PhysicalServerDetail = () => {
               <img
                 src={
                   physical?.image
-                    ? `http://localhost:5000/uploads/${physical.image}`
+                    ? `${IMAGE_BASE_URL}/${physical.image}`
                     : "/no-image.png"
                 }
                 alt={physical?.name}

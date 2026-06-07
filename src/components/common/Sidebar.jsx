@@ -16,6 +16,7 @@ import {
   FiShuffle,
   FiGlobe,
   FiCamera,
+  FiFileText,
 } from "react-icons/fi";
 
 const Sidebar = () => {
@@ -108,7 +109,7 @@ const Sidebar = () => {
           </NavLink>
 
           <NavLink
-            to="/digital/switch"
+            to="/switchMerk"
             className={({ isActive }) =>
               `${menuClass} ${isActive ? activeClass : ""}`
             }
@@ -153,6 +154,22 @@ const Sidebar = () => {
             }
           >
             <FiLink /> IP List
+          </NavLink>
+          <NavLink
+            to="/digitalAsset/domain"
+            className={({ isActive }) =>
+              `${menuClass} ${isActive ? activeClass : ""}`
+            }
+          >
+            <FiGlobe /> Domain
+          </NavLink>
+          <NavLink
+            to="/digitalAsset/lisensi"
+            className={({ isActive }) =>
+              `${menuClass} ${isActive ? activeClass : ""}`
+            }
+          >
+            <FiFileText /> Lisensi
           </NavLink>
         </div>
 
@@ -217,6 +234,14 @@ const Sidebar = () => {
                   }
                 >
                   Location
+                </NavLink>
+                <NavLink
+                  to="/option/subDomain"
+                  className={({ isActive }) =>
+                    `${menuClass} ${isActive ? activeClass : ""}`
+                  }
+                >
+                  Sub Domain
                 </NavLink>
               </div>
             )}

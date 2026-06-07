@@ -44,6 +44,9 @@ const RackCard = ({ rack, onEdit, onDelete }) => {
       <h2 className="text-lg font-semibold mb-1 cursor-pointer">{rack.name}</h2>
 
       <p className="text-sm text-gray-500 mb-3">{rack.location}</p>
+      <p className="text-sm text-gray-500 mb-3">
+        Total Physical Server: {rack.total}
+      </p>
     </div>
   );
 };

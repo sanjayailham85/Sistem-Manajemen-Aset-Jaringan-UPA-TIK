@@ -4,6 +4,7 @@ import Breadcrumb from "../../../components/common/Breadcrumb";
 import { getGuestById } from "../../../services/guestService";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import formatDate from "../../../utils/formatDate";
+import { IMAGE_BASE_URL } from "../../../config/api";
 
 const GuestDetail = () => {
   const { guestId } = useParams();
@@ -35,8 +36,6 @@ const GuestDetail = () => {
   const rackId = guest.host?.physical?.rack?.id;
   const physicalId = guest.host?.physical?.id;
   const hostId = guest.host?.id;
-
-  const imageUrl = `http://localhost:5000/uploads/${guest.host?.physical?.image}`;
 
   const hostCreatedAt = formatDate(guest?.host?.createdAt);
   const hostUpdatedAt = formatDate(guest?.host?.updatedAt);
@@ -90,20 +89,29 @@ const GuestDetail = () => {
             <p className="font-medium">{guest.ip}</p>
           </div>
 
-          <div className="flex items-center gap-2">
-            <p className="font-medium">
-              {guest.authUsername}/
-              {showGuestPassword
-                ? guest.authPassword
-                : "*".repeat(guest.authPassword?.length || 0)}
-            </p>
+          <div className="items-center gap-2">
+            <div>
+              <div className="text-gray-500">Auth</div>
+            </div>
+            <div className="flex">
+              <p className="font-medium pr-8">
+                {guest.authUsername}/
+                {showGuestPassword
+                  ? guest.authPassword
+                  : "*".repeat(guest.authPassword?.length || 0)}
+              </p>
 
-            <button
-              onClick={() => setShowGuestPassword(!showGuestPassword)}
-              className="text-gray-500"
-            >
-              {showGuestPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
-            </button>
+              <button
+                onClick={() => setShowGuestPassword(!showGuestPassword)}
+                className="text-gray-500"
+              >
+                {showGuestPassword ? (
+                  <FiEyeOff size={18} />
+                ) : (
+                  <FiEye size={18} />
+                )}
+              </button>
+            </div>
           </div>
 
           <div>
@@ -117,7 +125,7 @@ const GuestDetail = () => {
           </div>
 
           <div>
-            <span className="text-gray-500">Status</span>
+            <div className="text-gray-500">Status</div>
             <p
               className={`inline-block mt-1 px-3 py-1 rounded-full text-sm font-medium capitalize ${
                 guest.status === "Active"
@@ -257,7 +265,11 @@ const GuestDetail = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div>
               <img
-                src={imageUrl}
+                src={
+                  guest.host?.physical?.image
+                    ? `${IMAGE_BASE_URL}/${guest.host?.physical?.image}`
+                    : "/no-image.png"
+                }
                 alt={guest.host?.physical?.name}
                 className="w-full rounded-lg border object-cover"
               />

@@ -3,7 +3,7 @@ import { FiEdit, FiTrash2 } from "react-icons/fi";
 import { getAll, create, update, deleteIP } from "../../services/ipListService";
 import usePagination from "../../utils/usePagination";
 import usePermission from "../../utils/usePermission";
-import IPListModal from "../../components/digital/IPListModal";
+import IPListModal from "../../components/digitalAsset/IPListModal";
 import {
   notifyCreate,
   notifyUpdate,
@@ -20,13 +20,6 @@ const IPListTable = () => {
   const { canCreate, canUpdate, canDelete } = usePermission("ipList");
   const [openModal, setOpenModal] = useState(false);
   const [selected, setSelected] = useState(null);
-
-  const [form, setForm] = useState({
-    ip: "",
-    lisensi: "",
-    is_ssl: "",
-    domain: "",
-  });
 
   const handleAdd = async (data) => {
     try {
@@ -85,9 +78,9 @@ const IPListTable = () => {
         <thead className="bg-gray-100">
           <tr>
             <th className="px-4 py-2 text-left">IP Address</th>
-            <th className="px-4 py-2 text-left">Lisensi</th>
-            <th className="px-4 py-2 text-left">SSL</th>
-            <th className="px-4 py-2 text-left">Domain</th>
+            <th className="px-4 py-2 text-left">Kegunaan</th>
+            <th className="px-4 py-2 text-left">Author</th>
+            <th className="px-4 py-2 text-left">Status</th>
 
             {(canUpdate || canDelete) && (
               <th className="px-4 py-2 text-center w-28">Aksi</th>
@@ -99,9 +92,9 @@ const IPListTable = () => {
           {data.map((item) => (
             <tr key={item.id} className="border-t hover:bg-gray-50">
               <td className="px-4 py-2">{item.ip}</td>
-              <td className="px-4 py-2">{item.lisensi}</td>
-              <td className="px-4 py-2">{item.is_ssl}</td>
-              <td className="px-4 py-2">{item.domain}</td>
+              <td className="px-4 py-2">{item.kegunaan}</td>
+              <td className="px-4 py-2">{item.author}</td>
+              <td className="px-4 py-2">{item.status}</td>
 
               {(canUpdate || canDelete) && (
                 <td className="px-4 py-2">

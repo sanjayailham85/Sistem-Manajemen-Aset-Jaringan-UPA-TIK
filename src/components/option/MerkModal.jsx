@@ -52,6 +52,7 @@ const MerkModal = ({ onClose, onSubmit, initialData }) => {
             className="input font-medium"
           >
             <option value="Access Point">Access Point</option>
+            <option value="Switch">Switch</option>
             <option value="Router">Router</option>
             <option value="CCTV">CCTV</option>
           </select>

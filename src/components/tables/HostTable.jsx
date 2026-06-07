@@ -11,7 +11,6 @@ import { FiEdit, FiTrash2 } from "react-icons/fi";
 import usePermission from "../../utils/usePermission";
 import useTableSort from "../../utils/useTableSort";
 import usePagination from "../../utils/usePagination";
-import toast from "react-hot-toast";
 import {
   notifyCreate,
   notifyUpdate,
@@ -125,21 +124,21 @@ const HostTable = () => {
   return (
     <div className="bg-white rounded shadow overflow-x-auto pb-4">
       <div className="flex justify-end gap-2 p-2">
-        {canCreate && (
+        {/* {canCreate && (
           <button
             onClick={() => setShowImport(true)}
             className="bg-green-600 text-white px-4 py-2 rounded cursor-pointer"
           >
             Import Data
           </button>
-        )}
+        )} */}
 
-        <button
+        {/* <button
           onClick={() => setShowExport(true)}
           className="bg-blue-600 text-white px-4 py-2 rounded cursor-pointer"
         >
           Export Data
-        </button>
+        </button> */}
 
         {canCreate && (
           <button

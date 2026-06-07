@@ -8,6 +8,7 @@ const ITEMS_PER_PAGE = 6;
 
 const MonitoringPage = () => {
   const [activeTab, setActiveTab] = useState("all");
+  const [activeSubTab, setActiveSubTab] = useState("");
   const [devices, setDevices] = useState([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
@@ -40,9 +41,21 @@ const MonitoringPage = () => {
 
     fetchInitial();
   }, []);
-
+   
   useEffect(() => {
+    console.log("Socket connected?", socket.connected);
+
+    socket.on("connect", () => {
+      console.log("SOCKET CONNECTED", socket.id);
+    });
+
+    socket.on("disconnect", (reason) => {
+      console.log("SOCKET DISCONNECTED", reason);
+    });
+
     const handleUpdate = (updates) => {
+      console.log("UPDATE RECEIVED", updates);
+
       setDevices((prev) =>
         prev.map((device) => {
           const updated = updates.find((u) => u.id === device.id);
@@ -52,6 +65,7 @@ const MonitoringPage = () => {
     };
 
     const handleInit = (data) => {
+      console.log("INIT RECEIVED", data.length);
       setDevices(data || []);
     };
 
@@ -72,19 +86,19 @@ const MonitoringPage = () => {
         ? devices
         : devices.filter((d) => (d.category || "").toLowerCase() === activeTab);
 
-    const currentSub = subCategoryOrder[subIndex];
+    //subtab
+    if (activeSubTab) {
+      data = data.filter((d) => {
+        const sub = (d.subcategory || "").toLowerCase();
 
-    return [...data].sort((a, b) => {
-      const aIndex = subCategoryOrder.indexOf(a.subcategory);
-      const bIndex = subCategoryOrder.indexOf(b.subcategory);
+        if (activeSubTab === "accesspoint") return sub === "accesspoint";
+        if (activeSubTab === "physical") return sub === "physical";
+        return sub === activeSubTab;
+      });
+    }
 
-      // kalau sama atau tidak ada, tetap
-      if (a.subcategory === currentSub) return -1;
-      if (b.subcategory === currentSub) return 1;
-
-      return aIndex - bIndex;
-    });
-  }, [devices, activeTab, subIndex]);
+    return data;
+  }, [devices, activeTab, activeSubTab]);
 
   const totalPages = Math.ceil(filteredDevices.length / ITEMS_PER_PAGE);
 
@@ -102,7 +116,7 @@ const MonitoringPage = () => {
   }, [devices]);
 
   useEffect(() => {
-    setPage(1);
+    setActiveSubTab("");
   }, [activeTab]);
 
   return (
@@ -127,13 +141,14 @@ const MonitoringPage = () => {
         />
       </div>
 
-      <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
-
-      <DeviceTable
-        filteredDevices={paginatedDevices}
-        loading={loading}
-        onSubCategoryClick={handleSubCategoryClick}
+      <Tabs
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        activeSubTab={activeSubTab}
+        setActiveSubTab={setActiveSubTab}
       />
+
+      <DeviceTable filteredDevices={paginatedDevices} loading={loading} />
 
       <div className="flex justify-between items-center px-4 py-3 bg-white rounded shadow">
         <span className="text-sm text-gray-600">

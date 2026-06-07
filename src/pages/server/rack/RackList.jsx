@@ -43,7 +43,7 @@ const RackList = () => {
       refresh();
       setSelectedRack(null);
       setOpenModal(false);
-      notifyUpdadte("Rack");
+      notifyUpdate("Rack");
     } catch (err) {
       console.error("Gagal update data rack ", err);
       notifyError();
@@ -70,6 +70,16 @@ const RackList = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="flex flex-col items-center justify-center gap-3">
+          <div className="w-10 h-10 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
+          <span className="text-sm text-gray-500">Loading racks...</span>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">

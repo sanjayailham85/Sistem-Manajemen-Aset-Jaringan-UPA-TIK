@@ -9,47 +9,52 @@ import {
 import HostModal from "../host/HostModal";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
 import usePermission from "../../../utils/usePermission";
+import useTableSort from "../../../utils/useTableSort";
+import usePagination from "../../../utils/usePagination.js";
+import {
+  notifyCreate,
+  notifyUpdate,
+  notifyDelete,
+  notifyDeleteError,
+  notifyError,
+} from "../../../utils/notifyHelper";
 
-const HostTable = () => {
+const FilteredHostTable = () => {
   const { rackId, physicalId } = useParams();
   const navigate = useNavigate();
   const [hosts, setHost] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [selectedHost, setSelectedHost] = useState(null);
   const { canCreate, canUpdate, canDelete } = usePermission("host");
-
-  const fetchHost = async () => {
-    try {
-      setLoading(true);
-      const res = await getAllHost();
-
-      setHost(res.data);
-    } catch (err) {
-      console.error("Gagal mengambil data host", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { data, page, totalPages, nextPage, prevPage, loading, refresh } =
+    usePagination(getAllHost, 10);
+  const { sortedData, handleSort, sortConfig } = useTableSort(data);
 
   const handleAddHost = async (data) => {
     try {
-      await createHost({ ...data, physicalId });
-      fetchHost();
+      await createHost({
+        ...data,
+        physicalId,
+      });
+      await refresh();
       setOpenModal(false);
+      notifyCreate("Host");
     } catch (err) {
       console.error("Gagal menambah host", err);
+      notifyError();
     }
   };
 
   const handleUpdateHost = async (data) => {
     try {
       await updateHost(selectedHost.id, data);
-      fetchHost();
+      refresh();
       setSelectedHost(null);
       setOpenModal(false);
+      notifyUpdate("Host");
     } catch (err) {
       console.error("Gagal update host", err);
+      notifyError();
     }
   };
 
@@ -59,15 +64,20 @@ const HostTable = () => {
 
     try {
       await deleteHost(id);
-      fetchHost();
+      refresh();
+      notifyDelete("Host");
     } catch (err) {
-      console.error("Gagal menghapus host", err);
+      const code = err?.response?.data?.code;
+      if (code === "HOST_NOT_EMPTY") {
+        notifyDeleteError("Host");
+      } else {
+        notifyError();
+      }
     }
   };
-  const filteredHost = hosts.filter((host) => host.physicalId === physicalId);
-  useEffect(() => {
-    fetchHost();
-  }, []);
+  const filteredHost = sortedData.filter(
+    (host) => host.physicalId === physicalId
+  );
 
   return (
     <div className="bg-white rounded shadow overflow-x-auto pb-4">
@@ -173,8 +183,31 @@ const HostTable = () => {
           onSubmit={selectedHost ? handleUpdateHost : handleAddHost}
         />
       )}
+      <div className="flex justify-between items-center px-4 py-3 border-t bg-gray-50">
+        <span className="text-sm text-gray-600">
+          Page {page} of {totalPages}
+        </span>
+
+        <div className="flex gap-2">
+          <button
+            onClick={prevPage}
+            disabled={page === 1}
+            className="px-3 py-1 border rounded disabled:opacity-50"
+          >
+            Prev
+          </button>
+
+          <button
+            onClick={nextPage}
+            disabled={page === totalPages}
+            className="px-3 py-1 border rounded disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
 
-export default HostTable;
+export default FilteredHostTable;

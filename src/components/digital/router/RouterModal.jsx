@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getAllMerk } from "../../../services/merkService";
 import { getAllLocation } from "../../../services/locationService";
+import { FiUploadCloud } from "react-icons/fi";
 
 const RouterModal = ({ onClose, onSubmit, initialData }) => {
   const emptyForm = {
@@ -13,6 +14,8 @@ const RouterModal = ({ onClose, onSubmit, initialData }) => {
     status: "Active",
     detail: "",
     code: "",
+    image: null,
+    imagePreview: null,
   };
 
   const [form, setForm] = useState(emptyForm);
@@ -24,6 +27,8 @@ const RouterModal = ({ onClose, onSubmit, initialData }) => {
       setForm({
         ...emptyForm,
         ...initialData,
+        image: null,
+        imagePreview: initialData.imageUrl || null,
       });
     }
   }, [initialData]);
@@ -54,9 +59,37 @@ const RouterModal = ({ onClose, onSubmit, initialData }) => {
     }));
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setForm((prev) => ({
+      ...prev,
+      image: file,
+      imagePreview: URL.createObjectURL(file),
+    }));
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(form);
+
+    const formData = new FormData();
+
+    formData.append("name", form.name);
+    formData.append("ip", form.ip);
+    formData.append("type", form.type);
+    formData.append("location", form.location);
+    formData.append("locationDetail", form.locationDetail);
+    formData.append("code", form.code);
+    formData.append("merk", form.merk);
+    formData.append("status", form.status);
+    formData.append("detail", form.detail);
+
+    if (form.image) {
+      formData.append("image", form.image);
+    }
+
+    onSubmit(formData);
   };
 
   return (
@@ -69,97 +102,132 @@ const RouterModal = ({ onClose, onSubmit, initialData }) => {
           <p className="text-sm text-gray-500">Lengkapi informasi Router</p>
         </div>
 
-        <form
-          onSubmit={handleSubmit}
-          className="grid grid-cols-1 md:grid-cols-2 gap-4"
-        >
-          <input
-            name="name"
-            value={form.name}
-            onChange={handleChange}
-            placeholder="Name"
-            className="input"
-            required
-          />
-          <input
-            name="ip"
-            value={form.ip}
-            onChange={handleChange}
-            placeholder="IP"
-            className="input"
-            required
-          />
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <input
+              name="name"
+              value={form.name}
+              onChange={handleChange}
+              placeholder="Name"
+              className="input"
+              required
+            />
+            <input
+              name="ip"
+              value={form.ip}
+              onChange={handleChange}
+              placeholder="IP"
+              className="input"
+              required
+            />
 
-          <input
-            name="type"
-            value={form.type}
-            onChange={handleChange}
-            placeholder="Type"
-            className="input"
-            required
-          />
-          <select
-            name="merk"
-            value={form.merk}
-            onChange={handleChange}
-            className="input"
-            required
-          >
-            <option value="">Pilih Merk</option>
-            {merk.map((item) => (
-              <option key={item.id} value={item.name}>
-                {item.name}
-              </option>
-            ))}
-          </select>
-          <select
-            name="location"
-            value={form.location}
-            onChange={handleChange}
-            className="input"
-            required
-          >
-            <option value="">Pilih Lokasi</option>
-            {location.map((item) => (
-              <option key={item.id} value={item.name}>
-                {item.name}
-              </option>
-            ))}
-          </select>
-          <input
-            name="locationDetail"
-            value={form.locationDetail}
-            onChange={handleChange}
-            placeholder="Location Detail"
-            className="input"
-            required
-          />
-          <select
-            name="status"
-            value={form.status}
-            onChange={handleChange}
-            className="input font-medium"
-          >
-            <option value="Active">Active</option>
-            <option value="Inactive">Inactive</option>
-            <option value="Damaged">Damaged</option>
-          </select>
-          <input
-            name="detail"
-            value={form.detail}
-            onChange={handleChange}
-            placeholder="Detail Lainnya"
-            className="input"
-            required
-          />
-          <input
-            name="code"
-            value={form.code}
-            onChange={handleChange}
-            placeholder="Code"
-            className="input"
-            required
-          />
+            <input
+              name="type"
+              value={form.type}
+              onChange={handleChange}
+              placeholder="Type"
+              className="input"
+              required
+            />
+            <select
+              name="merk"
+              value={form.merk}
+              onChange={handleChange}
+              className="input"
+              required
+            >
+              <option value="">Pilih Merk</option>
+              {merk.map((item) => (
+                <option key={item.id} value={item.name}>
+                  {item.name}
+                </option>
+              ))}
+            </select>
+            <select
+              name="location"
+              value={form.location}
+              onChange={handleChange}
+              className="input"
+              required
+            >
+              <option value="">Pilih Lokasi</option>
+              {location.map((item) => (
+                <option key={item.id} value={item.name}>
+                  {item.name}
+                </option>
+              ))}
+            </select>
+            <input
+              name="locationDetail"
+              value={form.locationDetail}
+              onChange={handleChange}
+              placeholder="Location Detail"
+              className="input"
+              required
+            />
+            <select
+              name="status"
+              value={form.status}
+              onChange={handleChange}
+              className="input font-medium"
+            >
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+              <option value="Damaged">Damaged</option>
+            </select>
+            <input
+              name="detail"
+              value={form.detail}
+              onChange={handleChange}
+              placeholder="Detail Lainnya"
+              className="input"
+              required
+            />
+            <input
+              name="code"
+              value={form.code}
+              onChange={handleChange}
+              placeholder="Code"
+              className="input"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">
+              Gambar Router
+            </label>
+
+            <label
+              htmlFor="routerImage"
+              className="flex flex-col items-center justify-center
+              border-2 border-dashed rounded-lg p-6 cursor-pointer
+              text-gray-500 hover:border-blue-500 hover:text-blue-600 transition"
+            >
+              <FiUploadCloud size={24} />
+              <span className="mt-2 text-sm font-medium">
+                Klik untuk upload gambar Router
+              </span>
+              <span className="text-xs text-gray-400">PNG, JPG, JPEG</span>
+            </label>
+
+            <input
+              id="routerImage"
+              name="image"
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="hidden"
+            />
+
+            {form.imagePreview && (
+              <img
+                src={form.imagePreview}
+                alt="Preview"
+                className="mt-4 h-40 object-contain rounded border"
+              />
+            )}
+          </div>
 
           <div className="col-span-2 flex justify-end gap-3 pt-4 border-t">
             <button
