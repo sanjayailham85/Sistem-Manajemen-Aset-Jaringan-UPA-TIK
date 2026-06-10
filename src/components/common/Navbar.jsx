@@ -89,7 +89,7 @@ const Navbar = () => {
     <div className="h-16 bg-white shadow-sm px-6 flex items-center justify-between">
       {/* TITLE */}
       <h1 className="text-lg font-semibold text-slate-700">
-        UPA TIK Asset Manager
+        UPA TIK Network Asset Manager
       </h1>
 
       <div className="flex items-center gap-6">

@@ -208,7 +208,7 @@ const Dashboard = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="bg-white p-4 rounded-xl shadow">
-          <h2 className="font-medium mb-4">Status Overview</h2>
+          <h2 className="font-medium mb-4">Total Device</h2>
 
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">

@@ -54,7 +54,7 @@ const ExportModal = ({ isOpen, onClose, onExport, title = "Export Data" }) => {
             </select>
           </div>
 
-          <div>
+          {/* <div>
             <label className="mb-2 block text-sm font-medium text-gray-600">
               Export Data
             </label>
@@ -67,7 +67,7 @@ const ExportModal = ({ isOpen, onClose, onExport, title = "Export Data" }) => {
             >
               <option value="all">All Data</option>
             </select>
-          </div>
+          </div> */}
         </div>
 
         <div className="flex justify-end gap-3 border-t px-5 py-4">

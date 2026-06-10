@@ -41,7 +41,7 @@ const MonitoringPage = () => {
 
     fetchInitial();
   }, []);
-   
+
   useEffect(() => {
     console.log("Socket connected?", socket.connected);
 
