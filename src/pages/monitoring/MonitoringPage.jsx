@@ -12,6 +12,7 @@ const MonitoringPage = () => {
   const [devices, setDevices] = useState([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
+
   const subCategoryOrder = [
     "physical",
     "host",
@@ -22,6 +23,7 @@ const MonitoringPage = () => {
   ];
 
   const [subIndex, setSubIndex] = useState(0);
+
   const handleSubCategoryClick = () => {
     setSubIndex((prev) => (prev + 1) % subCategoryOrder.length);
   };
@@ -53,28 +55,30 @@ const MonitoringPage = () => {
       console.log("SOCKET DISCONNECTED", reason);
     });
 
-    const handleUpdate = (updates) => {
+    socket.on("monitoring:init", (data) => {
+      console.log("INIT RECEIVED", data?.length);
+      setDevices(data || []);
+    });
+
+    socket.on("monitoring:update", (updates) => {
       console.log("UPDATE RECEIVED", updates);
 
       setDevices((prev) =>
         prev.map((device) => {
-          const updated = updates.find((u) => u.id === device.id);
+          const updated = updates.find(
+            (u) => String(u.id) === String(device.id) // 🔥 FIX UTAMA
+          );
+
           return updated ? { ...device, ...updated } : device;
         })
       );
-    };
-
-    const handleInit = (data) => {
-      console.log("INIT RECEIVED", data.length);
-      setDevices(data || []);
-    };
-
-    socket.on("monitoring:update", handleUpdate);
-    socket.on("monitoring:init", handleInit);
+    });
 
     return () => {
-      socket.off("monitoring:update", handleUpdate);
-      socket.off("monitoring:init", handleInit);
+      socket.off("monitoring:update");
+      socket.off("monitoring:init");
+      socket.off("connect");
+      socket.off("disconnect");
     };
   }, []);
 
@@ -86,7 +90,6 @@ const MonitoringPage = () => {
         ? devices
         : devices.filter((d) => (d.category || "").toLowerCase() === activeTab);
 
-    //subtab
     if (activeSubTab) {
       data = data.filter((d) => {
         const sub = (d.subcategory || "").toLowerCase();
