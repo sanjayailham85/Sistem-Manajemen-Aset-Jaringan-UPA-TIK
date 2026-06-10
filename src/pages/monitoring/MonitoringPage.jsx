@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import Tabs from "./components/Tabs";
 import DeviceTable from "./components/DeviceTable";
-import { getAllDevicesMonitoring } from "../../services/monitoringService";
 import { socket } from "../../utils/socket";
 
 const ITEMS_PER_PAGE = 6;
@@ -28,22 +27,9 @@ const MonitoringPage = () => {
     setSubIndex((prev) => (prev + 1) % subCategoryOrder.length);
   };
 
-  useEffect(() => {
-    const fetchInitial = async () => {
-      try {
-        setLoading(true);
-        const res = await getAllDevicesMonitoring();
-        setDevices(res.data || res || []);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchInitial();
-  }, []);
-
+  // =====================================================
+  // 🔥 SOCKET REALTIME (ONLY SOURCE OF TRUTH)
+  // =====================================================
   useEffect(() => {
     console.log("Socket connected?", socket.connected);
 
@@ -55,33 +41,43 @@ const MonitoringPage = () => {
       console.log("SOCKET DISCONNECTED", reason);
     });
 
+    // INIT DATA DARI SERVER
     socket.on("monitoring:init", (data) => {
       console.log("INIT RECEIVED", data?.length);
       setDevices(data || []);
     });
 
+    // UPDATE DATA REALTIME
     socket.on("monitoring:update", (updates) => {
       console.log("UPDATE RECEIVED", updates);
 
-      setDevices((prev) =>
-        prev.map((device) => {
-          const updated = updates.find(
-            (u) => String(u.id) === String(device.id) // 🔥 FIX UTAMA
-          );
+      setDevices((prev) => {
+        const map = new Map(prev.map((d) => [String(d.id), d]));
 
-          return updated ? { ...device, ...updated } : device;
-        })
-      );
+        updates.forEach((u) => {
+          const id = String(u.id);
+
+          map.set(id, {
+            ...map.get(id),
+            ...u,
+          });
+        });
+
+        return Array.from(map.values());
+      });
     });
 
     return () => {
-      socket.off("monitoring:update");
-      socket.off("monitoring:init");
       socket.off("connect");
       socket.off("disconnect");
+      socket.off("monitoring:init");
+      socket.off("monitoring:update");
     };
   }, []);
 
+  // =====================================================
+  // FILTER
+  // =====================================================
   const filteredDevices = useMemo(() => {
     if (!devices) return [];
 
