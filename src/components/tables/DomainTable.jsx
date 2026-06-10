@@ -5,7 +5,7 @@ import {
   create,
   update,
   deleteDomain,
-} from "../../services/DomainService";
+} from "../../services/domainService";
 import usePagination from "../../utils/usePagination";
 import usePermission from "../../utils/usePermission";
 import DomainModal from "../../components/digitalAsset/DomainModal";
