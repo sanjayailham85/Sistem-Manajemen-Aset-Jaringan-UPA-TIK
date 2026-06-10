@@ -43,16 +43,6 @@ const MonitoringPage = () => {
   }, []);
 
   useEffect(() => {
-    console.log("Socket connected?", socket.connected);
-
-    socket.on("connect", () => {
-      console.log("SOCKET CONNECTED", socket.id);
-    });
-
-    socket.on("disconnect", (reason) => {
-      console.log("SOCKET DISCONNECTED", reason);
-    });
-
     const handleUpdate = (updates) => {
       console.log("UPDATE RECEIVED", updates);
 
@@ -65,9 +55,12 @@ const MonitoringPage = () => {
     };
 
     const handleInit = (data) => {
-      console.log("INIT RECEIVED", data.length);
+      console.log("INIT RECEIVED", data);
       setDevices(data || []);
     };
+
+    socket.removeAllListeners("monitoring:update");
+    socket.removeAllListeners("monitoring:init");
 
     socket.on("monitoring:update", handleUpdate);
     socket.on("monitoring:init", handleInit);
