@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import Tabs from "./components/Tabs";
 import DeviceTable from "./components/DeviceTable";
+import { getAllDevicesMonitoring } from "../../services/monitoringService";
 import { socket } from "../../utils/socket";
 
 const ITEMS_PER_PAGE = 6;
@@ -11,7 +12,6 @@ const MonitoringPage = () => {
   const [devices, setDevices] = useState([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
-
   const subCategoryOrder = [
     "physical",
     "host",
@@ -22,14 +22,26 @@ const MonitoringPage = () => {
   ];
 
   const [subIndex, setSubIndex] = useState(0);
-
   const handleSubCategoryClick = () => {
     setSubIndex((prev) => (prev + 1) % subCategoryOrder.length);
   };
 
-  // =====================================================
-  // 🔥 SOCKET REALTIME (ONLY SOURCE OF TRUTH)
-  // =====================================================
+  useEffect(() => {
+    const fetchInitial = async () => {
+      try {
+        setLoading(true);
+        const res = await getAllDevicesMonitoring();
+        setDevices(res.data || res || []);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchInitial();
+  }, []);
+
   useEffect(() => {
     console.log("Socket connected?", socket.connected);
 
@@ -41,43 +53,31 @@ const MonitoringPage = () => {
       console.log("SOCKET DISCONNECTED", reason);
     });
 
-    // INIT DATA DARI SERVER
-    socket.on("monitoring:init", (data) => {
-      console.log("INIT RECEIVED", data?.length);
-      setDevices(data || []);
-    });
-
-    // UPDATE DATA REALTIME
-    socket.on("monitoring:update", (updates) => {
+    const handleUpdate = (updates) => {
       console.log("UPDATE RECEIVED", updates);
 
-      setDevices((prev) => {
-        const map = new Map(prev.map((d) => [String(d.id), d]));
+      setDevices((prev) =>
+        prev.map((device) => {
+          const updated = updates.find((u) => u.id === device.id);
+          return updated ? { ...device, ...updated } : device;
+        })
+      );
+    };
 
-        updates.forEach((u) => {
-          const id = String(u.id);
+    const handleInit = (data) => {
+      console.log("INIT RECEIVED", data.length);
+      setDevices(data || []);
+    };
 
-          map.set(id, {
-            ...map.get(id),
-            ...u,
-          });
-        });
-
-        return Array.from(map.values());
-      });
-    });
+    socket.on("monitoring:update", handleUpdate);
+    socket.on("monitoring:init", handleInit);
 
     return () => {
-      socket.off("connect");
-      socket.off("disconnect");
-      socket.off("monitoring:init");
-      socket.off("monitoring:update");
+      socket.off("monitoring:update", handleUpdate);
+      socket.off("monitoring:init", handleInit);
     };
   }, []);
 
-  // =====================================================
-  // FILTER
-  // =====================================================
   const filteredDevices = useMemo(() => {
     if (!devices) return [];
 
@@ -86,6 +86,7 @@ const MonitoringPage = () => {
         ? devices
         : devices.filter((d) => (d.category || "").toLowerCase() === activeTab);
 
+    //subtab
     if (activeSubTab) {
       data = data.filter((d) => {
         const sub = (d.subcategory || "").toLowerCase();
