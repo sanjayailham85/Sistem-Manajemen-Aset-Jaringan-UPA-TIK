@@ -7,7 +7,7 @@ import {
   updateAccessPoint,
   deleteAccessPoint,
 } from "../../services/accessPointService";
-import AccessPointModal from "../digital/accessPoint/AccessPointModal";
+import AccessPointModal from "../digital/accessPoint/accessPointModal";
 import ExportModal from "../../components/ExportModal";
 import ImportModal from "../../components/ImportModal";
 import { FiEdit, FiTrash2, FiChevronUp, FiChevronDown } from "react-icons/fi";
