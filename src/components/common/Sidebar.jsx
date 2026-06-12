@@ -129,7 +129,7 @@ const Sidebar = () => {
 
         <div>
           <p className="text-xs uppercase text-slate-400 px-3 mb-2">
-            Security Device
+            Surveillance Device
           </p>
 
           <NavLink
