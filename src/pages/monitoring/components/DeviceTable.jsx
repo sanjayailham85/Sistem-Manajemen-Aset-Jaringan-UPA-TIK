@@ -18,6 +18,7 @@ const DeviceTable = ({ filteredDevices, loading, onSubCategoryClick }) => {
             <th className="p-3">IP Address</th>
             <th className="p-3">Status</th>
             <th className="p-3">Ping</th>
+            <th className="p-3">TTL</th>
           </tr>
         </thead>
 
@@ -54,6 +55,7 @@ const DeviceTable = ({ filteredDevices, loading, onSubCategoryClick }) => {
                 <td className="p-3">
                   {device.ping ? `${device.ping} ms` : "-"}
                 </td>
+                <td className="p-3">{device.ttl ? `${device.ttl} ` : "-"}</td>
               </tr>
             ))
           )}
